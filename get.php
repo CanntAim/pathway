@@ -8,3 +8,5 @@
 
 $params = $_POST['params'];
 echo '<pre>'; print_r($params); echo '</pre>';
+echo "change";
+?>
