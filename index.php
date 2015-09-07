@@ -13,6 +13,7 @@
 	<title content="Json pathway file reader">Json pathway file reader</title>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 	<script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 	<script src="code.js"></script>
 	<script src="html2canvas.js"></script>
 	<style>

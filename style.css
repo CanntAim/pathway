@@ -24,3 +24,10 @@ body {
     border: 1px solid #000;
     margin: 10px 5px 0 0;
 }
+
+rect.selection {
+    stroke          : red;
+    stroke-dasharray: 4px;
+    stroke-opacity  : 1.0;
+    fill            : transparent;
+}

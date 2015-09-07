@@ -166,6 +166,8 @@ $(function () { // on dom ready
 	function visual_pathway(obj) {
 		$('#cy').cytoscape({
 			style: cytoscape.stylesheet()
+			
+				// node elements default css (unselected state)
 				.selector('node').css({
 					'content': 'data(name)',
 					'text-valign': 'center',
@@ -210,6 +212,8 @@ $(function () { // on dom ready
 					'text-halign': 'center',
 					'text-valign': 'top'
 				})
+				
+				// edge elements default css (unselected)
 				.selector('edge').css({
 					'line-color': 'black',
 					'line-style': 'solid',
@@ -235,6 +239,8 @@ $(function () { // on dom ready
 					'line-color': 'yellow',
 					'line-style': 'solid'
 				})
+				
+				// node & edge elements (selected state)
 				.selector('edge:selected').css({
 					'background-color': 'black',
 					'line-color': 'black',
@@ -242,8 +248,10 @@ $(function () { // on dom ready
 					'source-arrow-color': 'black'
 				})
 				.selector('node:selected').css({
-					'width': 10
+					'background-color': 'yellow'
 				})
+				
+				// misc
 				.selector('.faded').css({
 					'opacity': 1,
 					'text-opacity': 0
@@ -263,24 +271,23 @@ $(function () { // on dom ready
 				name: 'preset',
 				padding: 10
 			},
-			//style: {
-			//    name: 'WikiPathways'
-			//},
+//style: {
+//name: 'WikiPathways'
+//},
 
-			// on graph initial layout done (could be async depending on layout...)
-
-
+			//on graph initial layout done (could be async depending on layout...)
 			ready: function () {
 				window.cy = this;
 
-				cy.elements().unselectify();
+//cy.elements().unselectify();
 
 				var selectedNodes = [];
 				var counts = {};
 				var str_info;
 
-				//$('#information').append("You have selected:" + "<br>");
+//$('#information').append("You have selected:" + "<br>");
 
+				/* custom event handlers */
 				cy.off('click', 'node').on('click', 'node', function (e) {
 					e.preventDefault();
 
@@ -301,8 +308,40 @@ $(function () { // on dom ready
 						$('#params').append(node_name + ":" + "low" + "\n");
 					}
 				});
-			}
-		});
+			},
+
+  			// initial viewport state:
+  			zoom: 1,
+  			pan: { x: 0, y: 0 },
+			
+			// interaction options:
+  			minZoom: 1e-50,
+  			maxZoom: 1e50,
+  			zoomingEnabled: true,
+  			userZoomingEnabled: true,
+  			panningEnabled: true,
+  			userPanningEnabled: true,
+ 	 		boxSelectionEnabled: true,
+  			selectionType: 'single',
+  			touchTapThreshold: 8,
+  			desktopTapThreshold: 4,
+  			autolock: false,
+  			autoungrabify: false,
+  			autounselectify: false,
+
+  			// rendering options:
+  			headless: false,
+  			styleEnabled: true,
+  			hideEdgesOnViewport: false,
+  			hideLabelsOnViewport: false,
+  			textureOnViewport: false,
+  			motionBlur: false,
+  			motionBlurOpacity: 0.2,
+  			wheelSensitivity: 1,
+  			pixelRatio: 1,
+  			initrender: function(evt){ /* ... */ },
+  			renderer: { /* ... */ }
+		});	
 	}
 
 	document.getElementById('file').addEventListener('change', onChange);
