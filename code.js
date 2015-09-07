@@ -1,3 +1,11 @@
+
+// Globals
+var selectedForQueryNodes = [];
+var selectedForEditNodes = [];
+var counts = {};
+var str_info;
+
+
 $(function () { // on dom ready
 
 	function onChange(event) {
@@ -12,6 +20,10 @@ $(function () { // on dom ready
 		visual_pathway(obj);
 	}
 
+	function remove(event) {
+		selectedForEditNodes.remove();
+	}
+	
 	/*
 	 function sendFileToServer(formData, status) {
 	 var uploadURL = "http://localhost/pathway/cy_v1/index.php"; //Upload URL
@@ -283,11 +295,6 @@ $(function () { // on dom ready
 
 				//cy.elements().unselectify();
 
-				var selectedForQueryNodes = [];
-				var selectedForEditNodes = [];
-				var counts = {};
-				var str_info;
-
 				//$('#information').append("You have selected:" + "<br>");
 
 				// custom event handlers
@@ -352,4 +359,5 @@ $(function () { // on dom ready
 	}
 
 	document.getElementById('file').addEventListener('change', onChange);
+	document.getElementById('delete').addEventListener('click', remove);
 }); // on dom ready

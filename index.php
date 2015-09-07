@@ -138,7 +138,7 @@
 </script>
 <body>
 <input id="file" type="file"/>
-
+<input id="delete" value="Delete" type="button"/></input>
 <form action="get.php" method="post" id="pathway">
 	<textarea id="params" name="params" rows="10" cols="10"></textarea>
 	<input type="submit" id="submit" value="Save and Query">
