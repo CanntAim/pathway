@@ -271,23 +271,26 @@ $(function () { // on dom ready
 				name: 'preset',
 				padding: 10
 			},
-//style: {
-//name: 'WikiPathways'
-//},
+			//style: {
+			//    name: 'WikiPathways'
+			//},
 
-			//on graph initial layout done (could be async depending on layout...)
+			// on graph initial layout done (could be async depending on layout...)
+
+
 			ready: function () {
 				window.cy = this;
 
-//cy.elements().unselectify();
+				//cy.elements().unselectify();
 
-				var selectedNodes = [];
+				var selectedForQueryNodes = [];
+				var selectedForEditNodes = [];
 				var counts = {};
 				var str_info;
 
-//$('#information').append("You have selected:" + "<br>");
+				//$('#information').append("You have selected:" + "<br>");
 
-				/* custom event handlers */
+				// custom event handlers
 				cy.off('click', 'node').on('click', 'node', function (e) {
 					e.preventDefault();
 
@@ -297,16 +300,20 @@ $(function () { // on dom ready
 					var node_id = node.data("id");
 					//console.log(node_name);
 
-					if ($.inArray(node_name, selectedNodes) !== -1) {
+					if ($.inArray(node_name, selectedForQueryNodes) !== -1) {
 						node.addClass('red');
 						var old_html = $('#params').text;
 						console.log(old_html);
 						$('#params').append(node_name + ":" + "high" + "\n");
 					} else {
-						selectedNodes.push(node_name);
+						selectedForQueryNodes.push(node_name);
 						node.addClass('green');
 						$('#params').append(node_name + ":" + "low" + "\n");
 					}
+				});
+				
+				cy.on('select', 'node', function(event){
+			    	selectedForEditNodes = cy.$('node:selected');
 				});
 			},
 
