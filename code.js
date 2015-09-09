@@ -23,157 +23,33 @@ $(function () { // on dom ready
 	function remove(event) {
 		selectedForEditNodes.remove();
 	}
-	
-	/*
-	 function sendFileToServer(formData, status) {
-	 var uploadURL = "http://localhost/pathway/cy_v1/index.php"; //Upload URL
-	 var extraData = {}; //Extra Data.
-	 var jqXHR = $.ajax({
-	 xhr: function () {
-	 var xhrobj = $.ajaxSettings.xhr();
-	 if (xhrobj.upload) {
-	 xhrobj.upload.addEventListener('progress', function (event) {
-	 var percent = 0;
-	 var position = event.loaded || event.position;
-	 var total = event.total;
-	 if (event.lengthComputable) {
-	 percent = Math.ceil(position / total * 100);
-	 }
-	 //Set progress
-	 status.setProgress(percent);
-	 }, false);
-	 }
-	 return xhrobj;
-	 },
-	 url: uploadURL,
-	 type: "POST",
-	 contentType: false,
-	 processData: false,
-	 cache: false,
-	 data: formData,
-	 success: function (data) {
-	 status.setProgress(100);
-	 $("#information").html(data);
-	 $("#status1").append("File upload Done<br>");
-	 }
-	 });
-
-	 status.setAbort(jqXHR);
-	 }
-
-	 var rowCount = 0;
-
-	 function createStatusbar(obj) {
-	 rowCount++;
-	 var row = "odd";
-	 if (rowCount % 2 == 0) row = "even";
-	 this.statusbar = $("<div class='statusbar " + row + "'></div>");
-	 this.filename = $("<div class='filename'></div>").appendTo(this.statusbar);
-	 this.size = $("<div class='filesize'></div>").appendTo(this.statusbar);
-	 this.progressBar = $("<div class='progressBar'><div></div></div>").appendTo(this.statusbar);
-	 this.abort = $("<div class='abort'>Abort</div>").appendTo(this.statusbar);
-	 obj.after(this.statusbar);
-
-	 this.setFileNameSize = function (name, size) {
-	 var sizeStr = "";
-	 var sizeKB = size / 1024;
-	 if (parseInt(sizeKB) > 1024) {
-	 var sizeMB = sizeKB / 1024;
-	 sizeStr = sizeMB.toFixed(2) + " MB";
-	 }
-	 else {
-	 sizeStr = sizeKB.toFixed(2) + " KB";
-	 }
-
-	 this.filename.html(name);
-	 this.size.html(sizeStr);
-	 }
-	 this.setProgress = function (progress) {
-	 var progressBarWidth = progress * this.progressBar.width() / 100;
-	 this.progressBar.find('div').animate({width: progressBarWidth}, 10).html(progress + "% ");
-	 if (parseInt(progress) >= 100) {
-	 this.abort.hide();
-	 }
-	 }
-	 this.setAbort = function (jqxhr) {
-	 var sb = this.statusbar;
-	 this.abort.click(function () {
-	 jqxhr.abort();
-	 sb.hide();
-	 });
-	 }
-	 }
-
-	 function handleFileUpload(files, obj) {
-	 for (var i = 0; i < files.length; i++) {
-	 var fd = new FormData();
-	 fd.append('file', files[i]);
-
-	 var status = new createStatusbar(obj); //Using this we can set progress.
-	 status.setFileNameSize(files[i].name, files[i].size);
-	 sendFileToServer(fd, status);
-
-	 }
-	 }
-
-	 var obj = $("#dragandrophandler");
-	 obj.on('dragenter', function (e) {
-	 e.stopPropagation();
-	 e.preventDefault();
-	 $(this).css('border', '2px solid #0B85A1');
-	 });
-	 obj.on('dragover', function (e) {
-	 e.stopPropagation();
-	 e.preventDefault();
-	 });
-	 obj.on('drop', function (e) {
-
-	 $(this).css('border', '2px dotted #0B85A1');
-	 e.preventDefault();
-	 var files = e.originalEvent.dataTransfer.files;
-
-	 //We need to send dropped files to Server
-	 handleFileUpload(files, obj);
-	 });
-	 $(document).on('dragenter', function (e) {
-	 e.stopPropagation();
-	 e.preventDefault();
-	 });
-	 $(document).on('dragover', function (e) {
-	 e.stopPropagation();
-	 e.preventDefault();
-	 obj.css('border', '2px dotted #0B85A1');
-	 });
-	 $(document).on('drop', function (e) {
-	 e.stopPropagation();
-	 e.preventDefault();
-	 });
-
-	 function addCircle(nodeId, circleText) {
-	 console.log(nodeId, circleText);
-	 var parentNode = cy.$('#' + nodeId);
-	 if (parentNode.data('isCircle') || parentNode.data('circleId'))
-	 return;
-	 parentNode.lock();
-	 var px = parentNode.position('x') + 10;
-	 var py = parentNode.position('y') - 10;
-	 var circleId = (cy.nodes().size() + 1).toString();
-	 parentNode.data('circleId', circleId);
-	 cy.add({
-	 group: 'nodes',
-	 data: {weight: 75, id: circleId, name: circleText, isCircle: true},
-	 position: {x: px, y: py},
-	 locked: true
-	 }).css({
-	 'background-color': 'yellow',
-	 'shape': 'ellipse',
-	 'background-opacity': 0.5
-	 }).unselectify();
-	 }
-	 */
-
-
-	//dCircle('1', 'Bubble A');
+/*	Color: "ff0033"
+	GraphId: "b6fd7"
+	Height: 27
+	LabelSize: 10
+	SUID: "b6fd7"
+	Type: "Protein"
+	Valign: "Middle"	
+	Width: 80.75
+	XrefDatasource: "Uniprot-TrEMBL"
+	XrefId: "O15350"
+	id: "b6fd7"
+	name: "TP73alpha"
+	selected: false
+	shared_name: "TP73alpha"
+*/
+	function add(event) {	
+		var node = { group: "nodes", x: 10, y: 35, 
+		data: { Color: "ff0033",GraphId: "b6fd8", 
+				Height: 27, Labelsize: 10, 
+				SUID: "b6fd8", Type: "Protein", 
+				Valign: "Middle", Width: 80.75,
+				XrefDatasource: "Uniprot-TrEMBL",
+				XrefId: 01530, id: "b6fd8", name: "O15350",
+				selected: false, shared_names: "TP73alpha" } };
+		
+		cy.add(node);
+	}
 
 	function visual_pathway(obj) {
 		$('#cy').cytoscape({
@@ -283,40 +159,34 @@ $(function () { // on dom ready
 				name: 'preset',
 				padding: 10
 			},
-			//style: {
-			//    name: 'WikiPathways'
-			//},
-
-			// on graph initial layout done (could be async depending on layout...)
-
 
 			ready: function () {
 				window.cy = this;
-
-				//cy.elements().unselectify();
-
-				//$('#information').append("You have selected:" + "<br>");
-
+				var selectedNodes = [];
+		
 				// custom event handlers
 				cy.off('click', 'node').on('click', 'node', function (e) {
+
 					e.preventDefault();
 
 					var node = this;
 
 					var node_name = node.data("shared_name");
+					selectedNodes.push(node_name);
 					var node_id = node.data("id");
-					//console.log(node_name);
+					var count = selectedNodes.filter(function (value) {
+						return value === node_name;
+					}).length;
 
-					if ($.inArray(node_name, selectedForQueryNodes) !== -1) {
+					selectedForQueryNodes.push(node_name);
+					if (count % 2 == 0) {
+						node.removeClass('green');
 						node.addClass('red');
-						var old_html = $('#params').text;
-						console.log(old_html);
-						$('#params').append(node_name + ":" + "high" + "\n");
 					} else {
-						selectedForQueryNodes.push(node_name);
+						node.removeClass('red');
 						node.addClass('green');
-						$('#params').append(node_name + ":" + "low" + "\n");
 					}
+
 				});
 				
 				cy.on('select', 'node', function(event){
@@ -360,4 +230,5 @@ $(function () { // on dom ready
 
 	document.getElementById('file').addEventListener('change', onChange);
 	document.getElementById('delete').addEventListener('click', remove);
+	document.getElementById('add').addEventListener('click', add);
 }); // on dom ready
