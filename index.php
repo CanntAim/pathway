@@ -36,7 +36,6 @@
 
 				$(".return-data").html("Uploaded Canvas image link: <a href=" + respond + ">" + respond + "</a>").hide().fadeIn("fast");
 			});
-
 		}
 	});
 
@@ -53,25 +52,35 @@
 		// Return our Blob object
 		return new Blob([new Uint8Array(array)], {type: 'image/png'});
 	}
-
 </script>
 <body>
 	<input id="file" type="file"/>
 	<input id="add" value="Add" type="button"/></input>
 	<input id="delete" value="Delete Selected Node(s)" type="button"/></input>
+	<input id="add_neighbor" value="add another neighbor" type="button"/>
 	<table class="dd" id="data">
 		<tr>
-			<td>Node:</td>
+			<td>Element name:</td>
 			<td><input name="name" id="name" type="text" /></td>
 			<td>Type:</td>
-			<td><select name="type" id="type">
+			<td><select name="element_type" id="type">
   				<option value="1">Rectangle</option>
   			</select></td>
 		</tr>
 	</table>
-	<br/>
+	</br>
+	</br>
+	</br>
 	<div id="cy"></div>
-	<br/>
 	<div id="result"></div>
 </body>
+<script>
+	var currentItem = 1;
+	$('#add_neighbor').click(function(){
+		currentItem++;
+		$('#items').val(currentItem);
+		var strToAdd = '<tr><td>Neighbor</td><td><input name="name_n'+currentItem+'" id="name_n'+currentItem+'" type="text"></td><td>Type</td><td><select name="edge_type_n'+currentItem+'" id="edge_type_n'+currentItem+'"><option value="1">Outgoing</option><option value="2">Incoming</option></select></td></tr>';
+  		$('#data').append(strToAdd);
+ 	});
+</script>
 </html>

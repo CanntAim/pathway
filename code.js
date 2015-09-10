@@ -38,17 +38,62 @@ $(function () { // on dom ready
 	selected: false
 	shared_name: "TP73alpha"
 */
-	function add(event) {	
-		var node = { group: "nodes", x: 10, y: 35, 
-		data: { Color: "ff0033",GraphId: "b6fd8", 
-				Height: 27, Labelsize: 10, 
-				SUID: "b6fd8", Type: "Protein", 
-				Valign: "Middle", Width: 80.75,
-				XrefDatasource: "Uniprot-TrEMBL",
-				XrefId: 01530, id: "b6fd8", name: "O15350",
-				selected: false, shared_names: "TP73alpha" } };
+	function add(event) {
+		var node = [];
+		var edges = [];
 		
-		cy.add(node);
+		//parse table info
+		var name = document.getElementById("name").value;
+		var x = document.getElementById("data").rows.length;
+		for(var i=1; i<x; i++){
+			var edgeTypeId = "edge_type_n"+x;
+			var nameNeigbhorId = "name_n"+x;
+			
+			var edgeType = document.getElementById(edgeTypeId).value;
+			var nameNeighbor= document.getElementById(nameNeigbhorId).value;
+			if(true){
+				edges.push({ 
+					group: "edges",
+					data : {
+        	   			id : "1",
+             			SUID : "1",
+            			LineThickness:1.0,
+            			EndArrow:"Arrow",
+            			Coords:[{"x":0,"y":0},{"x":0,"y":0}],
+            			GraphId:"1",
+            			ZOrder:"12288",
+            			source:name,
+            			target:nameNeighbor, 
+            			StartArrow : "Line",
+        				selected : false
+      				},
+      				selected : false
+    			})
+    		}
+    	}
+		
+		node.push({ group: "nodes",
+      			data: {
+        			Color: "ff0033",
+         			GraphId: name,
+         			LabelSize: 10,
+         			SUID: "b6fd7",
+         			Type: "Protein",
+         			Valign: "Middle",
+         			Width: 80.75,
+         			Height: 100,
+         			id: name,
+         			name: name,
+         			selected: false,
+         			shared_name: "Ivannode"
+       			},
+       			position: {
+         			x: 500,
+         			y: 500
+      			}
+   		})
+   				
+   		window.cy.add(node.concat(edges));
 	}
 
 	function visual_pathway(obj) {
