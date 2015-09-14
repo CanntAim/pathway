@@ -58,7 +58,7 @@ $(function () { // on dom ready
       				selected : false
     			})
     		} else {
-    				edges.push({ 
+    			edges.push({ 
 					group: "edges",
 					data : {
         	   			id : "e"+edgeCounter,
@@ -81,7 +81,6 @@ $(function () { // on dom ready
 		
 		node.push({ group: "nodes",
       			data: {
-        			Color: "ff0033",
          			GraphId: name,
          			LabelSize: 10,
          			SUID: "b6fd7",
@@ -92,12 +91,16 @@ $(function () { // on dom ready
          			id: name,
          			name: name,
          			selected: false,
-         			shared_name: "Ivannode"
+         			shared_name: name
        			},
        			position: {
          			x: 500,
          			y: 500
-      			}
+      			},
+      			css: { 
+      				'border-color': 'black', 
+      				'color': 'black'
+      			} 
    		})
    				
    		window.cy.add(node.concat(edges));
@@ -105,11 +108,10 @@ $(function () { // on dom ready
 	
 	function bundle(event){		
 		var nodes = [];
-
+		var edges =[];
 		// Create new parent
 		nodes.push({ group: "nodes",
       			data: {
-        			Color: "ff0033",
          			GraphId: "n"+bundleCounter,
          			LabelSize: 10,
          			SUID: "b6fd7",
@@ -125,16 +127,17 @@ $(function () { // on dom ready
        			position: {
          			x: 500,
          			y: 500
-      			}
+      			},
+      			css: { 
+      				"border-color": "red" 
+      			} 
    		})
 
 		// Create copies of old nodes
 		for (var i=0; i < selectedForEditNodes.size(); i++) {
-			console.log(selectedForEditNodes[i]);
 			nodes.push({
 				group: "nodes",
 				data: {
-        			Color: selectedForEditNodes[i].data('Color'),
          			GraphId: selectedForEditNodes[i].data('GraphId'),
          			LabelSize: selectedForEditNodes[i].data('LabelSize'),
          			SUID: selectedForEditNodes[i].data('SUID'),
@@ -148,15 +151,40 @@ $(function () { // on dom ready
          			shared_name: selectedForEditNodes[i].data('shared_name'),
          			parent: "n"+bundleCounter
        			},
-				position: {x: selectedForEditNodes[i].position('x'), y: selectedForEditNodes[i].position('y')}
+				position: {
+					x: selectedForEditNodes[i].position('x'), 
+					y: selectedForEditNodes[i].position('y')
+				},
+				css: { 
+      				'border-color': 'red' 
+      			} 	
 			});
+			for (var j=0; j < selectedForEditNodes[i].connectedEdges().size(); j++) {
+				edges.push({ 
+					group: "edges",
+					data : {
+        	   			id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
+             			SUID : selectedForEditNodes[i].connectedEdges()[j].data('SUID'),
+            			LineThickness: selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
+            			EndArrow: selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
+            			Coords: selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
+            			GraphId: selectedForEditNodes[i].connectedEdges()[j].data('GraphId'),
+            			ZOrder: selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
+            			source: selectedForEditNodes[i].connectedEdges()[j].data('source'),
+            			target: selectedForEditNodes[i].connectedEdges()[j].data('target'),
+            			StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
+        				selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
+      				},
+      				selected : selectedForEditNodes[i].connectedEdges()[j].selected,
+    			})
+    		}
 		}
 
 		// Remove old nodes
 		selectedForEditNodes.remove();
 
 		// Add new nodes
-		window.cy.add(nodes);
+		window.cy.add(nodes.concat(edges));
 		
 		bundleCounter++;
 	}
