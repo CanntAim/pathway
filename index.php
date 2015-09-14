@@ -58,6 +58,7 @@
 	<input id="add" value="Add" type="button"/></input>
 	<input id="delete" value="Delete Selected Node(s)" type="button"/></input>
 	<input id="bundle" value="Bundle" type="button"/></input>
+	<input id="produceJSON" value="Export JSON" type="button"/></input>
 	<input id="add_neighbor" value="add another neighbor" type="button"/>
 	<table class="dd" id="data">
 		<tr>

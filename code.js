@@ -188,6 +188,11 @@ $(function () { // on dom ready
 		
 		bundleCounter++;
 	}
+	
+	function produceJSON(event){ 
+		var j = cy.elements().jsons();
+		console.log(j);
+	}
 
 	function visual_pathway(obj) {
 		$('#cy').cytoscape({
@@ -370,4 +375,5 @@ $(function () { // on dom ready
 	document.getElementById('delete').addEventListener('click', remove);
 	document.getElementById('add').addEventListener('click', add);
 	document.getElementById('bundle').addEventListener('click',bundle);
+	document.getElementById('produceJSON').addEventListener('click',produceJSON);
 }); // on dom ready
