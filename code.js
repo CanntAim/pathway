@@ -2,6 +2,8 @@
 // Globals
 var selectedForQueryNodes = [];
 var selectedForEditNodes = [];
+var bundleCounter = 0;
+var edgeCounter = 0;
 var counts = {};
 var str_info;
 
@@ -23,21 +25,7 @@ $(function () { // on dom ready
 	function remove(event) {
 		selectedForEditNodes.remove();
 	}
-/*	Color: "ff0033"
-	GraphId: "b6fd7"
-	Height: 27
-	LabelSize: 10
-	SUID: "b6fd7"
-	Type: "Protein"
-	Valign: "Middle"	
-	Width: 80.75
-	XrefDatasource: "Uniprot-TrEMBL"
-	XrefId: "O15350"
-	id: "b6fd7"
-	name: "TP73alpha"
-	selected: false
-	shared_name: "TP73alpha"
-*/
+
 	function add(event) {
 		var node = [];
 		var edges = [];
@@ -51,16 +39,16 @@ $(function () { // on dom ready
 			
 			var edgeType = document.getElementById(edgeTypeId).value;
 			var nameNeighbor= document.getElementById(nameNeigbhorId).value;
-			if(true){
+			if(edgeType == "incoming"){
 				edges.push({ 
 					group: "edges",
 					data : {
-        	   			id : "1",
-             			SUID : "1",
+        	   			id : "e"+edgeCounter,
+             			SUID : "e"+edgeCounter,
             			LineThickness:1.0,
             			EndArrow:"Arrow",
             			Coords:[{"x":0,"y":0},{"x":0,"y":0}],
-            			GraphId:"1",
+            			GraphId:"e"+edgeCounter,
             			ZOrder:"12288",
             			source:name,
             			target:nameNeighbor, 
@@ -69,7 +57,26 @@ $(function () { // on dom ready
       				},
       				selected : false
     			})
+    		} else {
+    				edges.push({ 
+					group: "edges",
+					data : {
+        	   			id : "e"+edgeCounter,
+             			SUID : "e"+edgeCounter,
+            			LineThickness:1.0,
+            			EndArrow:"Line",
+            			Coords:[{"x":0,"y":0},{"x":0,"y":0}],
+            			GraphId:"e"+edgeCounter,
+            			ZOrder:"12288",
+            			source:name,
+            			target:nameNeighbor, 
+            			StartArrow : "Arrow",
+        				selected : false
+      				},
+      				selected : false
+    			})
     		}
+    		edgeCounter++;
     	}
 		
 		node.push({ group: "nodes",
@@ -94,6 +101,64 @@ $(function () { // on dom ready
    		})
    				
    		window.cy.add(node.concat(edges));
+	}
+	
+	function bundle(event){		
+		var nodes = [];
+
+		// Create new parent
+		nodes.push({ group: "nodes",
+      			data: {
+        			Color: "ff0033",
+         			GraphId: "n"+bundleCounter,
+         			LabelSize: 10,
+         			SUID: "b6fd7",
+         			Type: "Protein",
+         			Valign: "Middle",
+         			Width: 80.75,
+         			Height: 100,
+         			id: "n"+bundleCounter,
+         			name: "n"+bundleCounter,
+         			selected: false,
+         			shared_name: "n"+bundleCounter
+       			},
+       			position: {
+         			x: 500,
+         			y: 500
+      			}
+   		})
+
+		// Create copies of old nodes
+		for (var i=0; i < selectedForEditNodes.size(); i++) {
+			console.log(selectedForEditNodes[i]);
+			nodes.push({
+				group: "nodes",
+				data: {
+        			Color: selectedForEditNodes[i].data('Color'),
+         			GraphId: selectedForEditNodes[i].data('GraphId'),
+         			LabelSize: selectedForEditNodes[i].data('LabelSize'),
+         			SUID: selectedForEditNodes[i].data('SUID'),
+         			Type: selectedForEditNodes[i].data('Type'),
+         			Valign: selectedForEditNodes[i].data('Valign'),
+         			Width: selectedForEditNodes[i].data('Width'),
+         			Height: selectedForEditNodes[i].data('Height'),
+         			id: selectedForEditNodes[i].data('id'),
+         			name: selectedForEditNodes[i].data('name'),
+         			selected: selectedForEditNodes[i].data('selected'),
+         			shared_name: selectedForEditNodes[i].data('shared_name'),
+         			parent: "n"+bundleCounter
+       			},
+				position: {x: selectedForEditNodes[i].position('x'), y: selectedForEditNodes[i].position('y')}
+			});
+		}
+
+		// Remove old nodes
+		selectedForEditNodes.remove();
+
+		// Add new nodes
+		window.cy.add(nodes);
+		
+		bundleCounter++;
 	}
 
 	function visual_pathway(obj) {
@@ -272,8 +337,9 @@ $(function () { // on dom ready
   			renderer: { /* ... */ }
 		});	
 	}
-
+	
 	document.getElementById('file').addEventListener('change', onChange);
 	document.getElementById('delete').addEventListener('click', remove);
 	document.getElementById('add').addEventListener('click', add);
+	document.getElementById('bundle').addEventListener('click',bundle);
 }); // on dom ready
