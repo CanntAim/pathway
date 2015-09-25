@@ -1,4 +1,3 @@
-
 // Globals
 var selectedForQueryNodes = [];
 var selectedForEditNodes = [];
@@ -335,13 +334,43 @@ $(function () { // on dom ready
 					'opacity': 1,
 					'text-opacity': 0
 				})
-				.selector('.green').css({
-					'background-color': 'green',
+
+				// query purpose
+				.selector('.green_bg').css({
+					'background-color': 'LightGreen',
 					'color': 'black'
 				})
-				.selector('.red').css({
+				.selector('.red_bg').css({
+					'background-color': 'LightSalmon',
+					'color': 'black'
+				})
+				.selector('.purple_border').css({
+					'border-color': 'MediumPurple',
+					'border-width': 3
+				})
+				.selector('.red_border').css({
+					'border-color': 'red',
+					'border-width': 3
+				})
+				.selector('.red_shadow').css({
+					'shadow-opacity': 1,
+					'shadow-color': 'red',
+					'border-width': 1
+				})
+				.selector('.red_circle').css({
 					'background-color': 'red',
-					'color': 'white'
+					'shape': 'ellipse',
+					'background-opacity': 0.5
+				})
+				.selector('.green_circle').css({
+					'background-color': 'green',
+					'shape': 'ellipse',
+					'background-opacity': 0.5
+				})
+				.selector('.reset_all').css({
+					'background-color': 'white',
+					'border-color': 'black',
+					'border-width': 1
 				}),
 
 			elements: obj.elements,
@@ -370,18 +399,96 @@ $(function () { // on dom ready
 					}).length;
 
 					selectedForQueryNodes.push(node_name);
-					if (count % 2 == 0) {
-						node.removeClass('green');
-						node.addClass('red');
-					} else {
-						node.removeClass('red');
-						node.addClass('green');
+					
+					console.log(count);
+					
+					// RNA
+					if (count == 1) {						
+						node.addClass('green_bg');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					} 
+					
+					if (count == 2) {
+						node.removeClass('green_bg');
+						node.addClass('red_bg');
+						$('#variable').val($('#variable').val() + node_name + " ");
 					}
-
+					
+					// CNV Added
+					if (count == 3) {
+						node.addClass('purple_border');
+						node.addClass('green_bg');
+						node.removeClass('red_bg');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					}
+					
+					if (count == 4) {
+						node.addClass('purple_border');
+						node.addClass('red_bg');
+						node.removeClass('green_bg');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					}
+					
+					if (count == 5) {
+						node.addClass('red_border');
+						node.addClass('green_bg');
+						node.removeClass('red_bg');
+						node.removeClass('purple_border');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					}
+					
+					if (count == 6) {
+						node.addClass('red_border');
+						node.addClass('red_bg');
+						node.removeClass('green_bg');
+						node.removeClass('purple_border');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					}
+					
+					if (count == 7) {
+						node.addClass('red_shadow');
+						node.addClass('red_bg');
+						node.addClass('purple_border');
+						
+						node.removeClass('green_bg');
+						node.removeClass('red_border');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					}
+					
+					if (count == 8) {
+						node.addClass('red_shadow');
+						node.addClass('red_bg');
+						node.addClass('red_border');
+						
+						node.removeClass('green_bg');
+						node.removeClass('purple_border');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					}
+					
+					if (count == 9) {
+						node.addClass('red_shadow');
+						node.addClass('green_bg');
+						node.addClass('red_border');
+						
+						node.removeClass('red_bg');
+						node.removeClass('purple_border');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					}
+					
+					if (count == 10) {
+						node.addClass('red_shadow');
+						node.addClass('green_bg');
+						node.addClass('purple_border');
+						
+						node.removeClass('red_bg');
+						node.removeClass('red_border');
+						$('#variable').val($('#variable').val() + node_name + " ");
+					}
+                   				
 				});
-				
+
 				cy.on('cxttapstart ', 'node', function(event){
-              		var name = prompt("Enter new name.", event.cyTarget.data('name'));
+              				var name = prompt("Enter new name.", event.cyTarget.data('name'));
 					if (name != null) {
     					event.cyTarget.data('name', name)
 					}

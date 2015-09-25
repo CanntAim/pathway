@@ -73,10 +73,19 @@
 		</tr>
 	</table>
 	</br>
+        <form id="form-data" method="post" action="get.php" target="_blank">
+		<input type="hidden" name="variable" id="variable"><br>
+		<!--<input type="hidden" name="rna" id="rna"><br>
+		<input type="hidden" name="cnv" id="cnv"><br>
+		<input type="hidden" name="mut" id="mut"><br>
+		<input type="hidden" name="ts_gene" id="ts_gene"><br>
+		<input type="hidden" name="onco_gene" id="onco_gene"><br>-->
+		<input type="submit" value="Submit">
+	</form>
 	</br>
 	</br>
 	<div id="cy"></div>
-	<div id="result"></div>
+	<!--<div id="result"></div>-->
 </body>
 <script>
 	var currentItem = 1;
