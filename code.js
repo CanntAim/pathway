@@ -4,9 +4,10 @@ var selectedForQueryNodes = [];
 var selectedForEditNodes = [];
 var bundleCounter = 0;
 var edgeCounter = 0;
+var loadCounts = 0;
+var header ="";
 var counts = {};
 var str_info;
-
 
 $(function () { // on dom ready
 
@@ -17,9 +18,17 @@ $(function () { // on dom ready
 	}
 
 	function onReaderLoad(event) {
-		console.log(event.target.result);
 		var obj = JSON.parse(event.target.result);
-		visual_pathway(obj);
+		if(loadCounts==0){
+			header = obj.data;
+			visual_pathway(obj);
+		} else {
+			for(var i=0; i < obj.elements.nodes.length; i++){
+				obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x+1000*loadCounts;
+			}
+			window.cy.add(obj.elements)
+		}
+		loadCounts++;
 	}
 
 	function remove(event) {
@@ -135,30 +144,57 @@ $(function () { // on dom ready
 
 		// Create copies of old nodes
 		for (var i=0; i < selectedForEditNodes.size(); i++) {
-			nodes.push({
-				group: "nodes",
-				data: {
-         			GraphId: selectedForEditNodes[i].data('GraphId'),
-         			LabelSize: selectedForEditNodes[i].data('LabelSize'),
-         			SUID: selectedForEditNodes[i].data('SUID'),
-         			Type: selectedForEditNodes[i].data('Type'),
-         			Valign: selectedForEditNodes[i].data('Valign'),
-         			Width: selectedForEditNodes[i].data('Width'),
-         			Height: selectedForEditNodes[i].data('Height'),
-         			id: selectedForEditNodes[i].data('id'),
-         			name: selectedForEditNodes[i].data('name'),
-         			selected: selectedForEditNodes[i].data('selected'),
-         			shared_name: selectedForEditNodes[i].data('shared_name'),
-         			parent: "n"+bundleCounter
-       			},
-				position: {
-					x: selectedForEditNodes[i].position('x'), 
-					y: selectedForEditNodes[i].position('y')
-				},
-				css: { 
-      				'border-color': 'red' 
-      			} 	
-			});
+			if(typeof selectedForEditNodes[i].data('parent') == 'undefined'){
+				nodes.push({
+					group: "nodes",
+					data: {
+         				GraphId: selectedForEditNodes[i].data('GraphId'),
+         				LabelSize: selectedForEditNodes[i].data('LabelSize'),
+         				SUID: selectedForEditNodes[i].data('SUID'),
+         				Type: selectedForEditNodes[i].data('Type'),
+         				Valign: selectedForEditNodes[i].data('Valign'),
+         				Width: selectedForEditNodes[i].data('Width'),
+         				Height: selectedForEditNodes[i].data('Height'),
+         				id: selectedForEditNodes[i].data('id'),
+         				name: selectedForEditNodes[i].data('name'),
+         				selected: selectedForEditNodes[i].data('selected'),
+         				shared_name: selectedForEditNodes[i].data('shared_name'),
+         				parent: "n"+bundleCounter
+       				},
+					position: {
+						x: selectedForEditNodes[i].position('x'), 
+						y: selectedForEditNodes[i].position('y')
+					},
+					css: { 
+      					'border-color': 'red' 
+      				} 	
+				});
+			} else {
+				nodes.push({
+					group: "nodes",
+					data: {
+         				GraphId: selectedForEditNodes[i].data('GraphId'),
+         				LabelSize: selectedForEditNodes[i].data('LabelSize'),
+         				SUID: selectedForEditNodes[i].data('SUID'),
+         				Type: selectedForEditNodes[i].data('Type'),
+         				Valign: selectedForEditNodes[i].data('Valign'),
+         				Width: selectedForEditNodes[i].data('Width'),
+         				Height: selectedForEditNodes[i].data('Height'),
+         				id: selectedForEditNodes[i].data('id'),
+         				name: selectedForEditNodes[i].data('name'),
+         				selected: selectedForEditNodes[i].data('selected'),
+         				shared_name: selectedForEditNodes[i].data('shared_name'),
+         				parent: selectedForEditNodes[i].data('parent')
+       				},
+					position: {
+						x: selectedForEditNodes[i].position('x'), 
+						y: selectedForEditNodes[i].position('y')
+					},
+					css: { 
+      					'border-color': 'red' 
+      				} 	
+				});				
+			}
 			for (var j=0; j < selectedForEditNodes[i].connectedEdges().size(); j++) {
 				edges.push({ 
 					group: "edges",
@@ -175,7 +211,7 @@ $(function () { // on dom ready
             			StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
         				selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
       				},
-      				selected : selectedForEditNodes[i].connectedEdges()[j].selected,
+      				selected : selectedForEditNodes[i].connectedEdges()[j].selected
     			})
     		}
 		}
@@ -189,9 +225,21 @@ $(function () { // on dom ready
 		bundleCounter++;
 	}
 	
-	function produceJSON(event){ 
-		var j = cy.elements().jsons();
-		console.log(j);
+	function produceJSON(event){
+		var nodes = cy.$('node');
+		var edges = cy.$('edge');
+		var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :'
+		+JSON.stringify(header)+
+		',"elements" : {"nodes" :' 
+		+ JSON.stringify(nodes.jsons()) + 
+		',"edges" :'
+		+ JSON.stringify(edges.jsons()) + 
+		'}}';
+		console.log(data);
+//		console.log(JSON.stringify(header));
+//		console.log(JSON.stringify(nodes.jsons()));
+//		console.log(JSON.stringify(edges.jsons()));
+//		console.log(JSON.stringify(cy.elements().jsons()));
 	}
 
 	function visual_pathway(obj) {
@@ -331,6 +379,14 @@ $(function () { // on dom ready
 					}
 
 				});
+				
+				cy.on('cxttapstart ', 'node', function(event){
+              		var name = prompt("Enter new name.", event.cyTarget.data('name'));
+					if (name != null) {
+    					event.cyTarget.data('name', name)
+					}
+				});
+				
 				
 				cy.on('select', 'node', function(event){
 			    	selectedForEditNodes = cy.$('node:selected');
