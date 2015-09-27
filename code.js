@@ -3,7 +3,9 @@ var selectedForQueryNodes = [];
 var selectedForEditNodes = [];
 var bundleCounter = 0;
 var edgeCounter = 0;
+var nodeCounter = 0;
 var loadCounts = 0;
+var target = 0;
 var header ="";
 var counts = {};
 var str_info;
@@ -33,65 +35,16 @@ $(function () { // on dom ready
 	function remove(event) {
 		selectedForEditNodes.remove();
 	}
-
-	function add(event) {
+	
+	function addNode(event) {
+		var name = "n"+nodeCounter;
 		var node = [];
-		var edges = [];
-		
-		//parse table info
-		var name = document.getElementById("name").value;
-		var x = document.getElementById("data").rows.length;
-		for(var i=1; i<x; i++){
-			var edgeTypeId = "edge_type_n"+x;
-			var nameNeigbhorId = "name_n"+x;
-			
-			var edgeType = document.getElementById(edgeTypeId).value;
-			var nameNeighbor= document.getElementById(nameNeigbhorId).value;
-			if(edgeType == "incoming"){
-				edges.push({ 
-					group: "edges",
-					data : {
-        	   			id : "e"+edgeCounter,
-             			SUID : "e"+edgeCounter,
-            			LineThickness:1.0,
-            			EndArrow:"Arrow",
-            			Coords:[{"x":0,"y":0},{"x":0,"y":0}],
-            			GraphId:"e"+edgeCounter,
-            			ZOrder:"12288",
-            			source:name,
-            			target:nameNeighbor, 
-            			StartArrow : "Line",
-        				selected : false
-      				},
-      				selected : false
-    			})
-    		} else {
-    			edges.push({ 
-					group: "edges",
-					data : {
-        	   			id : "e"+edgeCounter,
-             			SUID : "e"+edgeCounter,
-            			LineThickness:1.0,
-            			EndArrow:"Line",
-            			Coords:[{"x":0,"y":0},{"x":0,"y":0}],
-            			GraphId:"e"+edgeCounter,
-            			ZOrder:"12288",
-            			source:name,
-            			target:nameNeighbor, 
-            			StartArrow : "Arrow",
-        				selected : false
-      				},
-      				selected : false
-    			})
-    		}
-    		edgeCounter++;
-    	}
 		
 		node.push({ group: "nodes",
       			data: {
          			GraphId: name,
          			LabelSize: 10,
-         			SUID: "b6fd7",
+         			SUID: name,
          			Type: "Protein",
          			Valign: "Middle",
          			Width: 80.75,
@@ -110,9 +63,40 @@ $(function () { // on dom ready
       				'color': 'black'
       			} 
    		})
-   				
-   		window.cy.add(node.concat(edges));
+   		
+   		nodeCounter++;		
+   		window.cy.add(node);
 	}
+	
+	function addEdge(event){
+		
+		var sourceE = prompt("Enter source.");
+		var targetE = prompt("Enter target.");
+		var typeE = prompt("Enter type.");
+		
+		var edge = [];
+		
+    	edge.push({ 
+			group: "edges",
+			data : {
+        	   	id : "e"+edgeCounter,
+            	SUID : "e"+edgeCounter,
+            	LineThickness:1.0,
+            	EndArrow:typeE,
+            	Coords:[{"x":0,"y":0},{"x":0,"y":0}],
+            	GraphId:"e"+edgeCounter,
+            	ZOrder:"12288",
+            	source:sourceE,
+            	target:targetE, 
+            	StartArrow : typeE,
+        		selected : false
+      		},
+      		selected : false
+    	})
+    	
+    	edgeCounter++;
+    	window.cy.add(edge);
+    }
 	
 	function bundle(event){		
 		var nodes = [];
@@ -392,15 +376,11 @@ $(function () { // on dom ready
 					var node = this;
 
 					var node_name = node.data("shared_name");
-					selectedNodes.push(node_name);
+					selectedForQueryNodes.push(node_name);
 					var node_id = node.data("id");
-					var count = selectedNodes.filter(function (value) {
+					var count = selectedForQueryNodes.filter(function (value) {
 						return value === node_name;
 					}).length;
-
-					selectedForQueryNodes.push(node_name);
-					
-					console.log(count);
 					
 					// RNA
 					if (count == 1) {						
@@ -488,10 +468,8 @@ $(function () { // on dom ready
 				});
 
 				cy.on('cxttapstart ', 'node', function(event){
-              				var name = prompt("Enter new name.", event.cyTarget.data('name'));
-					if (name != null) {
-    					event.cyTarget.data('name', name)
-					}
+					target = event.cyTarget;
+					dialogNode.dialog("open");
 				});
 				
 				
@@ -536,7 +514,8 @@ $(function () { // on dom ready
 	
 	document.getElementById('file').addEventListener('change', onChange);
 	document.getElementById('delete').addEventListener('click', remove);
-	document.getElementById('add').addEventListener('click', add);
+	document.getElementById('addNode').addEventListener('click', addNode);
+	document.getElementById('addEdge').addEventListener('click', addEdge);
 	document.getElementById('bundle').addEventListener('click',bundle);
 	document.getElementById('produceJSON').addEventListener('click',produceJSON);
 }); // on dom ready

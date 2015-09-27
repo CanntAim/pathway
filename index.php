@@ -1,6 +1,7 @@
 <html>
 <head>
 	<link href="style.css" rel="stylesheet"/>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 	<meta charset=utf-8/>
 	<title content="Json pathway file reader">Json pathway file reader</title>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
@@ -57,43 +58,54 @@
 </script>
 <body>
 	<input id="file" type="file"/>
-	<input id="add" value="Add" type="button"/></input>
+	<input id="addNode" value="Add Node" type="button"/></input>
+	<input id="addEdge" value="Add Edge" type="button"/></input>
 	<input id="delete" value="Delete Selected Node(s)" type="button"/></input>
 	<input id="bundle" value="Bundle" type="button"/></input>
 	<input id="produceJSON" value="Export JSON" type="button"/></input>
-	<input id="add_neighbor" value="add another neighbor" type="button"/>
-	<table class="dd" id="data">
-		<tr>
-			<td>Element name:</td>
-			<td><input name="name" id="name" type="text" /></td>
-			<td>Type:</td>
-			<td><select name="element_type" id="type">
-  				<option value="1">Rectangle</option>
-  			</select></td>
-		</tr>
-	</table>
-	</br>
-        <form id="form-data" method="post" action="get.php" target="_blank">
-		<input type="hidden" name="variable" id="variable"><br>
-		<!--<input type="hidden" name="rna" id="rna"><br>
-		<input type="hidden" name="cnv" id="cnv"><br>
-		<input type="hidden" name="mut" id="mut"><br>
-		<input type="hidden" name="ts_gene" id="ts_gene"><br>
-		<input type="hidden" name="onco_gene" id="onco_gene"><br>-->
-		<input type="submit" value="Submit">
-	</form>
-	</br>
-	</br>
+	
+	<div id="dialog-form-node" title="Edit node">
+ 		<form>
+    		<fieldset>
+      			<label for="name">name:</label>
+      			<input type="text" name="name" id="name" value="" class="text ui-widget-content ui-corner-all">
+      			
+      			<label for="height">height:</label>
+      			<input type="text" name="height" id="height" value="" class="text ui-widget-content ui-corner-all">
+      			
+      			<label for="width">width:</label>
+      			<input type="text" name="width" id="width" value="" class="text ui-widget-content ui-corner-all">
+ 
+ 			    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    		</fieldset>
+  		</form>
+	</div>
 	<div id="cy"></div>
-	<!--<div id="result"></div>-->
 </body>
 <script>
-	var currentItem = 1;
-	$('#add_neighbor').click(function(){
-		currentItem++;
-		$('#items').val(currentItem);
-		var strToAdd = '<tr><td>Neighbor</td><td><input name="name_n'+currentItem+'" id="name_n'+currentItem+'" type="text"></td><td>Type</td><td><select name="edge_type_n'+currentItem+'" id="edge_type_n'+currentItem+'"><option value="1">Outgoing</option><option value="2">Incoming</option></select></td></tr>';
-  		$('#data').append(strToAdd);
- 	});
+	function edit() {
+		name = document.getElementById("name").value;
+		width = document.getElementById("width").value;
+		height = document.getElementById("height").value;
+		target.data('name', name);
+		target.data('Width', width);
+		target.data('Height', height);
+		dialogNode.dialog( "close" );
+	}
+
+ 	dialogNode = $( "#dialog-form-node" ).dialog({
+    	autoOpen: false,
+    	height: 300,
+    	width: 350,
+    	buttons: {
+    		"submit": edit,
+    	    Cancel: function() {
+    	    	dialogNode.dialog( "close" );
+    	   	}
+    	},
+    	close: function() {
+    	}
+    });
+    
 </script>
 </html>
