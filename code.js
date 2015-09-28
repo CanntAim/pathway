@@ -387,6 +387,10 @@ $(function () { // on dom ready
 				cy.on('select', 'node', function(event){
 			    	selectedForEditNodes = cy.$('node:selected');
 				});
+				
+				cy.on('unselect', 'node', function(event){
+			    	selectedForEditNodes = cy.$('node:selected');
+				});
 			},
 
   			// initial viewport state:
