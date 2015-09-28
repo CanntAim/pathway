@@ -218,6 +218,7 @@ $(function () { // on dom ready
 		',"edges" :'
 		+ JSON.stringify(edges.jsons()) + 
 		'}}';
+		download(data, "data.txt", "text/plain")
 		console.log(data);
 //		console.log(JSON.stringify(header));
 //		console.log(JSON.stringify(nodes.jsons()));
