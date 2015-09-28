@@ -27,7 +27,7 @@
  * Time: 12:10 PM
  */
 
-$servername = "localhost";
+$servername = "137.99.11.122:3306";
 $username = "root";
 $password = "root";
 $dbname = "pathway";

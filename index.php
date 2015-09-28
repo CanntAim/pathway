@@ -64,6 +64,34 @@
 	<input id="bundle" value="Bundle" type="button"/></input>
 	<input id="produceJSON" value="Export JSON" type="button"/></input>
 	
+	<form id="form-data" method="post" action="http://137.99.11.122/pathway2/get.php" target="_blank">
+		<input type="hidden" name="variable" id="variable"><br>
+		<!--<input type="hidden" name="rna" id="rna"><br>
+		<input type="hidden" name="cnv" id="cnv"><br>
+		<input type="hidden" name="mut" id="mut"><br>
+		<input type="hidden" name="ts_gene" id="ts_gene"><br>
+		<input type="hidden" name="onco_gene" id="onco_gene"><br>-->
+	<input type="submit" value="Submit">
+	
+	<div id="dialog-form-edge" title="Edit edge">
+ 		<form>
+    		<fieldset>
+      			<label for="direction">change direction:</label>
+      			<input type="checkbox" name="direction" id="direction" value="Yes">
+      			
+      			<label for="type-edge">type:</label>
+      			<select style="width: 150px" id="type-edge" name="type-edge">
+  					<option selected="">Please Select</option>
+  					<option>TBar</option>
+  					<option>Arrow</option>
+  					<option>Line</option>
+				</select>
+ 
+ 			    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+    		</fieldset>
+  		</form>
+	</div>
+	
 	<div id="dialog-form-node" title="Edit node">
  		<form>
     		<fieldset>
@@ -75,6 +103,21 @@
       			
       			<label for="width">width:</label>
       			<input type="text" name="width" id="width" value="" class="text ui-widget-content ui-corner-all">
+      			
+      			<label for="type">type:</label>
+      			<select style="width: 150px" id="type" name="type">
+  					<option selected="">Please Select</option>
+  					<option>1</option>
+  					<option>2</option>
+  					<option>3</option>
+  					<option>4</option>
+  					<option>5</option>
+  					<option>6</option>
+  					<option>7</option>
+  					<option>8</option>
+  					<option>9</option>
+  					<option>10</option>
+				</select>
  
  			    <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
     		</fieldset>
@@ -83,13 +126,142 @@
 	<div id="cy"></div>
 </body>
 <script>
-	function edit() {
-		name = document.getElementById("name").value;
-		width = document.getElementById("width").value;
-		height = document.getElementById("height").value;
+	function clone(obj) {
+    	if (null == obj || "object" != typeof obj) return obj;
+    	var copy = obj.constructor();
+    	for (var attr in obj) {
+    	    if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    	}
+    	return copy;
+	}
+
+
+	function editEdge() {
+		var direction = document.getElementById("direction").value;
+		var type = document.getElementById("type-edge").value;
+		target.data('StartArrow',type);
+		target.data('EndArrow',type);
+		if(document.getElementById('direction').checked){
+			var edge = [];
+		
+    		edge.push({ 
+				group: "edges",
+				data : {
+        		   	id : target.data('id'),
+            		SUID : target.data('SUID'),
+            		LineThickness:target.data('LineThickness'),
+            		EndArrow: target.data('EndArrow'),
+           		 	Coords: target.data('Coords'),
+           		 	GraphId: target.data('GraphId'),
+           	 		ZOrder: target.data('ZOrder'),
+            		source: target.data('target'),
+            		target: target.data('source'), 
+            		StartArrow : target.data('StartArrow'),
+        			selected : target.data('Selected')
+      			},
+      			selected : false
+    		})
+    		target.remove();
+  			window.cy.add(edge);	
+		}
+		dialogEdge.dialog( "close" );
+	}
+	
+	function editNode() {
+		var name = document.getElementById("name").value;
+		var width = document.getElementById("width").value;
+		var height = document.getElementById("height").value;
 		target.data('name', name);
 		target.data('Width', width);
 		target.data('Height', height);
+		
+		var node_name = target.data("shared_name");
+		selectedForQueryNodes.push(node_name);
+		var node_id = target.data("id");
+		var count = document.getElementById("type").value;
+					
+		// RNA
+		if (count == 1) {						
+			target.addClass('green_bg');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		} 
+					
+		if (count == 2) {
+			target.removeClass('green_bg');
+			target.addClass('red_bg');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		// CNV Added
+		if (count == 3) {
+			target.addClass('purple_border');
+			target.addClass('green_bg');
+			target.removeClass('red_bg');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		if (count == 4) {
+			target.addClass('purple_border');
+			target.addClass('red_bg');
+			target.removeClass('green_bg');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		if (count == 5) {
+			target.addClass('red_border');
+			target.addClass('green_bg');
+			target.removeClass('red_bg');
+			target.removeClass('purple_border');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		if (count == 6) {
+			target.addClass('red_border');
+			target.addClass('red_bg');
+			target.removeClass('green_bg');
+			target.removeClass('purple_border');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		if (count == 7) {
+			target.addClass('red_shadow');
+			target.addClass('red_bg');
+			target.addClass('purple_border');
+						
+			target.removeClass('green_bg');
+			target.removeClass('red_border');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		if (count == 8) {
+			target.addClass('red_shadow');
+			target.addClass('red_bg');
+			target.addClass('red_border');
+						
+			target.removeClass('green_bg');
+			target.removeClass('purple_border');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		if (count == 9) {
+			target.addClass('red_shadow');
+			target.addClass('green_bg');
+			target.addClass('red_border');
+						
+			target.removeClass('red_bg');
+			target.removeClass('purple_border');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		if (count == 10) {
+			target.addClass('red_shadow');
+			target.addClass('green_bg');
+			target.addClass('purple_border');
+						
+			target.removeClass('red_bg');
+			target.removeClass('red_border');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
 		dialogNode.dialog( "close" );
 	}
 
@@ -98,9 +270,23 @@
     	height: 300,
     	width: 350,
     	buttons: {
-    		"submit": edit,
+    		"submit": editNode,
     	    Cancel: function() {
     	    	dialogNode.dialog( "close" );
+    	   	}
+    	},
+    	close: function() {
+    	}
+    });
+    
+    dialogEdge = $( "#dialog-form-edge" ).dialog({
+    	autoOpen: false,
+    	height: 300,
+    	width: 350,
+    	buttons: {
+    		"submit": editEdge,
+    	    Cancel: function() {
+    	    	dialogEdge.dialog( "close" );
     	   	}
     	},
     	close: function() {

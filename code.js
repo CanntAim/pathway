@@ -47,8 +47,8 @@ $(function () { // on dom ready
          			SUID: name,
          			Type: "Protein",
          			Valign: "Middle",
-         			Width: 80.75,
-         			Height: 100,
+         			Width: 100,
+         			Height: 25,
          			id: name,
          			name: name,
          			selected: false,
@@ -69,33 +69,33 @@ $(function () { // on dom ready
 	}
 	
 	function addEdge(event){
+		for(var i = 0; i < selectedForEditNodes.length-1; i++){
+			var sourceE = selectedForEditNodes[i].data('GraphId');
+			var targetE = selectedForEditNodes[i+1].data('GraphId');
 		
-		var sourceE = prompt("Enter source.");
-		var targetE = prompt("Enter target.");
-		var typeE = prompt("Enter type.");
+			var edge = [];
 		
-		var edge = [];
-		
-    	edge.push({ 
-			group: "edges",
-			data : {
-        	   	id : "e"+edgeCounter,
-            	SUID : "e"+edgeCounter,
-            	LineThickness:1.0,
-            	EndArrow:typeE,
-            	Coords:[{"x":0,"y":0},{"x":0,"y":0}],
-            	GraphId:"e"+edgeCounter,
-            	ZOrder:"12288",
-            	source:sourceE,
-            	target:targetE, 
-            	StartArrow : typeE,
-        		selected : false
-      		},
-      		selected : false
-    	})
+    		edge.push({ 
+				group: "edges",
+				data : {
+        		   	id : "e"+edgeCounter,
+            		SUID : "e"+edgeCounter,
+            		LineThickness:1.0,
+            		EndArrow:"Line",
+           		 	Coords:[{"x":0,"y":0},{"x":0,"y":0}],
+           		 	GraphId:"e"+edgeCounter,
+           	 		ZOrder:"12288",
+            		source:sourceE,
+            		target:targetE, 
+            		StartArrow : "Line",
+        			selected : false
+      			},
+      			selected : false
+    		})
     	
-    	edgeCounter++;
-    	window.cy.add(edge);
+    		edgeCounter++;
+    		window.cy.add(edge);
+    	}
     }
 	
 	function bundle(event){		
@@ -304,10 +304,10 @@ $(function () { // on dom ready
 				
 				// node & edge elements (selected state)
 				.selector('edge:selected').css({
-					'background-color': 'black',
-					'line-color': 'black',
-					'target-arrow-color': 'black',
-					'source-arrow-color': 'black'
+					'background-color': 'yellow',
+					'line-color': 'yellow',
+					'target-arrow-color': 'yellow',
+					'source-arrow-color': 'yellow'
 				})
 				.selector('node:selected').css({
 					'background-color': 'yellow'
@@ -369,102 +369,8 @@ $(function () { // on dom ready
 				var selectedNodes = [];
 		
 				// custom event handlers
-				cy.off('click', 'node').on('click', 'node', function (e) {
-
-					e.preventDefault();
-
-					var node = this;
-
-					var node_name = node.data("shared_name");
-					selectedForQueryNodes.push(node_name);
-					var node_id = node.data("id");
-					var count = selectedForQueryNodes.filter(function (value) {
-						return value === node_name;
-					}).length;
+				cy.on('click', 'node', function (event) {
 					
-					// RNA
-					if (count == 1) {						
-						node.addClass('green_bg');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					} 
-					
-					if (count == 2) {
-						node.removeClass('green_bg');
-						node.addClass('red_bg');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-					
-					// CNV Added
-					if (count == 3) {
-						node.addClass('purple_border');
-						node.addClass('green_bg');
-						node.removeClass('red_bg');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-					
-					if (count == 4) {
-						node.addClass('purple_border');
-						node.addClass('red_bg');
-						node.removeClass('green_bg');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-					
-					if (count == 5) {
-						node.addClass('red_border');
-						node.addClass('green_bg');
-						node.removeClass('red_bg');
-						node.removeClass('purple_border');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-					
-					if (count == 6) {
-						node.addClass('red_border');
-						node.addClass('red_bg');
-						node.removeClass('green_bg');
-						node.removeClass('purple_border');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-					
-					if (count == 7) {
-						node.addClass('red_shadow');
-						node.addClass('red_bg');
-						node.addClass('purple_border');
-						
-						node.removeClass('green_bg');
-						node.removeClass('red_border');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-					
-					if (count == 8) {
-						node.addClass('red_shadow');
-						node.addClass('red_bg');
-						node.addClass('red_border');
-						
-						node.removeClass('green_bg');
-						node.removeClass('purple_border');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-					
-					if (count == 9) {
-						node.addClass('red_shadow');
-						node.addClass('green_bg');
-						node.addClass('red_border');
-						
-						node.removeClass('red_bg');
-						node.removeClass('purple_border');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-					
-					if (count == 10) {
-						node.addClass('red_shadow');
-						node.addClass('green_bg');
-						node.addClass('purple_border');
-						
-						node.removeClass('red_bg');
-						node.removeClass('red_border');
-						$('#variable').val($('#variable').val() + node_name + " ");
-					}
-                   				
 				});
 
 				cy.on('cxttapstart ', 'node', function(event){
@@ -472,6 +378,10 @@ $(function () { // on dom ready
 					dialogNode.dialog("open");
 				});
 				
+				cy.on('cxttapstart ', 'edge', function(event){
+					target = event.cyTarget;
+					dialogEdge.dialog("open");
+				});
 				
 				cy.on('select', 'node', function(event){
 			    	selectedForEditNodes = cy.$('node:selected');
@@ -490,7 +400,7 @@ $(function () { // on dom ready
   			panningEnabled: true,
   			userPanningEnabled: true,
  	 		boxSelectionEnabled: true,
-  			selectionType: 'single',
+  			selectionType: 'additive',
   			touchTapThreshold: 8,
   			desktopTapThreshold: 4,
   			autolock: false,
