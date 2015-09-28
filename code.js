@@ -1,6 +1,7 @@
 // Globals
 var selectedForQueryNodes = [];
 var selectedForEditNodes = [];
+var selectedForEditEdges = [];
 var bundleCounter = 0;
 var edgeCounter = 0;
 var nodeCounter = 0;
@@ -32,8 +33,12 @@ $(function () { // on dom ready
 		loadCounts++;
 	}
 
-	function remove(event) {
+	function removeNodes(event) {
 		selectedForEditNodes.remove();
+	}
+	
+	function removeEdges(event) {
+		selectedForEditEdges.remove();
 	}
 	
 	function addNode(event) {
@@ -391,6 +396,14 @@ $(function () { // on dom ready
 				cy.on('unselect', 'node', function(event){
 			    	selectedForEditNodes = cy.$('node:selected');
 				});
+				
+				cy.on('select', 'edge', function(event){
+			    	selectedForEditEdges = cy.$('edge:selected');
+				});
+				
+				cy.on('unselect', 'edge', function(event){
+			    	selectedForEditEdges = cy.$('edge:selected');
+				});
 			},
 
   			// initial viewport state:
@@ -428,7 +441,8 @@ $(function () { // on dom ready
 	}
 	
 	document.getElementById('file').addEventListener('change', onChange);
-	document.getElementById('delete').addEventListener('click', remove);
+	document.getElementById('deleteNodes').addEventListener('click', removeNodes);
+	document.getElementById('deleteEdges').addEventListener('click', removeEdges);
 	document.getElementById('addNode').addEventListener('click', addNode);
 	document.getElementById('addEdge').addEventListener('click', addEdge);
 	document.getElementById('bundle').addEventListener('click',bundle);

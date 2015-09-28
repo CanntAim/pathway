@@ -61,7 +61,8 @@
 	<input id="file" type="file"/>
 	<input id="addNode" value="Add Node" type="button"/></input>
 	<input id="addEdge" value="Add Edge" type="button"/></input>
-	<input id="delete" value="Delete Selected Node(s)" type="button"/></input>
+	<input id="deleteEdges" value="Delete Selected Edge(s)" type="button"/></input>
+	<input id="deleteNodes" value="Delete Selected Node(s)" type="button"/></input>
 	<input id="bundle" value="Bundle" type="button"/></input>
 	<input id="produceJSON" value="Export JSON" type="button"/></input>
 	
