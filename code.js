@@ -1,4 +1,6 @@
 // Globals
+var states = [];
+var lastEvent = 0;
 var selectedForQueryNodes = [];
 var selectedForEditNodes = [];
 var selectedForEditEdges = [];
@@ -25,6 +27,7 @@ $(function () { // on dom ready
 			header = obj.data;
 			visual_pathway(obj);
 		} else {
+			saveState();
 			for(var i=0; i < obj.elements.nodes.length; i++){
 				obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x+1000*loadCounts;
 			}
@@ -34,14 +37,17 @@ $(function () { // on dom ready
 	}
 
 	function removeNodes(event) {
+		saveState();
 		selectedForEditNodes.remove();
 	}
 	
 	function removeEdges(event) {
+		saveState();
 		selectedForEditEdges.remove();
 	}
 	
 	function addNode(event) {
+		saveState();
 		var name = "n"+nodeCounter;
 		var node = [];
 		
@@ -74,6 +80,7 @@ $(function () { // on dom ready
 	}
 	
 	function addEdge(event){
+		saveState();
 		for(var i = 0; i < selectedForEditNodes.length-1; i++){
 			var sourceE = selectedForEditNodes[i].data('GraphId');
 			var targetE = selectedForEditNodes[i+1].data('GraphId');
@@ -102,8 +109,69 @@ $(function () { // on dom ready
     		window.cy.add(edge);
     	}
     }
+    
+    function unbundle(event){
+    	saveState();	
+    		
+		var nodes = [];
+		var edges =[];
+		
+    	for (var i=0; i < selectedForEditNodes.size(); i++) {
+    		if(typeof selectedForEditNodes[i].data('parent') != 'undefined'){
+				nodes.push({
+					group: "nodes",
+					data: {
+         				GraphId: selectedForEditNodes[i].data('GraphId'),
+         				LabelSize: selectedForEditNodes[i].data('LabelSize'),
+         				SUID: selectedForEditNodes[i].data('SUID'),
+         				Type: selectedForEditNodes[i].data('Type'),
+         				Valign: selectedForEditNodes[i].data('Valign'),
+         				Width: selectedForEditNodes[i].data('Width'),
+         				Height: selectedForEditNodes[i].data('Height'),
+         				id: selectedForEditNodes[i].data('id'),
+         				name: selectedForEditNodes[i].data('name'),
+         				selected: selectedForEditNodes[i].data('selected'),
+         				shared_name: selectedForEditNodes[i].data('shared_name'),
+       				},
+					position: {
+						x: selectedForEditNodes[i].position('x'), 
+						y: selectedForEditNodes[i].position('y')
+					},
+					css: { 
+     					'border-color': 'red' 
+    				} 	
+				});
+			}
+			for (var j=0; j < selectedForEditNodes[i].connectedEdges().size(); j++) {
+			edges.push({ 
+				group: "edges",
+				data : {
+        	  		id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
+             		SUID : selectedForEditNodes[i].connectedEdges()[j].data('SUID'),
+            		LineThickness: selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
+            		EndArrow: selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
+            		Coords: selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
+            		GraphId: selectedForEditNodes[i].connectedEdges()[j].data('GraphId'),
+            		ZOrder: selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
+            		source: selectedForEditNodes[i].connectedEdges()[j].data('source'),
+            		target: selectedForEditNodes[i].connectedEdges()[j].data('target'),
+            		StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
+        			selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
+      			},
+      			selected : selectedForEditNodes[i].connectedEdges()[j].selected
+    		})
+    	}
+		}
+
+		// Remove old nodes
+		selectedForEditNodes.remove();
+
+		// Add new nodes
+		window.cy.add(nodes.concat(edges));
+    }
 	
-	function bundle(event){		
+	function bundle(event){
+		saveState();		
 		var nodes = [];
 		var edges =[];
 		// Create new parent
@@ -214,6 +282,11 @@ $(function () { // on dom ready
 	}
 	
 	function produceJSON(event){
+		download(states[states.length - 1], "data.txt", "text/plain");
+		console.log(data);
+	}
+	
+	function saveState(){
 		var nodes = cy.$('node');
 		var edges = cy.$('edge');
 		var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :'
@@ -223,13 +296,19 @@ $(function () { // on dom ready
 		',"edges" :'
 		+ JSON.stringify(edges.jsons()) + 
 		'}}';
-		download(data, "data.txt", "text/plain")
-		console.log(data);
-//		console.log(JSON.stringify(header));
-//		console.log(JSON.stringify(nodes.jsons()));
-//		console.log(JSON.stringify(edges.jsons()));
-//		console.log(JSON.stringify(cy.elements().jsons()));
+		states.push(data);
 	}
+	
+	function undo(){
+		if(states.length > 1){
+			cy.$('node').remove();
+			cy.$('edge').remove();
+			states.pop()
+			var obj = JSON.parse(states[states.length-1]);
+			window.cy.add(obj.elements)
+		}
+	}
+	
 
 	function visual_pathway(obj) {
 		$('#cy').cytoscape({
@@ -391,19 +470,37 @@ $(function () { // on dom ready
 				
 				cy.on('select', 'node', function(event){
 			    	selectedForEditNodes = cy.$('node:selected');
+//			    	saveState();
 				});
 				
 				cy.on('unselect', 'node', function(event){
 			    	selectedForEditNodes = cy.$('node:selected');
+//			    	saveState();
 				});
 				
 				cy.on('select', 'edge', function(event){
 			    	selectedForEditEdges = cy.$('edge:selected');
+//			    	saveState();
 				});
 				
 				cy.on('unselect', 'edge', function(event){
 			    	selectedForEditEdges = cy.$('edge:selected');
+//			    	saveState();
 				});
+				
+				cy.on('free', 'node', function(event){
+					saveState();
+				});
+				
+				cy.on('data', 'node', function(event){
+//					saveState();
+				});
+				
+				cy.on('style', 'node', function(event){
+//					saveState();
+				});
+				
+				saveState();
 			},
 
   			// initial viewport state:
@@ -440,11 +537,181 @@ $(function () { // on dom ready
 		});	
 	}
 	
+	function clone(obj) {
+    	if (null == obj || "object" != typeof obj) return obj;
+    	var copy = obj.constructor();
+    	for (var attr in obj) {
+    	    if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    	}
+    	return copy;
+	}
+	
+	function setNodeStyle(target,background,border){
+		target.removeClass();
+		if(background != '')
+			target.addClass(background);
+		if(border != '')
+			target.addClass(border);
+	}
+	
+	function editEdge() {
+		saveState();
+		var direction = document.getElementById("direction").value;
+		var type = document.getElementById("type-edge").value;
+		target.data('StartArrow',type);
+		target.data('EndArrow',type);
+		if(document.getElementById('direction').checked){
+			var edge = [];
+		
+    		edge.push({ 
+				group: "edges",
+				data : {
+        		   	id : target.data('id'),
+            		SUID : target.data('SUID'),
+            		LineThickness:target.data('LineThickness'),
+            		EndArrow: target.data('EndArrow'),
+           		 	Coords: target.data('Coords'),
+           		 	GraphId: target.data('GraphId'),
+           	 		ZOrder: target.data('ZOrder'),
+            		source: target.data('target'),
+            		target: target.data('source'), 
+            		StartArrow : target.data('StartArrow'),
+        			selected : target.data('Selected')
+      			},
+      			selected : false
+    		})
+    		target.remove();
+  			window.cy.add(edge);	
+		}
+		dialogEdge.dialog( "close" );
+	}
+	
+	function editNode() {
+		saveState();
+		var name = document.getElementById("name").value;
+		var width = document.getElementById("width").value;
+		var height = document.getElementById("height").value;
+		target.data('name', name);
+		target.data('Width', width);
+		target.data('Height', height);
+		
+		var node_name = target.data("shared_name");
+		selectedForQueryNodes.push(node_name);
+		var node_id = target.data("id");
+		var count = document.getElementById("type").value;
+					
+		// RNA
+		if (count == 1) {						
+			target.addClass('green_bg');
+		} 
+					
+		if (count == 2) {
+			target.removeClass('green_bg');
+			target.addClass('red_bg');
+		}
+					
+		// CNV Added
+		if (count == 3) {
+			target.addClass('purple_border');
+			target.addClass('green_bg');
+			target.removeClass('red_bg');
+		}
+					
+		if (count == 4) {
+			target.addClass('purple_border');
+			target.addClass('red_bg');
+			target.removeClass('green_bg');
+		}
+					
+		if (count == 5) {
+			target.addClass('red_border');
+			target.addClass('green_bg');
+			target.removeClass('red_bg');
+			target.removeClass('purple_border');
+			$('#variable').val($('#variable').val() + node_name + " ");
+		}
+					
+		if (count == 6) {
+			target.addClass('red_border');
+			target.addClass('red_bg');
+			target.removeClass('green_bg');
+			target.removeClass('purple_border');
+		}
+					
+		if (count == 7) {
+			target.addClass('red_shadow');
+			target.addClass('red_bg');
+			target.addClass('purple_border');
+						
+			target.removeClass('green_bg');
+			target.removeClass('red_border');
+		}
+					
+		if (count == 8) {
+			target.addClass('red_shadow');
+			target.addClass('red_bg');
+			target.addClass('red_border');
+						
+			target.removeClass('green_bg');
+			target.removeClass('purple_border');
+		}
+					
+		if (count == 9) {
+			target.addClass('red_shadow');
+			target.addClass('green_bg');
+			target.addClass('red_border');
+						
+			target.removeClass('red_bg');
+			target.removeClass('purple_border');
+		}
+					
+		if (count == 10) {
+			target.addClass('red_shadow');
+			target.addClass('green_bg');
+			target.addClass('purple_border');
+						
+			target.removeClass('red_bg');
+			target.removeClass('red_border');
+		}
+		$('#variable').val($('#variable').val() + node_name + " ");
+		dialogNode.dialog( "close" );
+	}
+
+ 	dialogNode = $( "#dialog-form-node" ).dialog({
+    	autoOpen: false,
+    	height: 300,
+    	width: 350,
+    	buttons: {
+    		"submit": editNode,
+    	    Cancel: function() {
+    	    	dialogNode.dialog( "close" );
+    	   	}
+    	},
+    	close: function() {
+    	}
+    });
+    
+    dialogEdge = $( "#dialog-form-edge" ).dialog({
+    	autoOpen: false,
+    	height: 300,
+    	width: 350,
+    	buttons: {
+    		"submit": editEdge,
+    	    Cancel: function() {
+    	    	dialogEdge.dialog( "close" );
+    	   	}
+    	},
+    	close: function() {
+    	}
+    });
+    	
 	document.getElementById('file').addEventListener('change', onChange);
 	document.getElementById('deleteNodes').addEventListener('click', removeNodes);
 	document.getElementById('deleteEdges').addEventListener('click', removeEdges);
 	document.getElementById('addNode').addEventListener('click', addNode);
 	document.getElementById('addEdge').addEventListener('click', addEdge);
 	document.getElementById('bundle').addEventListener('click',bundle);
+	document.getElementById('unbundle').addEventListener('click',unbundle);
 	document.getElementById('produceJSON').addEventListener('click',produceJSON);
+	document.getElementById('undo').addEventListener('click',undo);
 }); // on dom ready
