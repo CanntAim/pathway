@@ -117,50 +117,49 @@ $(function () { // on dom ready
 		var edges =[];
 		
     	for (var i=0; i < selectedForEditNodes.size(); i++) {
-    		if(typeof selectedForEditNodes[i].data('parent') != 'undefined'){
-				nodes.push({
-					group: "nodes",
-					data: {
-         				GraphId: selectedForEditNodes[i].data('GraphId'),
-         				LabelSize: selectedForEditNodes[i].data('LabelSize'),
-         				SUID: selectedForEditNodes[i].data('SUID'),
-         				Type: selectedForEditNodes[i].data('Type'),
-         				Valign: selectedForEditNodes[i].data('Valign'),
-         				Width: selectedForEditNodes[i].data('Width'),
-         				Height: selectedForEditNodes[i].data('Height'),
-         				id: selectedForEditNodes[i].data('id'),
-         				name: selectedForEditNodes[i].data('name'),
-         				selected: selectedForEditNodes[i].data('selected'),
-         				shared_name: selectedForEditNodes[i].data('shared_name'),
-       				},
-					position: {
-						x: selectedForEditNodes[i].position('x'), 
-						y: selectedForEditNodes[i].position('y')
-					},
-					css: { 
-     					'border-color': 'red' 
-    				} 	
-				});
-			}
+			nodes.push({
+				group: "nodes",
+				data: {
+         			GraphId: selectedForEditNodes[i].data('GraphId'),
+         			LabelSize: selectedForEditNodes[i].data('LabelSize'),
+         			SUID: selectedForEditNodes[i].data('SUID'),
+         			Type: selectedForEditNodes[i].data('Type'),
+         			Valign: selectedForEditNodes[i].data('Valign'),
+         			Width: selectedForEditNodes[i].data('Width'),
+         			Height: selectedForEditNodes[i].data('Height'),
+         			id: selectedForEditNodes[i].data('id'),
+         			name: selectedForEditNodes[i].data('name'),
+         			selected: selectedForEditNodes[i].data('selected'),
+         			shared_name: selectedForEditNodes[i].data('shared_name'),
+       			},
+				position: {
+					x: selectedForEditNodes[i].position('x'), 
+					y: selectedForEditNodes[i].position('y')
+				},
+				css: { 
+     				'border-color': 'red' 
+    			} 	
+			});
+			
 			for (var j=0; j < selectedForEditNodes[i].connectedEdges().size(); j++) {
-			edges.push({ 
-				group: "edges",
-				data : {
-        	  		id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
-             		SUID : selectedForEditNodes[i].connectedEdges()[j].data('SUID'),
-            		LineThickness: selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
-            		EndArrow: selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
-            		Coords: selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
-            		GraphId: selectedForEditNodes[i].connectedEdges()[j].data('GraphId'),
-            		ZOrder: selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
-            		source: selectedForEditNodes[i].connectedEdges()[j].data('source'),
-            		target: selectedForEditNodes[i].connectedEdges()[j].data('target'),
-            		StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
-        			selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
-      			},
-      			selected : selectedForEditNodes[i].connectedEdges()[j].selected
-    		})
-    	}
+				edges.push({ 
+					group: "edges",
+					data : {
+        	  			id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
+             			SUID : selectedForEditNodes[i].connectedEdges()[j].data('SUID'),
+            			LineThickness: selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
+            			EndArrow: selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
+            			Coords: selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
+            			GraphId: selectedForEditNodes[i].connectedEdges()[j].data('GraphId'),
+            			ZOrder: selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
+            			source: selectedForEditNodes[i].connectedEdges()[j].data('source'),
+            			target: selectedForEditNodes[i].connectedEdges()[j].data('target'),
+            			StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
+        				selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
+      				},
+      				selected : selectedForEditNodes[i].connectedEdges()[j].selected
+    			})
+    		}
 		}
 
 		// Remove old nodes
