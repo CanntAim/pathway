@@ -1,7 +1,8 @@
-var VQI_pathwayEditor = function(parent,services) {
+var VQI_pathwayEditor = function(parent, services) {
 
 	// Globals
 	var states = [];
+	var stateRecycle = [];
 	var lastEvent = 0;
 	var selectedForQueryNodes = [];
 	var selectedForEditNodes = [];
@@ -19,6 +20,116 @@ var VQI_pathwayEditor = function(parent,services) {
 	//var cnv2Color = {'red_border',[1,2,3,4,5],'purple_border',[6,7,8,9,10]}
 	//var mut2Color = {'',[1,2,3,4,5],'red_shadow',[6,7,8,9,10]}
 
+	// Outer Control Layout
+
+	var parentDiv = document.getElementById(parent);
+
+	var strVar = "";
+	strVar += "	<input id=\"" + parent + "-file\" value=\"Pick File\" type=\"file\"><\/input>";
+	strVar += " <label for=\"" + parent + "-pathwaySelector\">Pathway:<\/label>";
+	strVar += " <select style=\"width: 150px\" id=\"" + parent + "-pathwaySelector\" name=\"" + parent + "-pathwaySelector\">";
+	strVar += "  	<option selected=\"\">Please Select<\/option>";
+	strVar += "	<\/select>";
+	strVar += "	<input id=\"" + parent + "-addNode\" value=\"Add Node\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-addEdge\" value=\"Add Edge\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-deleteEdges\" value=\"Delete Selected Edge(s)\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-deleteNodes\" value=\"Delete Selected Node(s)\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-findPath\" value=\"Find Pathway\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-produceJSON\" value=\"Export JSON\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\"><\/input>";
+	strVar += "	<form id=\"" + parent + "-form-data\" method=\"post\" action=\"http:\/\/137.99.11.122\/pathway2\/get.php\" target=\"_blank\">";
+	strVar += "		<input type=\"hidden\" name=\"" + parent + "-variable\" id=\"" + parent + "-variable\"><\/input>";
+	strVar += "		<input type=\"submit\" value=\"Submit\"><\/input>";
+	strVar += "	<\/form>";
+	strVar += " <div id=\"" + parent + "-dialog-form-find-path\" title=\"Find path\">";
+	strVar += " 		<form>";
+	strVar += "    		<fieldset>";
+	strVar += "      			<label for=\"" + parent + "-sid\">sid:<\/label>";
+	strVar += " 				<input type=\"text\" name=\"" + parent + "-sid\" id=\"" + parent + "-sid\"><br>";
+	strVar += "      			<label for=\"" + parent + "-vid\">vid:<\/label>";
+	strVar += " 				<input type=\"text\" name=\"" + parent + "-vid\" id=\"" + parent + "-vid\"><br>";
+	strVar += " 				<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
+	strVar += "    		<\/fieldset>";
+	strVar += " 		<\/form>";
+	strVar += "	<\/div>";
+	strVar += "	<div id=\"" + parent + "-dialog-form-edge\" title=\"Edit edge\">";
+	strVar += " 		<form>";
+	strVar += "    		<fieldset>";
+	strVar += "      			<label for=\"" + parent + "-direction\">change direction:<\/label>";
+	strVar += "      			<input type=\"checkbox\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
+	strVar += "      			<label for=\"" + parent + "-type-edge\">type:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-edge\" name=\"" + parent + "-type-edge\">";
+	strVar += "  					<option selected=\"\">Please Select<\/option>";
+	strVar += "  					<option>TBar<\/option>";
+	strVar += "  					<option>Arrow<\/option>";
+	strVar += "  					<option>Line<\/option>";
+	strVar += "				<\/select>";
+	strVar += " 			<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
+	strVar += "    		<\/fieldset>";
+	strVar += "  		<\/form>";
+	strVar += "	<\/div>";
+	strVar += "	<div id=\"" + parent + "-dialog-form-node\" title=\"Edit node\">";
+	strVar += " 		<form>";
+	strVar += "    		<fieldset>";
+	strVar += "      			<label for=\"" + parent + "-gene-name\">gene-name:<\/label>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-gene-name\" id=\"" + parent + "-gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<label for=\"" + parent + "-height\">height:<\/label>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "height\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-rna\" name=\"" + parent + "-rna\">";
+	strVar += "  					<option selected=\"\">Please Select<\/option>";
+	strVar += "  					<option>1<\/option>";
+	strVar += "  					<option>2<\/option>";
+	strVar += "  					<option>3<\/option>";
+	strVar += "  					<option>4<\/option>";
+	strVar += "  					<option>5<\/option>";
+	strVar += "  					<option>6<\/option>";
+	strVar += "  					<option>7<\/option>";
+	strVar += "  					<option>8<\/option>";
+	strVar += "  					<option>9<\/option>";
+	strVar += "  					<option>10<\/option>";
+	strVar += "				<\/select>";
+	strVar += "				<label for=\"" + parent + "-cnv\">CNV:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-cnv\" name=\"" + parent + "-cnv\">";
+	strVar += "  					<option selected=\"\">Please Select<\/option>";
+	strVar += "  					<option>1<\/option>";
+	strVar += "  					<option>2<\/option>";
+	strVar += "  					<option>3<\/option>";
+	strVar += "  					<option>4<\/option>";
+	strVar += "  					<option>5<\/option>";
+	strVar += "  					<option>6<\/option>";
+	strVar += "  					<option>7<\/option>";
+	strVar += "  					<option>8<\/option>";
+	strVar += "  					<option>9<\/option>";
+	strVar += "  					<option>10<\/option>";
+	strVar += "				<\/select>";
+	strVar += "				<label for=\"" + parent + "-mut\">MUT:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-mut\" name=\"" + parent + "-mut\">";
+	strVar += "  					<option selected=\"\">Please Select<\/option>";
+	strVar += "  					<option>1<\/option>";
+	strVar += "  					<option>2<\/option>";
+	strVar += "  					<option>3<\/option>";
+	strVar += "  					<option>4<\/option>";
+	strVar += "  					<option>5<\/option>";
+	strVar += "  					<option>6<\/option>";
+	strVar += "  					<option>7<\/option>";
+	strVar += "  					<option>8<\/option>";
+	strVar += "  					<option>9<\/option>";
+	strVar += "  					<option>10<\/option>";
+	strVar += "				<\/select>";
+	strVar += " 			    <input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
+	strVar += "    		<\/fieldset>";
+	strVar += "  		<\/form>";
+	strVar += "	<\/div>";
+	strVar += "	<div id=\"" + parent + "-cy\" style=\"height: 100%;width: 100%;position: absolute; left: 0;\"><\/div>";
+
+	document.getElementById(parent).innerHTML = strVar;
+
 	$(function() {// on dom ready
 		function onChange(event) {
 			var reader = new FileReader();
@@ -31,7 +142,6 @@ var VQI_pathwayEditor = function(parent,services) {
 				header = obj.data;
 				visual_pathway(obj);
 			} else {
-				saveState();
 				for (var i = 0; i < obj.elements.nodes.length; i++) {
 					obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x + 1000 * loadCounts;
 				}
@@ -372,12 +482,12 @@ var VQI_pathwayEditor = function(parent,services) {
 			var vid = orderedSelectedNodes[1]._private.data['GraphId'];
 			var result = findPath(JSON.parse(states[states.length - 1]), sid, vid);
 			console.log(result);
-			for(var i = 0; i < result[0].length; i++){
-				cy.elements("edge[GraphId = \""+result[0][i]+"\"]").select();
+			for (var i = 0; i < result[0].length; i++) {
+				cy.elements("edge[GraphId = \"" + result[0][i] + "\"]").select();
 			}
 			dialogPathfind.dialog("close");
 		}
-		
+
 		function saveState() {
 			var nodes = cy.$('node');
 			var edges = cy.$('edge');
@@ -389,7 +499,17 @@ var VQI_pathwayEditor = function(parent,services) {
 			if (states.length > 1) {
 				cy.$('node').remove();
 				cy.$('edge').remove();
-				states.pop()
+				stateRecycle.push(states.pop());
+				var obj = JSON.parse(states[states.length - 1]);
+				window.cy.add(obj.elements)
+			}
+		}
+		
+		function redo() {
+			if (stateRecycle.length > 1) {
+				cy.$('node').remove();
+				cy.$('edge').remove();
+				states.push(stateRecycle.pop());
 				var obj = JSON.parse(states[states.length - 1]);
 				window.cy.add(obj.elements)
 			}
@@ -466,12 +586,12 @@ var VQI_pathwayEditor = function(parent,services) {
 
 				// node & edge elements (selected state)
 				.selector('edge:selected').css({
-					'background-color' : 'yellow',
-					'line-color' : 'yellow',
-					'target-arrow-color' : 'yellow',
-					'source-arrow-color' : 'yellow'
+					'background-color' : 'green',
+					'line-color' : 'green',
+					'target-arrow-color' : 'green',
+					'source-arrow-color' : 'green'
 				}).selector('node:selected').css({
-					'background-color' : 'yellow'
+					'background-color' : 'green'
 				})
 
 				// misc
@@ -524,11 +644,11 @@ var VQI_pathwayEditor = function(parent,services) {
 
 					// custom event handlers
 					cy.on('click', 'node', function(event) {
-						if(orderedSelectedNodes.length < 2)
+						if (orderedSelectedNodes.length < 2)
 							orderedSelectedNodes.push(event.cyTarget);
 						else
 							orderedSelectedNodes.shift();
-							orderedSelectedNodes.push(event.cyTarget);
+						orderedSelectedNodes.push(event.cyTarget);
 					});
 
 					cy.on('cxttapstart ', 'node', function(event) {
@@ -738,14 +858,14 @@ var VQI_pathwayEditor = function(parent,services) {
 			close : function() {
 			}
 		});
-		
-		function dialogPathfindOpen(event){
+
+		function dialogPathfindOpen(event) {
 			dialogPathfind.dialog("open");
 		}
-		
+
 		dialogPathfind = $("#" + parent + "-dialog-form-find-path").dialog({
 			open : function(event) {
-				document.getElementById(parent + "-sid").value = orderedSelectedNodes[0]._private.data['name']; 
+				document.getElementById(parent + "-sid").value = orderedSelectedNodes[0]._private.data['name'];
 				document.getElementById(parent + "-vid").value = orderedSelectedNodes[1]._private.data['name'];
 			},
 			autoOpen : false,
@@ -797,114 +917,6 @@ var VQI_pathwayEditor = function(parent,services) {
 		document.getElementById(parent + '-unbundle').addEventListener('click', unbundle);
 		document.getElementById(parent + '-produceJSON').addEventListener('click', produceJSON);
 		document.getElementById(parent + '-undo').addEventListener('click', undo);
+		document.getElementById(parent + '-redo').addEventListener('click', redo);
 	});
-
-	// Outer Control Layout
-
-	var parentDiv = document.getElementById(parent);
-
-	var strVar = "";
-	strVar += "	<input id=\"" + parent + "-file\" value=\"Pick File\" type=\"file\"><\/input>";
-	strVar += " <label for=\"" + parent + "-pathwaySelector\">Pathway:<\/label>";
-	strVar += " <select style=\"width: 150px\" id=\"" + parent + "-pathwaySelector\" name=\"" + parent + "-pathwaySelector\">";
-	strVar += "  	<option selected=\"\">Please Select<\/option>";
-	strVar += "	<\/select>";
-	strVar += "	<input id=\"" + parent + "-addNode\" value=\"Add Node\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-addEdge\" value=\"Add Edge\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-deleteEdges\" value=\"Delete Selected Edge(s)\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-deleteNodes\" value=\"Delete Selected Node(s)\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-findPath\" value=\"Find Pathway\" type=\"button\"><\/input>";	
-	strVar += "	<input id=\"" + parent + "-produceJSON\" value=\"Export JSON\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\"><\/input>";
-	strVar += "	<form id=\"" + parent + "-form-data\" method=\"post\" action=\"http:\/\/137.99.11.122\/pathway2\/get.php\" target=\"_blank\">";
-	strVar += "		<input type=\"hidden\" name=\"" + parent + "-variable\" id=\"" + parent + "-variable\"><\/input>";
-	strVar += "		<input type=\"submit\" value=\"Submit\"><\/input>";
-	strVar += "	<\/form>";
-	strVar += " <div id=\"" + parent + "-dialog-form-find-path\" title=\"Find path\">";
-	strVar += " 		<form>";
-	strVar += "    		<fieldset>";
-	strVar += "      			<label for=\"" + parent + "-sid\">sid:<\/label>";
-	strVar += " 				<input type=\"text\" name=\"" + parent + "-sid\" id=\"" + parent + "-sid\"><br>";
-	strVar += "      			<label for=\"" + parent + "-vid\">vid:<\/label>";	
-	strVar += " 				<input type=\"text\" name=\"" + parent + "-vid\" id=\"" + parent + "-vid\"><br>";
-	strVar += " 				<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
-	strVar += "    		<\/fieldset>";
-	strVar += " 		<\/form>";
-	strVar += "	<\/div>";
-	strVar += "	<div id=\"" + parent + "-dialog-form-edge\" title=\"Edit edge\">";
-	strVar += " 		<form>";
-	strVar += "    		<fieldset>";
-	strVar += "      			<label for=\"" + parent + "-direction\">change direction:<\/label>";
-	strVar += "      			<input type=\"checkbox\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
-	strVar += "      			<label for=\"" + parent + "-type-edge\">type:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-edge\" name=\"" + parent + "-type-edge\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>TBar<\/option>";
-	strVar += "  					<option>Arrow<\/option>";
-	strVar += "  					<option>Line<\/option>";
-	strVar += "				<\/select>";
-	strVar += " 			<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
-	strVar += "    		<\/fieldset>";
-	strVar += "  		<\/form>";
-	strVar += "	<\/div>";
-	strVar += "	<div id=\"" + parent + "-dialog-form-node\" title=\"Edit node\">";
-	strVar += " 		<form>";
-	strVar += "    		<fieldset>";
-	strVar += "      			<label for=\"" + parent + "-gene-name\">gene-name:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"" + parent + "-gene-name\" id=\"" + parent + "-gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-	strVar += "      			<label for=\"" + parent + "-height\">height:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "height\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-	strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-rna\" name=\"" + parent + "-rna\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>1<\/option>";
-	strVar += "  					<option>2<\/option>";
-	strVar += "  					<option>3<\/option>";
-	strVar += "  					<option>4<\/option>";
-	strVar += "  					<option>5<\/option>";
-	strVar += "  					<option>6<\/option>";
-	strVar += "  					<option>7<\/option>";
-	strVar += "  					<option>8<\/option>";
-	strVar += "  					<option>9<\/option>";
-	strVar += "  					<option>10<\/option>";
-	strVar += "				<\/select>";
-	strVar += "				<label for=\"" + parent + "-cnv\">CNV:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-cnv\" name=\"" + parent + "-cnv\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>1<\/option>";
-	strVar += "  					<option>2<\/option>";
-	strVar += "  					<option>3<\/option>";
-	strVar += "  					<option>4<\/option>";
-	strVar += "  					<option>5<\/option>";
-	strVar += "  					<option>6<\/option>";
-	strVar += "  					<option>7<\/option>";
-	strVar += "  					<option>8<\/option>";
-	strVar += "  					<option>9<\/option>";
-	strVar += "  					<option>10<\/option>";
-	strVar += "				<\/select>";
-	strVar += "				<label for=\"" + parent + "-mut\">MUT:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-mut\" name=\"" + parent + "-mut\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>1<\/option>";
-	strVar += "  					<option>2<\/option>";
-	strVar += "  					<option>3<\/option>";
-	strVar += "  					<option>4<\/option>";
-	strVar += "  					<option>5<\/option>";
-	strVar += "  					<option>6<\/option>";
-	strVar += "  					<option>7<\/option>";
-	strVar += "  					<option>8<\/option>";
-	strVar += "  					<option>9<\/option>";
-	strVar += "  					<option>10<\/option>";
-	strVar += "				<\/select>";
-	strVar += " 			    <input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
-	strVar += "    		<\/fieldset>";
-	strVar += "  		<\/form>";
-	strVar += "	<\/div>";
-	strVar += "	<div id=\"" + parent + "-cy\" style=\"height: 100%;width: 100%;position: absolute; left: 0;\"><\/div>";
-
-	document.getElementById(parent).innerHTML = strVar;
 }
