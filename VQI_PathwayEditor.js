@@ -1,6 +1,9 @@
-var VQI_pathwayEditor = function(parent, services) {
-
+var VQI_PathwayEditor = function(parent) {
+    //Web services
+    var services = {};
+    services['pathwayfinder'] = 'http://137.99.11.36/pathwayVisual/PathwayParser/ajaxJSON.php';
 	// Globals
+        
 	var states = [];
 	var stateRecycle = [];
 	var lastEvent = 0;
@@ -22,7 +25,7 @@ var VQI_pathwayEditor = function(parent, services) {
 
 	// Outer Control Layout
 
-	var parentDiv = document.getElementById(parent);
+//	var parentDiv = document.getElementById(parent);
 
 	var strVar = "";
 	strVar += "	<input id=\"" + parent + "-file\" value=\"Pick File\" type=\"file\"><\/input>";
@@ -919,4 +922,4 @@ var VQI_pathwayEditor = function(parent, services) {
 		document.getElementById(parent + '-undo').addEventListener('click', undo);
 		document.getElementById(parent + '-redo').addEventListener('click', redo);
 	});
-}
+};
