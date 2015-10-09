@@ -5,6 +5,7 @@ var VQI_pathwayEditor = function(parent,services) {
 	var lastEvent = 0;
 	var selectedForQueryNodes = [];
 	var selectedForEditNodes = [];
+	var orderedSelectedNodes = [];
 	var selectedForEditEdges = [];
 	var bundleCounter = 0;
 	var edgeCounter = 0;
@@ -367,11 +368,12 @@ var VQI_pathwayEditor = function(parent,services) {
 		}
 
 		function wrapperFindPath() {
-			var sid = document.getElementById(parent + "-sid").value;
-			var vid = document.getElementById(parent + "-vid").value;
+			var sid = orderedSelectedNodes[0]._private.data['GraphId'];
+			var vid = orderedSelectedNodes[1]._private.data['GraphId'];
 			var result = findPath(JSON.parse(states[states.length - 1]), sid, vid);
-			for(var i = 0; i < result.length; i++){
-				cy.elements("edge[graphid = "+result[i]+"]").select();
+			console.log(result);
+			for(var i = 0; i < result[0].length; i++){
+				cy.elements("edge[GraphId = \""+result[0][i]+"\"]").select();
 			}
 			dialogPathfind.dialog("close");
 		}
@@ -522,7 +524,11 @@ var VQI_pathwayEditor = function(parent,services) {
 
 					// custom event handlers
 					cy.on('click', 'node', function(event) {
-
+						if(orderedSelectedNodes.length < 2)
+							orderedSelectedNodes.push(event.cyTarget);
+						else
+							orderedSelectedNodes.shift();
+							orderedSelectedNodes.push(event.cyTarget);
 					});
 
 					cy.on('cxttapstart ', 'node', function(event) {
@@ -738,6 +744,10 @@ var VQI_pathwayEditor = function(parent,services) {
 		}
 		
 		dialogPathfind = $("#" + parent + "-dialog-form-find-path").dialog({
+			open : function(event) {
+				document.getElementById(parent + "-sid").value = orderedSelectedNodes[0]._private.data['name']; 
+				document.getElementById(parent + "-vid").value = orderedSelectedNodes[1]._private.data['name'];
+			},
 			autoOpen : false,
 			height : 300,
 			width : 350,
