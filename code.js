@@ -25,8 +25,7 @@ var pathwayEditor = function(parent) {
 			reader.readAsText(event.target.files[0]);
 		}
 
-		function onReaderLoad(event) {
-			var obj = JSON.parse(event.target.result);
+		function setElements(obj) {
 			if (loadCounts == 0) {
 				header = obj.data;
 				visual_pathway(obj);
@@ -38,6 +37,21 @@ var pathwayEditor = function(parent) {
 				window.cy.add(obj.elements)
 			}
 			loadCounts++;
+		}
+
+		function onSelect(event) {
+			var val = event.target.value;
+			$.post('http://137.99.11.36/pathwayVisual/PathwayParser/ajaxJSON.php', {
+				pid : val
+			}, function(data) {
+				var obj = JSON.parse(data);
+				setElements(obj);
+			});
+		}
+
+		function onReaderLoad(event) {
+			var obj = JSON.parse(event.target.result);
+			setElements(obj);
 		}
 
 		function removeNodes(event) {
@@ -294,7 +308,70 @@ var pathwayEditor = function(parent) {
 
 		function produceJSON(event) {
 			download(states[states.length - 1], "data.txt", "text/plain");
-			console.log(data);
+		}
+
+		function findPath(Json, sid, vid) {
+			var nodes = Json['elements']['nodes'];
+			var edges = Json['elements']['edges'];
+			var result = [];
+			//array of arrays containing the graphids for edges in the path
+			var path = [];
+			var nodeTrack = [];
+
+			function mapLocation(x, y) {
+				var deta = 3;
+				for (var j = 0; j < nodes.length; j++) {
+					var x0 = nodes[j]['position']['x'];
+					var y0 = nodes[j]['position']['y'];
+					var w = nodes[j]['data']['Width'];
+					var h = nodes[j]['data']['Height'];
+
+					if (x > x0 - w / 2 - deta & x < x0 + w / 2 + deta & y > y0 - h / 2 - deta & y < y0 + h / 2 + deta) {
+						return nodes[j]['data']['SUID'];
+
+					}
+				}
+			}
+
+			function findEdgeBySource(gid) {
+				nodeTrack.push(gid);
+				for (var i = 0; i < edges.length; i++) {
+					var s = (!('source' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][0]['x'], edges[i]['data']['Coords'][0]['y']) : edges[i]['data']['source']);
+					if (s == gid) {
+						var cl = edges[i]['data']['Coords'].length;
+						var t = (!('target' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][cl - 1]['x'], edges[i]['data']['Coords'][cl - 1]['y']) : edges[i]['data']['target']);
+
+						if (t == vid) {
+							//console.log(path);
+							path.push(edges[i]['data']['id']);
+							result.push(path);
+							path = [];
+							nodeTrack = [];
+
+						} else {
+
+							if (nodeTrack.indexOf(t) == -1) {
+								path.push(edges[i]['data']['id']);
+
+								findEdgeBySource(t);
+							}
+						}
+					}
+				}
+				//console.log(mapLocation(60.75,188.75))
+
+			}
+
+			findEdgeBySource(sid);
+			return result;
+
+		}
+
+		function wrapperFindPath(event) {
+			var result = findPath(JSON.parse(states[states.length - 1]), event.target[0].value, event.target[1].value);
+			for(var i = 0; i < result.length; i++){
+				cy.elements("edge[graphid = "+result[i]+"]").select();
+			}
 		}
 
 		function saveState() {
@@ -315,7 +392,7 @@ var pathwayEditor = function(parent) {
 		}
 
 		function visual_pathway(obj) {
-			$('#cy').cytoscape({
+			$('#' + parent + '-cy').cytoscape({
 				style : cytoscape.stylesheet()
 
 				// node elements default css (unselected state)
@@ -552,11 +629,11 @@ var pathwayEditor = function(parent) {
 
 		function editEdge() {
 			saveState();
-			var direction = document.getElementById("direction").value;
-			var type = document.getElementById("type-edge").value;
+			var direction = document.getElementById(parent + "-direction").value;
+			var type = document.getElementById(parent + "-type-edge").value;
 			target.data('StartArrow', type);
 			target.data('EndArrow', type);
-			if (document.getElementById('direction').checked) {
+			if (document.getElementById(parent + '-direction').checked) {
 				var edge = [];
 
 				edge.push({
@@ -584,9 +661,9 @@ var pathwayEditor = function(parent) {
 
 		function editNode() {
 			saveState();
-			var name = document.getElementById("gene-name").value;
-			var width = document.getElementById("width").value;
-			var height = document.getElementById("height").value;
+			var name = document.getElementById(parent + "-gene-name").value;
+			var width = document.getElementById(parent + "-width").value;
+			var height = document.getElementById(parent + "-height").value;
 			target.data('name', name);
 			target.data('Width', width);
 			target.data('Height', height);
@@ -594,9 +671,9 @@ var pathwayEditor = function(parent) {
 			var node_name = target.data("shared_name");
 			selectedForQueryNodes.push(node_name);
 			var node_id = target.data("id");
-			var rna = document.getElementById("rna").value;
-			var cnv = document.getElementById("cnv").value;
-			var mut = document.getElementById("mut").value;
+			var rna = document.getElementById(parent + "-rna").value;
+			var cnv = document.getElementById(parent + "-cnv").value;
+			var mut = document.getElementById(parent + "-mut").value;
 
 			// RNA
 			if (rna > 5) {
@@ -617,13 +694,15 @@ var pathwayEditor = function(parent) {
 				setNodeStyle(target, 'green_bg', '', '');
 			}
 
-			$('#variable').val($('#variable').val() + node_name + " ");
+			$('#' + parent + '-variable').val($('#' + parent + '-variable').val() + node_name + " ");
 			dialogNode.dialog("close");
 		}
 
-		dialogNode = $("#dialog-form-node").dialog({
+		// On Page Start
+
+		dialogNode = $("#" + parent + "-dialog-form-node").dialog({
 			open : function(event) {
-				document.getElementById("gene-name").value = target.data('name');
+				document.getElementById(parent + "-gene-name").value = target.data('name');
 			},
 			autoOpen : false,
 			height : 300,
@@ -638,7 +717,7 @@ var pathwayEditor = function(parent) {
 			}
 		});
 
-		dialogEdge = $("#dialog-form-edge").dialog({
+		dialogEdge = $("#" + parent + "-dialog-form-edge").dialog({
 			autoOpen : false,
 			height : 300,
 			width : 350,
@@ -652,43 +731,79 @@ var pathwayEditor = function(parent) {
 			}
 		});
 
-		document.getElementById('file').addEventListener('change', onChange);
-		document.getElementById('deleteNodes').addEventListener('click', removeNodes);
-		document.getElementById('deleteEdges').addEventListener('click', removeEdges);
-		document.getElementById('addNode').addEventListener('click', addNode);
-		document.getElementById('addEdge').addEventListener('click', addEdge);
-		document.getElementById('bundle').addEventListener('click', bundle);
-		document.getElementById('unbundle').addEventListener('click', unbundle);
-		document.getElementById('produceJSON').addEventListener('click', produceJSON);
-		document.getElementById('undo').addEventListener('click', undo);
+		var select = document.getElementById(parent + "-pathwaySelector");
+
+		$.get('http://137.99.11.36/pathwayVisual/PathwayParser/ajaxJSON.php', {
+			pathwayList : '1'
+		}, function(data) {
+			var obj = JSON.parse(data);
+			for (var i = 0; i < obj.length; i++) {
+				var opt = obj[i].NAME;
+				var val = obj[i].ID;
+				var el = document.createElement("option");
+				el.textContent = opt;
+				el.value = val;
+				select.appendChild(el);
+			}
+		});
+
+		/*	for(var i = 0; i < options.length; i++) {
+		 var opt = options[i];
+		 var el = document.createElement("option");
+		 el.textContent = opt;
+		 el.value = opt;
+		 select.appendChild(el);
+		 }​
+		 */
+		document.getElementById(parent + '-file').addEventListener('change', onChange);
+		document.getElementById(parent + '-form-find-path').addEventListener('submit', wrapperFindPath);
+		document.getElementById(parent + '-deleteNodes').addEventListener('click', removeNodes);
+		document.getElementById(parent + '-pathwaySelector').addEventListener('change', onSelect);
+		document.getElementById(parent + '-deleteNodes').addEventListener('click', removeNodes);
+		document.getElementById(parent + '-deleteEdges').addEventListener('click', removeEdges);
+		document.getElementById(parent + '-addNode').addEventListener('click', addNode);
+		document.getElementById(parent + '-addEdge').addEventListener('click', addEdge);
+		document.getElementById(parent + '-bundle').addEventListener('click', bundle);
+		document.getElementById(parent + '-unbundle').addEventListener('click', unbundle);
+		document.getElementById(parent + '-produceJSON').addEventListener('click', produceJSON);
+		document.getElementById(parent + '-undo').addEventListener('click', undo);
 	});
-	
+
 	// Outer Control Layout
-	
+
 	var parentDiv = document.getElementById(parent);
-	
+
 	var strVar = "";
-	strVar += "	<input id=\"file\" value=\"Pick File\" type=\"file\"><\/input>";
-	strVar += "	<input id=\"addNode\" value=\"Add Node\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"addEdge\" value=\"Add Edge\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"deleteEdges\" value=\"Delete Selected Edge(s)\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"deleteNodes\" value=\"Delete Selected Node(s)\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"bundle\" value=\"Bundle\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"unbundle\" value=\"Unbundle\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"produceJSON\" value=\"Export JSON\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"undo\" value=\"Undo\" type=\"button\"><\/input>";
-	strVar += "	<form id=\"form-data\" method=\"post\" action=\"http:\/\/137.99.11.122\/pathway2\/get.php\" target=\"_blank\">";
-	strVar += "		<input type=\"hidden\" name=\"variable\" id=\"variable\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-file\" value=\"Pick File\" type=\"file\"><\/input>";
+	strVar += " <label for=\"" + parent + "-pathwaySelector\">Pathway:<\/label>";
+	strVar += " <select style=\"width: 150px\" id=\"" + parent + "-pathwaySelector\" name=\"" + parent + "-pathwaySelector\">";
+	strVar += "  	<option selected=\"\">Please Select<\/option>";
+	strVar += "	<\/select>";
+	strVar += "	<input id=\"" + parent + "-addNode\" value=\"Add Node\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-addEdge\" value=\"Add Edge\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-deleteEdges\" value=\"Delete Selected Edge(s)\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-deleteNodes\" value=\"Delete Selected Node(s)\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-produceJSON\" value=\"Export JSON\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\"><\/input>";
+	strVar += "	<form id=\"" + parent + "-form-data\" method=\"post\" action=\"http:\/\/137.99.11.122\/pathway2\/get.php\" target=\"_blank\">";
+	strVar += "		<input type=\"hidden\" name=\"" + parent + "-variable\" id=\"" + parent + "-variable\"><\/input>";
 	strVar += "		<input type=\"submit\" value=\"Submit\"><\/input>";
 	strVar += "	<\/form>";
-	strVar += "	<div id=\"dialog-form-edge\" title=\"Edit edge\">";
+	strVar += " <form id=\"" + parent + "-form-find-path\">";
+	strVar += " 	First name: <input type=\"text\" name=\"src\"><br>";
+	strVar += " 	Last name: <input type=\"text\" name=\"dst\"><br>";
+	strVar += " 	<input type=\"submit\" value=\"Submit\">";
+	strVar += " </form>"
+	strVar += "	<div id=\"" + parent + "-dialog-form-edge\" title=\"Edit edge\">";
 	strVar += " 		<form>";
 	strVar += "    		<fieldset>";
-	strVar += "      			<label for=\"direction\">change direction:<\/label>";
-	strVar += "      			<input type=\"checkbox\" name=\"direction\" id=\"direction\" value=\"Yes\"><\/input>";
+	strVar += "      			<label for=\"" + parent + "-direction\">change direction:<\/label>";
+	strVar += "      			<input type=\"checkbox\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
 	strVar += "      			";
-	strVar += "      			<label for=\"type-edge\">type:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"type-edge\" name=\"type-edge\">";
+	strVar += "      			<label for=\"" + parent + "-type-edge\">type:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-edge\" name=\"" + parent + "-type-edge\">";
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
 	strVar += "  					<option>TBar<\/option>";
 	strVar += "  					<option>Arrow<\/option>";
@@ -698,20 +813,20 @@ var pathwayEditor = function(parent) {
 	strVar += "    		<\/fieldset>";
 	strVar += "  		<\/form>";
 	strVar += "	<\/div>";
-	strVar += "	<div id=\"dialog-form-node\" title=\"Edit node\">";
+	strVar += "	<div id=\"" + parent + "-dialog-form-node\" title=\"Edit node\">";
 	strVar += " 		<form>";
 	strVar += "    		<fieldset>";
-	strVar += "      			<label for=\"gene-name\">gene-name:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"gene-name\" id=\"gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<label for=\"" + parent + "-gene-name\">gene-name:<\/label>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-gene-name\" id=\"" + parent + "-gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			";
-	strVar += "      			<label for=\"height\">height:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"height\" id=\"height\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<label for=\"" + parent + "-height\">height:<\/label>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "height\" id=\"" + parent + "height\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			";
-	strVar += "      			<label for=\"width\">width:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"width\" id=\"width\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			";
-	strVar += "      			<label for=\"rna\">RNA:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"rna\" name=\"rna\">";
+	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-rna\" name=\"" + parent + "-rna\">";
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
 	strVar += "  					<option>1<\/option>";
 	strVar += "  					<option>2<\/option>";
@@ -725,8 +840,8 @@ var pathwayEditor = function(parent) {
 	strVar += "  					<option>10<\/option>";
 	strVar += "				<\/select>";
 	strVar += "				";
-	strVar += "				<label for=\"cvn\">CNV:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"cvn\" name=\"cvn\">";
+	strVar += "				<label for=\"" + parent + "-cvn\">CNV:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-cvn\" name=\"" + parent + "-cvn\">";
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
 	strVar += "  					<option>1<\/option>";
 	strVar += "  					<option>2<\/option>";
@@ -740,8 +855,8 @@ var pathwayEditor = function(parent) {
 	strVar += "  					<option>10<\/option>";
 	strVar += "				<\/select>";
 	strVar += "				";
-	strVar += "				<label for=\"mut\">MUT:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"mut\" name=\"mut\">";
+	strVar += "				<label for=\"" + parent + "-mut\">MUT:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-mut\" name=\"" + parent + "-mut\">";
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
 	strVar += "  					<option>1<\/option>";
 	strVar += "  					<option>2<\/option>";
@@ -758,7 +873,7 @@ var pathwayEditor = function(parent) {
 	strVar += "    		<\/fieldset>";
 	strVar += "  		<\/form>";
 	strVar += "	<\/div>";
-	strVar += "	<div id=\"cy\"><\/div>";
-	
+	strVar += "	<div id=\"" + parent + "-cy\" style=\"height: 100%;width: 100%;position: absolute; left: 0;\"><\/div>";
+
 	document.getElementById(parent).innerHTML = strVar;
 }
