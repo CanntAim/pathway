@@ -14,7 +14,7 @@
 <body>
 	<div id="parent"></div>
 	<script src="VQI_Observable.js"></script>
-	<script src="code.js"></script>
+	<script src="VQI_PathwayEditor.js"></script>
 	<script src="main.js"></script>
 </body>
 </html>
