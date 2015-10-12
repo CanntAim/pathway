@@ -1,9 +1,9 @@
 var VQI_PathwayEditor = function(parent) {
-    //Web services
-    var services = {};
-    services['pathwayfinder'] = 'http://137.99.11.36/pathwayVisual/PathwayParser/ajaxJSON.php';
+	//Web services
+	var services = {};
+	services['pathwayfinder'] = 'http://137.99.11.36/pathwayVisual/PathwayParser/ajaxJSON.php';
 	// Globals
-        
+
 	var states = [];
 	var stateRecycle = [];
 	var lastEvent = 0;
@@ -25,7 +25,7 @@ var VQI_PathwayEditor = function(parent) {
 
 	// Outer Control Layout
 
-//	var parentDiv = document.getElementById(parent);
+	//	var parentDiv = document.getElementById(parent);
 
 	var strVar = "";
 	strVar += "	<input id=\"" + parent + "-file\" value=\"Pick File\" type=\"file\"><\/input>";
@@ -47,6 +47,18 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "		<input type=\"hidden\" name=\"" + parent + "-variable\" id=\"" + parent + "-variable\"><\/input>";
 	strVar += "		<input type=\"submit\" value=\"Submit\"><\/input>";
 	strVar += "	<\/form>";
+	strVar += " <div id=\"" + parent + "-dialog-bundle\" title=\"Find path\">";
+	strVar += " 		<form>";
+	strVar += "    		<fieldset>";
+	strVar += "      			<label for=\"" + parent + "-type-bundle\">type:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-bundle\" name=\"" + parent + "-type-bundle\">";
+	strVar += "  					<option selected=\"\">Please Select<\/option>";
+	strVar += "  					<option>bundle_type_1<\/option>";
+	strVar += "  					<option>bundle_type_2<\/option>";
+	strVar += "				<\/select>";
+	strVar += "    		<\/fieldset>";
+	strVar += " 		<\/form>";
+	strVar += "	<\/div>";
 	strVar += " <div id=\"" + parent + "-dialog-form-find-path\" title=\"Find path\">";
 	strVar += " 		<form>";
 	strVar += "    		<fieldset>";
@@ -149,8 +161,52 @@ var VQI_PathwayEditor = function(parent) {
 					obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x + 1000 * loadCounts;
 				}
 				window.cy.add(obj.elements)
+//				loadHelper();
 			}
 			loadCounts++;
+		}
+		
+		function loadHelper(){
+			var bundledElements = window.cy.elements("node[GroupRef != \"default\"]").select();
+			var nodes = [];
+			var edges = [];
+			for (var i = 0; i < bundledElements.size(); i++) {
+				nodes.push({
+					group : "nodes",
+					data : {
+						LabelSize : bundledElements[i].data('LabelSize'),
+						Type : bundledElements[i].data('Type'),
+						Valign : bundledElements[i].data('Valign'),
+						Width : bundledElements[i].data('Width'),
+						Height : bundledElements[i].data('Height'),
+						id : bundledElements[i].data('id'),
+						name : bundledElements[i].data('name'),
+						selected : bundledElements[i].data('selected'),
+						parent : bundledElements[i].data('GroupRef')
+					},
+					position : {
+						x : bundledElements[i].position('x'),
+						y : bundledElements[i].position('y')
+					}
+				});
+				for (var j = 0; j < bundledElements[i].connectedEdges().size(); j++) {
+					edges.push({
+						group : "edges",
+						data : {
+							id : bundledElements[i].connectedEdges()[j].data('id'),
+							LineThickness : bundledElements[i].connectedEdges()[j].data('LineThickness'),
+							EndArrow : bundledElements[i].connectedEdges()[j].data('EndArrow'),
+							Coords : bundledElements[i].connectedEdges()[j].data('Coords'),
+							ZOrder : bundledElements[i].connectedEdges()[j].data('ZOrder'),
+							source : bundledElements[i].connectedEdges()[j].data('source'),
+							target : bundledElements[i].connectedEdges()[j].data('target'),
+							StartArrow : bundledElements[i].connectedEdges()[j].data('StartArrow'),
+							selected : bundledElements[i].connectedEdges()[j].data('selected')
+						},
+						selected : bundledElements[i].connectedEdges()[j].selected
+					})
+				}
+			}
 		}
 
 		function onSelect(event) {
@@ -158,6 +214,8 @@ var VQI_PathwayEditor = function(parent) {
 			$.post(services['pathwayfinder'], {
 				pid : val
 			}, function(data) {
+				console.log(data);
+				console.log(obj);
 				var obj = JSON.parse(data);
 				setElements(obj);
 			});
@@ -186,25 +244,18 @@ var VQI_PathwayEditor = function(parent) {
 			node.push({
 				group : "nodes",
 				data : {
-					GraphId : name,
 					LabelSize : 10,
-					SUID : name,
 					Type : "Protein",
 					Valign : "Middle",
 					Width : 100,
 					Height : 25,
 					id : name,
 					name : name,
-					selected : false,
-					shared_name : name
+					selected : false
 				},
 				position : {
 					x : 500,
 					y : 500
-				},
-				css : {
-					'border-color' : 'black',
-					'color' : 'black'
 				}
 			})
 
@@ -215,8 +266,8 @@ var VQI_PathwayEditor = function(parent) {
 		function addEdge(event) {
 			saveState();
 			for (var i = 0; i < selectedForEditNodes.length - 1; i++) {
-				var sourceE = selectedForEditNodes[i].data('GraphId');
-				var targetE = selectedForEditNodes[i + 1].data('GraphId');
+				var sourceE = selectedForEditNodes[i].data('id');
+				var targetE = selectedForEditNodes[i + 1].data('id');
 
 				var edge = [];
 
@@ -224,7 +275,6 @@ var VQI_PathwayEditor = function(parent) {
 					group : "edges",
 					data : {
 						id : "e" + edgeCounter,
-						SUID : "e" + edgeCounter,
 						LineThickness : 1.0,
 						EndArrow : "Line",
 						Coords : [{
@@ -234,14 +284,12 @@ var VQI_PathwayEditor = function(parent) {
 							"x" : 0,
 							"y" : 0
 						}],
-						GraphId : "e" + edgeCounter,
 						ZOrder : "12288",
 						source : sourceE,
 						target : targetE,
 						StartArrow : "Line",
 						selected : false
-					},
-					selected : false
+					}
 				})
 
 				edgeCounter++;
@@ -259,9 +307,7 @@ var VQI_PathwayEditor = function(parent) {
 				nodes.push({
 					group : "nodes",
 					data : {
-						GraphId : selectedForEditNodes[i].data('GraphId'),
 						LabelSize : selectedForEditNodes[i].data('LabelSize'),
-						SUID : selectedForEditNodes[i].data('SUID'),
 						Type : selectedForEditNodes[i].data('Type'),
 						Valign : selectedForEditNodes[i].data('Valign'),
 						Width : selectedForEditNodes[i].data('Width'),
@@ -269,14 +315,10 @@ var VQI_PathwayEditor = function(parent) {
 						id : selectedForEditNodes[i].data('id'),
 						name : selectedForEditNodes[i].data('name'),
 						selected : selectedForEditNodes[i].data('selected'),
-						shared_name : selectedForEditNodes[i].data('shared_name'),
 					},
 					position : {
 						x : selectedForEditNodes[i].position('x'),
 						y : selectedForEditNodes[i].position('y')
-					},
-					css : {
-						'border-color' : 'red'
 					}
 				});
 
@@ -285,18 +327,15 @@ var VQI_PathwayEditor = function(parent) {
 						group : "edges",
 						data : {
 							id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
-							SUID : selectedForEditNodes[i].connectedEdges()[j].data('SUID'),
 							LineThickness : selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
 							EndArrow : selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
 							Coords : selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
-							GraphId : selectedForEditNodes[i].connectedEdges()[j].data('GraphId'),
 							ZOrder : selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
 							source : selectedForEditNodes[i].connectedEdges()[j].data('source'),
 							target : selectedForEditNodes[i].connectedEdges()[j].data('target'),
 							StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
 							selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
-						},
-						selected : selectedForEditNodes[i].connectedEdges()[j].selected
+						}
 					})
 				}
 			}
@@ -310,30 +349,25 @@ var VQI_PathwayEditor = function(parent) {
 
 		function bundle(event) {
 			saveState();
+			var type = document.getElementById(parent + "-type-bundle").value;
 			var nodes = [];
 			var edges = [];
 			// Create new parent
 			nodes.push({
 				group : "nodes",
 				data : {
-					GraphId : "n" + bundleCounter,
 					LabelSize : 10,
-					SUID : "b6fd7",
-					Type : "Protein",
+					Type : type,
 					Valign : "Middle",
 					Width : 80.75,
 					Height : 100,
 					id : "n" + bundleCounter,
 					name : "n" + bundleCounter,
-					selected : false,
-					shared_name : "n" + bundleCounter
+					selected : false
 				},
 				position : {
 					x : 500,
 					y : 500
-				},
-				css : {
-					"border-color" : "red"
 				}
 			})
 
@@ -343,9 +377,7 @@ var VQI_PathwayEditor = function(parent) {
 					nodes.push({
 						group : "nodes",
 						data : {
-							GraphId : selectedForEditNodes[i].data('GraphId'),
 							LabelSize : selectedForEditNodes[i].data('LabelSize'),
-							SUID : selectedForEditNodes[i].data('SUID'),
 							Type : selectedForEditNodes[i].data('Type'),
 							Valign : selectedForEditNodes[i].data('Valign'),
 							Width : selectedForEditNodes[i].data('Width'),
@@ -353,24 +385,18 @@ var VQI_PathwayEditor = function(parent) {
 							id : selectedForEditNodes[i].data('id'),
 							name : selectedForEditNodes[i].data('name'),
 							selected : selectedForEditNodes[i].data('selected'),
-							shared_name : selectedForEditNodes[i].data('shared_name'),
 							parent : "n" + bundleCounter
 						},
 						position : {
 							x : selectedForEditNodes[i].position('x'),
 							y : selectedForEditNodes[i].position('y')
-						},
-						css : {
-							'border-color' : 'red'
 						}
 					});
 				} else {
 					nodes.push({
 						group : "nodes",
 						data : {
-							GraphId : selectedForEditNodes[i].data('GraphId'),
 							LabelSize : selectedForEditNodes[i].data('LabelSize'),
-							SUID : selectedForEditNodes[i].data('SUID'),
 							Type : selectedForEditNodes[i].data('Type'),
 							Valign : selectedForEditNodes[i].data('Valign'),
 							Width : selectedForEditNodes[i].data('Width'),
@@ -378,15 +404,11 @@ var VQI_PathwayEditor = function(parent) {
 							id : selectedForEditNodes[i].data('id'),
 							name : selectedForEditNodes[i].data('name'),
 							selected : selectedForEditNodes[i].data('selected'),
-							shared_name : selectedForEditNodes[i].data('shared_name'),
 							parent : selectedForEditNodes[i].data('parent')
 						},
 						position : {
 							x : selectedForEditNodes[i].position('x'),
 							y : selectedForEditNodes[i].position('y')
-						},
-						css : {
-							'border-color' : 'red'
 						}
 					});
 				}
@@ -395,18 +417,15 @@ var VQI_PathwayEditor = function(parent) {
 						group : "edges",
 						data : {
 							id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
-							SUID : selectedForEditNodes[i].connectedEdges()[j].data('SUID'),
 							LineThickness : selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
 							EndArrow : selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
 							Coords : selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
-							GraphId : selectedForEditNodes[i].connectedEdges()[j].data('GraphId'),
 							ZOrder : selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
 							source : selectedForEditNodes[i].connectedEdges()[j].data('source'),
 							target : selectedForEditNodes[i].connectedEdges()[j].data('target'),
 							StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
 							selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
-						},
-						selected : selectedForEditNodes[i].connectedEdges()[j].selected
+						}
 					})
 				}
 			}
@@ -418,6 +437,9 @@ var VQI_PathwayEditor = function(parent) {
 			window.cy.add(nodes.concat(edges));
 
 			bundleCounter++;
+
+			// Remove dialog box
+			dialogBundle.dialog("close");
 		}
 
 		function produceJSON(event) {
@@ -477,16 +499,19 @@ var VQI_PathwayEditor = function(parent) {
 
 			findEdgeBySource(sid);
 			return result;
-
 		}
 
 		function wrapperFindPath() {
-			var sid = orderedSelectedNodes[0]._private.data['GraphId'];
-			var vid = orderedSelectedNodes[1]._private.data['GraphId'];
+			saveState();
+			var sid = orderedSelectedNodes[0]._private.data['id'];
+			var vid = orderedSelectedNodes[1]._private.data['id'];
 			var result = findPath(JSON.parse(states[states.length - 1]), sid, vid);
-			console.log(result);
 			for (var i = 0; i < result[0].length; i++) {
-				cy.elements("edge[GraphId = \"" + result[0][i] + "\"]").select();
+				cy.elements("edge[id = \"" + result[0][i] + "\"]").select();
+				var sourceNode = cy.elements("edge[id = \"" + result[0][i] + "\"]").data('source');
+				var targetNode = cy.elements("edge[id = \"" + result[0][i] + "\"]").data('target');
+				cy.elements("node[id = \"" + targetNode + "\"]").select();
+				cy.elements("node[id = \"" + sourceNode + "\"]").select();
 			}
 			dialogPathfind.dialog("close");
 		}
@@ -507,7 +532,7 @@ var VQI_PathwayEditor = function(parent) {
 				window.cy.add(obj.elements)
 			}
 		}
-		
+
 		function redo() {
 			if (stateRecycle.length > 1) {
 				cy.$('node').remove();
@@ -546,6 +571,20 @@ var VQI_PathwayEditor = function(parent) {
 					'background-color' : 'white',
 					'color' : '#ff3333',
 					'border-color' : '#ff3333',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="bundle_type_1"]').css({
+					'shape' : 'hexagon',
+					'background-color' : 'white',
+					'color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="bundle_type_2"]').css({
+					'shape' : 'roundrectangle',
+					'background-color' : 'white',
+					'color' : 'white',
+					'border-color' : 'black',
 					'border-style' : 'solid',
 					'border-width' : 1
 				}).selector('node[Shape="Brace"]').css({
@@ -643,8 +682,8 @@ var VQI_PathwayEditor = function(parent) {
 
 				ready : function() {
 					window.cy = this;
-					var selectedNodes = [];
-
+//					loadHelper();
+					
 					// custom event handlers
 					cy.on('click', 'node', function(event) {
 						if (orderedSelectedNodes.length < 2)
@@ -771,18 +810,15 @@ var VQI_PathwayEditor = function(parent) {
 					group : "edges",
 					data : {
 						id : target.data('id'),
-						SUID : target.data('SUID'),
 						LineThickness : target.data('LineThickness'),
 						EndArrow : target.data('EndArrow'),
 						Coords : target.data('Coords'),
-						GraphId : target.data('GraphId'),
 						ZOrder : target.data('ZOrder'),
 						source : target.data('target'),
 						target : target.data('source'),
 						StartArrow : target.data('StartArrow'),
 						selected : target.data('Selected')
-					},
-					selected : false
+					}
 				})
 				target.remove();
 				window.cy.add(edge);
@@ -829,7 +865,13 @@ var VQI_PathwayEditor = function(parent) {
 			dialogNode.dialog("close");
 		}
 
-		// On Page Start
+		function dialogBundleOpen(event) {
+			dialogBundle.dialog("open");
+		}
+
+		function dialogPathfindOpen(event) {
+			dialogPathfind.dialog("open");
+		}
 
 		dialogNode = $("#" + parent + "-dialog-form-node").dialog({
 			open : function(event) {
@@ -862,10 +904,6 @@ var VQI_PathwayEditor = function(parent) {
 			}
 		});
 
-		function dialogPathfindOpen(event) {
-			dialogPathfind.dialog("open");
-		}
-
 		dialogPathfind = $("#" + parent + "-dialog-form-find-path").dialog({
 			open : function(event) {
 				document.getElementById(parent + "-sid").value = orderedSelectedNodes[0]._private.data['name'];
@@ -876,6 +914,20 @@ var VQI_PathwayEditor = function(parent) {
 			width : 350,
 			buttons : {
 				"submit" : wrapperFindPath,
+				Cancel : function() {
+					dialogPathfind.dialog("close");
+				}
+			},
+			close : function() {
+			}
+		});
+
+		dialogBundle = $("#" + parent + "-dialog-bundle").dialog({
+			autoOpen : false,
+			height : 300,
+			width : 350,
+			buttons : {
+				"submit" : bundle,
 				Cancel : function() {
 					dialogPathfind.dialog("close");
 				}
@@ -900,14 +952,6 @@ var VQI_PathwayEditor = function(parent) {
 			}
 		});
 
-		/*	for(var i = 0; i < options.length; i++) {
-		 var opt = options[i];
-		 var el = document.createElement("option");
-		 el.textContent = opt;
-		 el.value = opt;
-		 select.appendChild(el);
-		 }​
-		 */
 		document.getElementById(parent + '-file').addEventListener('change', onChange);
 		document.getElementById(parent + '-findPath').addEventListener('click', dialogPathfindOpen);
 		document.getElementById(parent + '-deleteNodes').addEventListener('click', removeNodes);
@@ -916,7 +960,7 @@ var VQI_PathwayEditor = function(parent) {
 		document.getElementById(parent + '-deleteEdges').addEventListener('click', removeEdges);
 		document.getElementById(parent + '-addNode').addEventListener('click', addNode);
 		document.getElementById(parent + '-addEdge').addEventListener('click', addEdge);
-		document.getElementById(parent + '-bundle').addEventListener('click', bundle);
+		document.getElementById(parent + '-bundle').addEventListener('click', dialogBundleOpen);
 		document.getElementById(parent + '-unbundle').addEventListener('click', unbundle);
 		document.getElementById(parent + '-produceJSON').addEventListener('click', produceJSON);
 		document.getElementById(parent + '-undo').addEventListener('click', undo);
