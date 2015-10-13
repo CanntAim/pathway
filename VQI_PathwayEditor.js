@@ -529,8 +529,15 @@ var VQI_PathwayEditor = function(parent) {
 					'border-color' : '#ff3333',
 					'border-style' : 'solid',
 					'border-width' : 1
+				}).selector('node[Type="unknown"]').css({
+					'shape' : 'rectangle',
+					'background-color' : 'white',
+					'color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
 				}).selector('node[Type="bundle_type_1"]').css({
-					'shape' : 'hexagon',
+					'shape' : 'rectangle',
 					'background-color' : 'white',
 					'color' : 'white',
 					'border-color' : 'black',
