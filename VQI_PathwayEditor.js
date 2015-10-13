@@ -161,52 +161,8 @@ var VQI_PathwayEditor = function(parent) {
 					obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x + 1000 * loadCounts;
 				}
 				window.cy.add(obj.elements)
-//				loadHelper();
 			}
 			loadCounts++;
-		}
-		
-		function loadHelper(){
-			var bundledElements = window.cy.elements("node[GroupRef != \"default\"]").select();
-			var nodes = [];
-			var edges = [];
-			for (var i = 0; i < bundledElements.size(); i++) {
-				nodes.push({
-					group : "nodes",
-					data : {
-						LabelSize : bundledElements[i].data('LabelSize'),
-						Type : bundledElements[i].data('Type'),
-						Valign : bundledElements[i].data('Valign'),
-						Width : bundledElements[i].data('Width'),
-						Height : bundledElements[i].data('Height'),
-						id : bundledElements[i].data('id'),
-						name : bundledElements[i].data('name'),
-						selected : bundledElements[i].data('selected'),
-						parent : bundledElements[i].data('GroupRef')
-					},
-					position : {
-						x : bundledElements[i].position('x'),
-						y : bundledElements[i].position('y')
-					}
-				});
-				for (var j = 0; j < bundledElements[i].connectedEdges().size(); j++) {
-					edges.push({
-						group : "edges",
-						data : {
-							id : bundledElements[i].connectedEdges()[j].data('id'),
-							LineThickness : bundledElements[i].connectedEdges()[j].data('LineThickness'),
-							EndArrow : bundledElements[i].connectedEdges()[j].data('EndArrow'),
-							Coords : bundledElements[i].connectedEdges()[j].data('Coords'),
-							ZOrder : bundledElements[i].connectedEdges()[j].data('ZOrder'),
-							source : bundledElements[i].connectedEdges()[j].data('source'),
-							target : bundledElements[i].connectedEdges()[j].data('target'),
-							StartArrow : bundledElements[i].connectedEdges()[j].data('StartArrow'),
-							selected : bundledElements[i].connectedEdges()[j].data('selected')
-						},
-						selected : bundledElements[i].connectedEdges()[j].selected
-					})
-				}
-			}
 		}
 
 		function onSelect(event) {
@@ -686,7 +642,6 @@ var VQI_PathwayEditor = function(parent) {
 
 				ready : function() {
 					window.cy = this;
-//					loadHelper();
 					
 					// custom event handlers
 					cy.on('click', 'node', function(event) {
