@@ -402,60 +402,100 @@ var VQI_PathwayEditor = function(parent) {
 			download(states[states.length - 1], "data.txt", "text/plain");
 		}
 
-		function findPath(Json, sid, vid) {
-			var nodes = Json['elements']['nodes'];
-			var edges = Json['elements']['edges'];
-			var result = [];
-			//array of arrays containing the graphids for edges in the path
-			var path = [];
-			var nodeTrack = [];
+function findPath(Json, sid, vid) {
+    var nodes = Json['elements']['nodes'];
+    nodes = nodes.filter(function(item) {
+        if (item['data']['NODE_TYPE'] !== 'GROUP') {
+            return true;
+        }
 
-			function mapLocation(x, y) {
-				var deta = 3;
-				for (var j = 0; j < nodes.length; j++) {
-					var x0 = nodes[j]['position']['x'];
-					var y0 = nodes[j]['position']['y'];
-					var w = nodes[j]['data']['Width'];
-					var h = nodes[j]['data']['Height'];
+    });
+    //console.log(nodes);
+    var edges = Json['elements']['edges'];
+    var result = [];//array of arrays containing the graphids for edges in the path
+    var path = [];
+    var nodeTrack = [];
 
-					if (x > x0 - w / 2 - deta & x < x0 + w / 2 + deta & y > y0 - h / 2 - deta & y < y0 + h / 2 + deta) {
-						return nodes[j]['data']['SUID'];
+    function mapLocation(x, y) {
+        var deta = 1;
 
-					}
-				}
-			}
+        for (var j = 0; j < nodes.length; j++) {
+            var x0 = nodes[j]['position']['x'];
+            var y0 = nodes[j]['position']['y'];
+            var w = nodes[j]['data']['Width'];
+            var h = nodes[j]['data']['Height'];
 
-			function findEdgeBySource(gid) {
-				nodeTrack.push(gid);
-				for (var i = 0; i < edges.length; i++) {
-					var s = (!('source' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][0]['x'], edges[i]['data']['Coords'][0]['y']) : edges[i]['data']['source']);
-					if (s == gid) {
-						var cl = edges[i]['data']['Coords'].length;
-						var t = (!('target' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][cl - 1]['x'], edges[i]['data']['Coords'][cl - 1]['y']) : edges[i]['data']['target']);
+            if (x > x0 - w / 2 - deta & x < x0 + w / 2 + deta & y > y0 - h / 2 - deta & y < y0 + h / 2 + deta) {
+                return nodes[j]['data']['SUID'];
 
-						if (t == vid) {
-							//console.log(path);
-							path.push(edges[i]['data']['id']);
-							result.push(path);
-							path = [];
-							nodeTrack = [];
+            }
+        }
+    }
 
-						} else {
+    function findEdgeBySource(gid) {
+        if (gid == undefined | gid == '0') {
+            return;
+        }
 
-							if (nodeTrack.indexOf(t) == -1) {
-								path.push(edges[i]['data']['id']);
+        var end = true;
+        for (var i = 0; i < edges.length; i++)
+        {
+            var eid = edges[i]['data']['id'];
+            var s = (!('source' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][0]['x'], edges[i]['data']['Coords'][0]['y']) : edges[i]['data']['source']);
 
-								findEdgeBySource(t);
-							}
-						}
-					}
-				}
-				//console.log(mapLocation(60.75,188.75))
-			}
+            if (s == gid) {
 
-			findEdgeBySource(sid);
-			return result;
-		}
+                var cl = edges[i]['data']['Coords'].length;
+                var t = (!('target' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][cl - 1]['x'], edges[i]['data']['Coords'][cl - 1]['y']) : edges[i]['data']['target']);
+
+
+                if (t == vid)
+                {
+                    //console.log(path);
+                    var p = path.slice();
+                    p.push(eid);
+                    result.push(p);
+//                    console.log(path);
+//                    console.log(nodeTrack);
+//                    console.log('result find! ')
+//                    console.log(result);
+
+                    //nodeTrack = [];
+                    continue;
+
+                }
+                else if (nodeTrack.indexOf(eid) == -1 & t !== undefined & t !== '0') {
+                    path.push(eid);
+                    nodeTrack.push(eid);
+//                    console.log('new node added but not dest')
+//                    console.log(path);
+//                    console.log(result);
+                    findEdgeBySource(t);
+                } else {//there is a loop
+                    continue;
+
+                }
+
+            }
+        }
+        if (end == true) {
+            //console.log('dead end')
+            path.pop();
+            nodeTrack.pop();
+//            console.log(path);
+//            console.log(nodeTrack);
+
+
+        }
+        return true;
+        //console.log(mapLocation(60.75,188.75))
+
+
+    }
+    findEdgeBySource(sid);
+    return result;
+
+}
 
 		function wrapperFindPath() {
 			saveState();
@@ -649,7 +689,7 @@ var VQI_PathwayEditor = function(parent) {
 
 				ready : function() {
 					window.cy = this;
-					
+
 					// custom event handlers
 					cy.on('click', 'node', function(event) {
 						if (orderedSelectedNodes.length < 2)
@@ -754,15 +794,17 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function setNodeStyle(target, background, border, shadow) {
-			if (background != ''){
+			if (background != '') {
 				target.removeClass('green_bg');
 				target.removeClass('red_bg');
 				target.addClass(background);
-			}if (border != ''){
+			}
+			if (border != '') {
 				target.removeClass('purple_border');
 				target.removeClass('red_border');
 				target.addClass(border);
-			}if (shadow != ''){
+			}
+			if (shadow != '') {
 				target.removeClass('red_shadow');
 				target.removeClass('no_shadow');
 				target.addClass(shadow);
