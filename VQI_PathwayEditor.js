@@ -92,7 +92,7 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "      			<label for=\"" + parent + "-gene-name\">gene-name:<\/label>";
 	strVar += "      			<input type=\"text\" name=\"" + parent + "-gene-name\" id=\"" + parent + "-gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-height\">height:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "height\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "-height\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
 	strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
@@ -659,6 +659,10 @@ var VQI_PathwayEditor = function(parent) {
 					'shadow-opacity' : 1,
 					'shadow-color' : 'red',
 					'border-width' : 1
+				}).selector('.no_shadow').css({
+					'shadow-opacity' : 0,
+					'shadow-color' : 'red',
+					'border-width' : 1
 				}).selector('.red_circle').css({
 					'background-color' : 'red',
 					'shape' : 'ellipse',
@@ -788,13 +792,19 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function setNodeStyle(target, background, border, shadow) {
-			target.removeClass();
-			if (background != '')
+			if (background != ''){
+				target.removeClass('green_bg');
+				target.removeClass('red_bg');
 				target.addClass(background);
-			if (border != '')
+			}if (border != ''){
+				target.removeClass('purple_border');
+				target.removeClass('red_border');
 				target.addClass(border);
-			if (shadow != '')
+			}if (shadow != ''){
+				target.removeClass('red_shadow');
+				target.removeClass('no_shadow');
 				target.addClass(shadow);
+			}
 		}
 
 		function editEdge() {
@@ -835,7 +845,7 @@ var VQI_PathwayEditor = function(parent) {
 			target.data('Width', width);
 			target.data('Height', height);
 
-			var node_name = target.data("shared_name");
+			var node_name = target.data("name");
 			selectedForQueryNodes.push(node_name);
 			var node_id = target.data("id");
 			var rna = document.getElementById(parent + "-rna").value;
@@ -852,13 +862,13 @@ var VQI_PathwayEditor = function(parent) {
 			if (cnv > 5) {
 				setNodeStyle(target, '', 'red_border', '');
 			} else {
-				setNodeStyle(target, 'green_bg', '', '');
+				setNodeStyle(target, '', 'purple_border', '');
 			}
 
 			if (mut > 5) {
-				setNodeStyle(target, 'red_bg', '', '');
+				setNodeStyle(target, '', '', 'red_shadow');
 			} else {
-				setNodeStyle(target, 'green_bg', '', '');
+				setNodeStyle(target, '', '', 'no_shadow');
 			}
 
 			$('#' + parent + '-variable').val($('#' + parent + '-variable').val() + node_name + " ");
