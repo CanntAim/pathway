@@ -47,6 +47,8 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "	<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\"><\/input>";
     strVar += "	<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\"><\/input>";
     strVar += " <input id=\"" + parent + "-findObject\" value=\"Find Object\" type=\"button\"><\/input>";
+    strVar += " <div id=\"" + parent + "-dialog-table\" title=\"Object Table\">";
+    strVar += "	<\/div>";
     strVar += " <div id=\"" + parent + "-dialog-bundle\" title=\"Find path\">";
     strVar += " 		<form>";
     strVar += "    		<fieldset>";
@@ -897,16 +899,30 @@ var VQI_PathwayEditor = function (parent) {
         }
 
         function findObject(event) {
-            alert("fasfafa");
             console.log(coloredNodes);
             var val = event.target.value;
             $.post(services['objectfinder'], {
-                pattern: coloredNodes
+                pattern: JSON.stringify(coloredNodes)
             }, function (data) {
+            	document.getElementById(parent + "-dialog-table").innerHTML = data;
+            	dialogTable.dialog("open")
                 console.log(data);
             });
 
         }
+        
+        dialogTable = $("#" + parent + "-dialog-table").dialog({
+            autoOpen: false,
+            height: 300,
+            width: 350,
+            buttons: {
+                Cancel: function () {
+                    dialogTable.dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
 
         dialogNode = $("#" + parent + "-dialog-form-node").dialog({
             open: function (event) {
