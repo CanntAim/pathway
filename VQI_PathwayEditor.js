@@ -402,100 +402,96 @@ var VQI_PathwayEditor = function(parent) {
 			download(states[states.length - 1], "data.txt", "text/plain");
 		}
 
-function findPath(Json, sid, vid) {
-    var nodes = Json['elements']['nodes'];
-    nodes = nodes.filter(function(item) {
-        if (item['data']['NODE_TYPE'] !== 'GROUP') {
-            return true;
-        }
+		function findPath(Json, sid, vid) {
+			var nodes = Json['elements']['nodes'];
+			nodes = nodes.filter(function(item) {
+				if (item['data']['NODE_TYPE'] !== 'GROUP') {
+					return true;
+				}
 
-    });
-    //console.log(nodes);
-    var edges = Json['elements']['edges'];
-    var result = [];//array of arrays containing the graphids for edges in the path
-    var path = [];
-    var nodeTrack = [];
+			});
+			//console.log(nodes);
+			var edges = Json['elements']['edges'];
+			var result = [];
+			//array of arrays containing the graphids for edges in the path
+			var path = [];
+			var nodeTrack = [];
 
-    function mapLocation(x, y) {
-        var deta = 1;
+			function mapLocation(x, y) {
+				var deta = 1;
 
-        for (var j = 0; j < nodes.length; j++) {
-            var x0 = nodes[j]['position']['x'];
-            var y0 = nodes[j]['position']['y'];
-            var w = nodes[j]['data']['Width'];
-            var h = nodes[j]['data']['Height'];
+				for (var j = 0; j < nodes.length; j++) {
+					var x0 = nodes[j]['position']['x'];
+					var y0 = nodes[j]['position']['y'];
+					var w = nodes[j]['data']['Width'];
+					var h = nodes[j]['data']['Height'];
 
-            if (x > x0 - w / 2 - deta & x < x0 + w / 2 + deta & y > y0 - h / 2 - deta & y < y0 + h / 2 + deta) {
-                return nodes[j]['data']['SUID'];
+					if (x > x0 - w / 2 - deta & x < x0 + w / 2 + deta & y > y0 - h / 2 - deta & y < y0 + h / 2 + deta) {
+						return nodes[j]['data']['SUID'];
 
-            }
-        }
-    }
+					}
+				}
+			}
 
-    function findEdgeBySource(gid) {
-        if (gid == undefined | gid == '0') {
-            return;
-        }
+			function findEdgeBySource(gid) {
+				if (gid == undefined | gid == '0') {
+					return;
+				}
 
-        var end = true;
-        for (var i = 0; i < edges.length; i++)
-        {
-            var eid = edges[i]['data']['id'];
-            var s = (!('source' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][0]['x'], edges[i]['data']['Coords'][0]['y']) : edges[i]['data']['source']);
+				var end = true;
+				for (var i = 0; i < edges.length; i++) {
+					var eid = edges[i]['data']['id'];
+					var s = (!('source' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][0]['x'], edges[i]['data']['Coords'][0]['y']) : edges[i]['data']['source']);
 
-            if (s == gid) {
+					if (s == gid) {
 
-                var cl = edges[i]['data']['Coords'].length;
-                var t = (!('target' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][cl - 1]['x'], edges[i]['data']['Coords'][cl - 1]['y']) : edges[i]['data']['target']);
+						var cl = edges[i]['data']['Coords'].length;
+						var t = (!('target' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][cl - 1]['x'], edges[i]['data']['Coords'][cl - 1]['y']) : edges[i]['data']['target']);
 
+						if (t == vid) {
+							//console.log(path);
+							var p = path.slice();
+							p.push(eid);
+							result.push(p);
+							//                    console.log(path);
+							//                    console.log(nodeTrack);
+							//                    console.log('result find! ')
+							//                    console.log(result);
 
-                if (t == vid)
-                {
-                    //console.log(path);
-                    var p = path.slice();
-                    p.push(eid);
-                    result.push(p);
-//                    console.log(path);
-//                    console.log(nodeTrack);
-//                    console.log('result find! ')
-//                    console.log(result);
+							//nodeTrack = [];
+							continue;
 
-                    //nodeTrack = [];
-                    continue;
+						} else if (nodeTrack.indexOf(eid) == -1 & t !== undefined & t !== '0') {
+							path.push(eid);
+							nodeTrack.push(eid);
+							//                    console.log('new node added but not dest')
+							//                    console.log(path);
+							//                    console.log(result);
+							findEdgeBySource(t);
+						} else {//there is a loop
+							continue;
 
-                }
-                else if (nodeTrack.indexOf(eid) == -1 & t !== undefined & t !== '0') {
-                    path.push(eid);
-                    nodeTrack.push(eid);
-//                    console.log('new node added but not dest')
-//                    console.log(path);
-//                    console.log(result);
-                    findEdgeBySource(t);
-                } else {//there is a loop
-                    continue;
+						}
 
-                }
+					}
+				}
+				if (end == true) {
+					//console.log('dead end')
+					path.pop();
+					nodeTrack.pop();
+					//            console.log(path);
+					//            console.log(nodeTrack);
 
-            }
-        }
-        if (end == true) {
-            //console.log('dead end')
-            path.pop();
-            nodeTrack.pop();
-//            console.log(path);
-//            console.log(nodeTrack);
+				}
+				return true;
+				//console.log(mapLocation(60.75,188.75))
 
+			}
 
-        }
-        return true;
-        //console.log(mapLocation(60.75,188.75))
+			findEdgeBySource(sid);
+			return result;
 
-
-    }
-    findEdgeBySource(sid);
-    return result;
-
-}
+		}
 
 		function wrapperFindPath() {
 			saveState();
@@ -690,6 +686,22 @@ function findPath(Json, sid, vid) {
 				ready : function() {
 					window.cy = this;
 
+					// add custom event
+					var cy = $('#' + parent +'-cy').cytoscape('get');
+					var tappedBefore = null;
+					cy.on('tap', function(event) {
+						var tappedNow = event.cyTarget;
+						setTimeout(function() {
+							tappedBefore = null;
+						}, 300);
+						if (tappedBefore === tappedNow) {
+							tappedNow.trigger('doubleTap');
+							tappedBefore = null;
+						} else {
+							tappedBefore = tappedNow;
+						}
+					});
+
 					// custom event handlers
 					cy.on('click', 'node', function(event) {
 						if (orderedSelectedNodes.length < 2)
@@ -699,12 +711,12 @@ function findPath(Json, sid, vid) {
 						orderedSelectedNodes.push(event.cyTarget);
 					});
 
-					cy.on('cxttapstart ', 'node', function(event) {
+					cy.on('doubleTap', 'node', function(event) {
 						target = event.cyTarget;
 						dialogNode.dialog("open");
 					});
 
-					cy.on('cxttapstart ', 'edge', function(event) {
+					cy.on('doubleTap', 'edge', function(event) {
 						target = event.cyTarget;
 						dialogEdge.dialog("open");
 					});
