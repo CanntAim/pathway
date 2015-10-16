@@ -513,12 +513,16 @@ var VQI_PathwayEditor = function (parent) {
             var sid = orderedSelectedNodes[0]._private.data['id'];
             var vid = orderedSelectedNodes[1]._private.data['id'];
             var result = findPath(JSON.parse(states[states.length - 1]), sid, vid);
-            for (var i = 0; i < result[0].length; i++) {
-                cy.elements("edge[id = \"" + result[0][i] + "\"]").select();
-                var sourceNode = cy.elements("edge[id = \"" + result[0][i] + "\"]").data('source');
-                var targetNode = cy.elements("edge[id = \"" + result[0][i] + "\"]").data('target');
-                cy.elements("node[id = \"" + targetNode + "\"]").select();
-                cy.elements("node[id = \"" + sourceNode + "\"]").select();
+            if(typeof(result) == "undefined")
+            	 dialogPathfind.dialog("close");
+            for (var i = 0; i < result.length; i++) {
+            	for (var j = 0; j < result[i].length; j++) {
+                	cy.elements("edge[id = \"" + result[i][j] + "\"]").select();
+                	var sourceNode = cy.elements("edge[id = \"" + result[i][j] + "\"]").data('source');
+                	var targetNode = cy.elements("edge[id = \"" + result[i][j] + "\"]").data('target');
+                	cy.elements("node[id = \"" + targetNode + "\"]").select();
+                	cy.elements("node[id = \"" + sourceNode + "\"]").select();
+               }
             }
             dialogPathfind.dialog("close");
         }
