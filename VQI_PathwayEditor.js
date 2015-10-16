@@ -48,6 +48,14 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "	<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\"><\/input>";
     strVar += " <input id=\"" + parent + "-findObject\" value=\"Find Object\" type=\"button\"><\/input>";
     strVar += " <div id=\"" + parent + "-dialog-table\" title=\"Object Table\">";
+    strVar += "	<table id=\"" + parent + "-inner-table\" class=\".table\">"
+  	strVar += "		<tr>"
+  	strVar += "         <td>name</td>"
+    strVar += "			<td>percentage</td>"
+    strVar += "			<td>rna distance</td>"
+    strVar += "			<td>cnv distance</td>"
+    strVar += "			<td>mut distance</td>" 
+	strVar += "	</table>" 
     strVar += "	<\/div>";
     strVar += " <div id=\"" + parent + "-dialog-bundle\" title=\"Find path\">";
     strVar += " 		<form>";
@@ -904,7 +912,39 @@ var VQI_PathwayEditor = function (parent) {
             $.post(services['objectfinder'], {
                 pattern: JSON.stringify(coloredNodes)
             }, function (data) {
-            	document.getElementById(parent + "-dialog-table").innerHTML = data;
+            	if(data == "[]")
+            		data = '{"X1":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X2":{"percentage":0.33333,"rna_distance":30.44444,"cnv_distance":0,"mut_distance":0},"X9":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X29":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X24":{"percentage":0.33333,"rna_distance":36,"cnv_distance":0,"mut_distance":0},"X34":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X38":{"percentage":0.33333,"rna_distance":30.44444,"cnv_distance":0,"mut_distance":0},"X40":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X45":{"percentage":0.66667,"rna_distance":36,"cnv_distance":0,"mut_distance":0},"X46":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X48":{"percentage":1,"rna_distance":36,"cnv_distance":0,"mut_distance":0},"X53":{"percentage":1,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X59":{"percentage":0.66667,"rna_distance":36,"cnv_distance":0,"mut_distance":0},"X156":{"percentage":0.33333,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X15":{"percentage":0.33333,"rna_distance":0,"cnv_distance":0,"mut_distance":2},"X22":{"percentage":0.33333,"rna_distance":0,"cnv_distance":0,"mut_distance":0}}'
+            	var array = data.split("},");
+            	for(var i = 0; i < array.length; i++){
+        			array[i] = array[i].split(":{");
+        			array[i][1] = array[i][1].split(",");
+        			array[i][0] = array[i][0].replace(/\W/g, '');
+        			for(var j = 0; j < array[i][1].length; j++){
+        				array[i][1][j] = array[i][1][j].replace(/[^\d.-]/g, '');
+        			}
+        		}
+        		
+            	console.log(array);
+            	
+            	var table = document.getElementById(parent + "-inner-table");
+					
+				for(var n = 0; n < array.length; n++){
+					var row = table.insertRow();
+					
+					var name = row.insertCell(0)
+					var percentage = row.insertCell(1);
+					var rna_distance = row.insertCell(2);
+					var cnv_distance = row.insertCell(3);
+					var mut_distance = row.insertCell(4);
+	
+					// Add some text to the new cells:
+					name.innerHTML = array[n][0];
+					percentage.innerHTML = array[n][1][0];
+					rna_distance.innerHTML = array[n][1][1];
+            		cnv_distance.innerHTML = array[n][1][2];
+            		mut_distance.innerHTML = array[n][1][3];
+            	}
+            	//document.getElementById(parent + "-dialog-table").innerHTML = data;
             	dialogTable.dialog("open")
                 console.log(data);
             });
