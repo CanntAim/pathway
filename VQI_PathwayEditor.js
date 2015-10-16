@@ -5,7 +5,6 @@ var VQI_PathwayEditor = function (parent) {
     services['objectfinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
 
     // Globals
-
     var states = [];
     var stateRecycle = [];
     var lastEvent = 0;
@@ -105,6 +104,12 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "-height\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
     strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
     strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+    strVar += "      			<label for=\"" + parent + "-type-node\">type:<\/label>";
+    strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" name=\"" + parent + "-type-node\">";
+    strVar += "  					<option selected=\"\">Please Select<\/option>";
+    strVar += "  					<option>bundle_type_1<\/option>";
+    strVar += "  					<option>bundle_type_2<\/option>";
+    strVar += "					<\/select>";
     strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
     strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-rna\" name=\"" + parent + "-rna\">";
     strVar += "  					<option selected=\"\">Please Select<\/option>";
@@ -577,9 +582,9 @@ var VQI_PathwayEditor = function (parent) {
                     'border-width': 1
                 }).selector('node[Type="unknown"]').css({
                     'shape': 'rectangle',
-                    'background-color': 'white',
-                    'color': 'white',
-                    'border-color': 'black',
+                    'background-color': 'grey',
+                    'color': 'grey',
+                    'border-color': 'grey',
                     'border-style': 'solid',
                     'border-width': 1
                 }).selector('node[Type="bundle_type_1"]').css({
@@ -861,9 +866,11 @@ var VQI_PathwayEditor = function (parent) {
             var name = document.getElementById(parent + "-gene-name").value;
             var width = document.getElementById(parent + "-width").value;
             var height = document.getElementById(parent + "-height").value;
+            var type = document.getElementById(parent + "-type-node").value;
             target.data('name', name);
             target.data('Width', width);
             target.data('Height', height);
+            target.data('Type', type);
 
             var node_name = target.data("name");
             selectedForQueryNodes.push(node_name);
@@ -871,23 +878,26 @@ var VQI_PathwayEditor = function (parent) {
             var rna = document.getElementById(parent + "-rna").value;
             var cnv = document.getElementById(parent + "-cnv").value;
             var mut = document.getElementById(parent + "-mut").value;
+            target.data('rna', rna);
+            target.data('cnv', cnv);
+            target.data('mut', mut);
 
             // RNA
             if (rna > 5) {
                 setNodeStyle(target, 'red_bg', '', '');
-            } else {
+            } else if (rna < 6){
                 setNodeStyle(target, 'green_bg', '', '');
             }
 
             if (cnv > 5) {
                 setNodeStyle(target, '', 'red_border', '');
-            } else {
+            } else if(cnv < 6) {
                 setNodeStyle(target, '', 'purple_border', '');
             }
 
             if (mut > 5) {
                 setNodeStyle(target, '', '', 'red_shadow');
-            } else {
+            } else if(mut < 6){
                 setNodeStyle(target, '', '', 'no_shadow');
             }
 
@@ -927,7 +937,10 @@ var VQI_PathwayEditor = function (parent) {
             	console.log(array);
             	
             	var table = document.getElementById(parent + "-inner-table");
-					
+				var length = document.getElementById(parent + "-inner-table").rows.length;	
+				for(var n = 1; n < length; n++){
+					table.deleteRow(1);
+				}
 				for(var n = 0; n < array.length; n++){
 					var row = table.insertRow();
 					
@@ -967,6 +980,21 @@ var VQI_PathwayEditor = function (parent) {
         dialogNode = $("#" + parent + "-dialog-form-node").dialog({
             open: function (event) {
                 document.getElementById(parent + "-gene-name").value = target.data('name');
+                document.getElementById(parent + "-type-node").value = target.data('Type');
+                if(typeof(target.data('rna')) != "undefined")
+                	document.getElementById(parent + "-rna").value = target.data('rna');
+                else
+                	document.getElementById(parent + "-rna").value = 'Please Select';
+                	
+                if(typeof(target.data('cnv')) != "undefined")
+                	document.getElementById(parent + "-cnv").value = target.data('cnv');
+               	else
+               		document.getElementById(parent + "-cnv").value = 'Please Select';
+               		
+                if(typeof(target.data('mut')) != "undefined")
+                	document.getElementById(parent + "-mut").value = target.data('mut');
+                else
+                	document.getElementById(parent + "-mut").value = 'Please Select';
             },
             autoOpen: false,
             height: 300,
