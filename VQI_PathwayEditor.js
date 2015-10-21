@@ -2,6 +2,7 @@ var VQI_PathwayEditor = function (parent) {
     //Web services
     var services = {};
     services['pathwayfinder'] = 'http://137.99.11.36/pathwayVisual/PathwayParser/ajaxJSON.php';
+    services['pathwaySaver'] = 'http://137.99.11.36/pathwayVisual/PathwayParser/updateDB_json.php';
     services['objectfinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
 
     // Globals
@@ -45,6 +46,8 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "	<input id=\"" + parent + "-produceJSON\" value=\"Export JSON\" type=\"button\"><\/input>";
     strVar += "	<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\"><\/input>";
     strVar += "	<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\"><\/input>";
+    strVar += "	<input id=\"" + parent + "-pathwaySave\" value=\"Save\" type=\"button\"><\/input>";
+    strVar += "	<input id=\"" + parent + "-pathwaySaveAs\" value=\"SaveAs\" type=\"button\"><\/input>";    
     strVar += " <input id=\"" + parent + "-findObject\" value=\"Find Object\" type=\"button\"><\/input>";
     strVar += " <div id=\"" + parent + "-dialog-table\" title=\"Object Table\">";
     strVar += "	<table id=\"" + parent + "-inner-table\" class=\".table\">"
@@ -55,6 +58,15 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "			<td>cnv distance</td>"
     strVar += "			<td>mut distance</td>" 
 	strVar += "	</table>" 
+    strVar += "	<\/div>";
+    strVar += " <div id=\"" + parent + "-dialog-form-save-as-pathway\" title=\"Find path\">";
+    strVar += " 		<form>";
+    strVar += "    		<fieldset>";
+    strVar += "      			<label for=\"" + parent + "-pathway-name\">pathway-name:<\/label>";
+    strVar += " 				<input type=\"text\" name=\"" + parent + "-pathway-name\" id=\"" + parent + "-pathway-name\"><br>";
+    strVar += " 				<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
+    strVar += "    		<\/fieldset>";
+    strVar += " 		<\/form>";
     strVar += "	<\/div>";
     strVar += " <div id=\"" + parent + "-dialog-bundle\" title=\"Find path\">";
     strVar += " 		<form>";
@@ -189,6 +201,27 @@ var VQI_PathwayEditor = function (parent) {
                 console.log(obj);
                 var obj = JSON.parse(data);
                 setElements(obj);
+            });
+        }
+        
+        function saveAsPathway(event){
+        	var obj = JSON.parse(states[states.length - 1]);
+        	obj.data.NAME = document.getElementById(parent + "-pathway-name").value;
+        	$.post(services['pathwaySaver'], {
+                insertPathway: obj
+            }, function (data) {
+                console.log(data);
+                dialogPathwaySaveAs.dialog("close");
+            });
+        }
+        
+        function savePathway(event){
+        	var obj = JSON.parse(states[states.length - 1]);
+        	$.post(services['pathwaySaver'], {
+                updatePathway: obj
+            }, function (data) {
+                console.log(data);
+                dialogPathwaySaveAs.dialog("close");
             });
         }
 
@@ -919,6 +952,10 @@ var VQI_PathwayEditor = function (parent) {
         function dialogPathfindOpen(event) {
             dialogPathfind.dialog("open");
         }
+        
+        function dialogPathwaySaveAsOpen(event) {
+            dialogPathwaySaveAs.dialog("open");
+        }
 
         function findObject(event) {
             console.log(coloredNodes);
@@ -1044,6 +1081,20 @@ var VQI_PathwayEditor = function (parent) {
             close: function () {
             }
         });
+        
+        dialogPathwaySaveAs = $("#" + parent + "-dialog-form-save-as-pathway").dialog({
+            autoOpen: false,
+            height: 300,
+            width: 350,
+            buttons: {
+                "submit": saveAsPathway,
+                Cancel: function () {
+                    dialogPathwaySaveAs.dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
 
         dialogBundle = $("#" + parent + "-dialog-bundle").dialog({
             autoOpen: false,
@@ -1080,6 +1131,8 @@ var VQI_PathwayEditor = function (parent) {
         document.getElementById(parent + '-findObject').addEventListener('click', findObject);
         document.getElementById(parent + '-deleteNodes').addEventListener('click', removeNodes);
         document.getElementById(parent + '-pathwaySelector').addEventListener('change', onSelect);
+        document.getElementById(parent + '-pathwaySaveAs').addEventListener('click', dialogPathwaySaveAsOpen);
+        document.getElementById(parent + '-pathwaySave').addEventListener('click', savePathway);
         document.getElementById(parent + '-deleteNodes').addEventListener('click', removeNodes);
         document.getElementById(parent + '-deleteEdges').addEventListener('click', removeEdges);
         document.getElementById(parent + '-addNode').addEventListener('click', addNode);
