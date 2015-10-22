@@ -581,18 +581,48 @@ var VQI_PathwayEditor = function(parent) {
 			saveState();
 			var sid = orderedSelectedNodes[0]._private.data['id'];
 			var vid = orderedSelectedNodes[1]._private.data['id'];
-			var result = findPath(JSON.parse(states[states.length - 1]), sid, vid);
-			if ( typeof (result) == "undefined")
+
+			var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
+			var table = document.getElementById(parent + "-inner-table");
+			var length = document.getElementById(parent + "-inner-table").rows.length;
+			
+			if ( typeof (selectedPaths) == "undefined"){
 				dialogPathfind.dialog("close");
-			for (var i = 0; i < result.length; i++) {
-				for (var j = 0; j < result[i].length; j++) {
-					cy.elements("edge[id = \"" + result[i][j] + "\"]").select();
-					var sourceNode = cy.elements("edge[id = \"" + result[i][j] + "\"]").data('source');
-					var targetNode = cy.elements("edge[id = \"" + result[i][j] + "\"]").data('target');
-					cy.elements("node[id = \"" + targetNode + "\"]").select();
-					cy.elements("node[id = \"" + sourceNode + "\"]").select();
+			}
+			
+			for (var n = 0; n < length; n++) {
+				table.deleteRow(0);
+			}
+			for (var n = 0; n <= selectedPaths.length; n++) {
+				var row = table.insertRow();
+
+				var path = row.insertCell(0)
+
+				// Add some text to the new cells:
+
+				if (n == 0) {
+					path.innerHTML = "paths";
+				} else {
+					var btn = document.createElement("button");
+					var t = document.createTextNode((n-1).toString());
+					btn.appendChild(t);
+					btn.addEventListener('click', function(event) {
+							var k = parseInt(event.currentTarget.innerHTML);
+							cy.$('node').unselect();
+							cy.$('edge').unselect();
+							for (var j = 0; j < selectedPaths[k].length; j++) {
+								cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").select();
+								var sourceNode = cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('source');
+								var targetNode = cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('target');
+								cy.elements("node[id = \"" + targetNode + "\"]").select();
+								cy.elements("node[id = \"" + sourceNode + "\"]").select();
+							}	
+					});
+					path.appendChild(btn);
 				}
 			}
+			//document.getElementById(parent + "-dialog-table").innerHTML = data;
+			dialogTable.dialog("open");
 			dialogPathfind.dialog("close");
 		}
 
@@ -1032,10 +1062,10 @@ var VQI_PathwayEditor = function(parent) {
 
 				var table = document.getElementById(parent + "-inner-table");
 				var length = document.getElementById(parent + "-inner-table").rows.length;
-				for (var n = 1; n < length; n++) {
-					table.deleteRow(1);
+				for (var n = 0; n < length; n++) {
+					table.deleteRow(0);
 				}
-				for (var n = 0; n < array.length; n++) {
+				for (var n = 0; n <= array.length; n++) {
 					var row = table.insertRow();
 
 					var name = row.insertCell(0)
@@ -1045,17 +1075,25 @@ var VQI_PathwayEditor = function(parent) {
 					var mut_distance = row.insertCell(4);
 
 					// Add some text to the new cells:
-					name.innerHTML = array[n][0];
-					percentage.innerHTML = array[n][1][0];
-					rna_distance.innerHTML = array[n][1][1];
-					cnv_distance.innerHTML = array[n][1][2];
-					mut_distance.innerHTML = array[n][1][3];
+
+					if (n == 0) {
+						name.innerHTML = "name";
+						percentage.innerHTML = "percentage";
+						rna_distance.innerHTML = "rna";
+						cnv_distance.innerHTML = "cnv";
+						mut_distance.innerHTML = "mut";
+					} else {
+						name.innerHTML = array[n-1][0];
+						percentage.innerHTML = array[n-1][1][0];
+						rna_distance.innerHTML = array[n-1][1][1];
+						cnv_distance.innerHTML = array[n-1][1][2];
+						mut_distance.innerHTML = array[n-1][1][3];
+					}
 				}
 				//document.getElementById(parent + "-dialog-table").innerHTML = data;
 				dialogTable.dialog("open")
 				console.log(data);
 			});
-
 		}
 
 		dialogTable = $("#" + parent + "-dialog-table").dialog({
