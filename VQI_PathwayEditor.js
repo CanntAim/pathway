@@ -126,47 +126,11 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "  					<option>bundle_type_2<\/option>";
 	strVar += "					<\/select>";
 	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-rna\" name=\"" + parent + "-rna\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>1<\/option>";
-	strVar += "  					<option>2<\/option>";
-	strVar += "  					<option>3<\/option>";
-	strVar += "  					<option>4<\/option>";
-	strVar += "  					<option>5<\/option>";
-	strVar += "  					<option>6<\/option>";
-	strVar += "  					<option>7<\/option>";
-	strVar += "  					<option>8<\/option>";
-	strVar += "  					<option>9<\/option>";
-	strVar += "  					<option>10<\/option>";
-	strVar += "				<\/select>";
-	strVar += "				<label for=\"" + parent + "-cnv\">CNV:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-cnv\" name=\"" + parent + "-cnv\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>1<\/option>";
-	strVar += "  					<option>2<\/option>";
-	strVar += "  					<option>3<\/option>";
-	strVar += "  					<option>4<\/option>";
-	strVar += "  					<option>5<\/option>";
-	strVar += "  					<option>6<\/option>";
-	strVar += "  					<option>7<\/option>";
-	strVar += "  					<option>8<\/option>";
-	strVar += "  					<option>9<\/option>";
-	strVar += "  					<option>10<\/option>";
-	strVar += "				<\/select>";
-	strVar += "				<label for=\"" + parent + "-mut\">MUT:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-mut\" name=\"" + parent + "-mut\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>1<\/option>";
-	strVar += "  					<option>2<\/option>";
-	strVar += "  					<option>3<\/option>";
-	strVar += "  					<option>4<\/option>";
-	strVar += "  					<option>5<\/option>";
-	strVar += "  					<option>6<\/option>";
-	strVar += "  					<option>7<\/option>";
-	strVar += "  					<option>8<\/option>";
-	strVar += "  					<option>9<\/option>";
-	strVar += "  					<option>10<\/option>";
-	strVar += "				<\/select>";
+	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-rna\" name=\"" + parent + "-rna\">";
+	strVar += "					<label for=\"" + parent + "-cnv\">CNV:<\/label>";
+	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-cnv\" name=\"" + parent + "-cnv\">";
+	strVar += "					<label for=\"" + parent + "-mut\">MUT:<\/label>";
+	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" name=\"" + parent + "-mut\">";
 	strVar += " 			    <input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
 	strVar += "    		<\/fieldset>";
 	strVar += "  		<\/form>";
@@ -253,22 +217,32 @@ var VQI_PathwayEditor = function(parent) {
 				var mut = lines[line][1];
 				var cnv = lines[line][2];
 				var rna = lines[line][3];
-				if (rna >= 0) {
+				target.data('rna', rna);
+				target.data('cnv', cnv);
+				target.data('mut', mut);
+
+				if (rna > 0) {
 					setNodeStyle(target, 'red_bg', '', '');
 				} else if (rna < 0) {
 					setNodeStyle(target, 'green_bg', '', '');
+				} else {
+					setNodeStyle(target, 'white_bg', '', '');
 				}
 
-				if (cnv >= 0) {
+				if (cnv > 0) {
 					setNodeStyle(target, '', 'red_border', '');
 				} else if (cnv < 0) {
 					setNodeStyle(target, '', 'purple_border', '');
+				} else {
+					setNodeStyle(target, '', 'black_border', '');
 				}
 
-				if (mut >= 0) {
+				if (mut > 0) {
 					setNodeStyle(target, '', '', 'red_shadow');
-				} else if (mut < 0) {
+				} else if (mut <= 0) {
 					setNodeStyle(target, '', '', 'no_shadow');
+				} else {
+					setNodeStyle(target, '', '', '');
 				}
 			}
 		}
@@ -762,11 +736,17 @@ var VQI_PathwayEditor = function(parent) {
 				}).selector('.red_bg').css({
 					'background-color' : 'LightSalmon',
 					'color' : 'black'
+				}).selector('.white_bg').css({
+					'background-color' : 'white',
+					'color' : 'black'
 				}).selector('.purple_border').css({
 					'border-color' : 'MediumPurple',
 					'border-width' : 3
 				}).selector('.red_border').css({
 					'border-color' : 'red',
+					'border-width' : 3
+				}).selector('.black_border').css({
+					'border-color' : 'black',
 					'border-width' : 3
 				}).selector('.red_shadow').css({
 					'shadow-opacity' : 1,
@@ -917,11 +897,13 @@ var VQI_PathwayEditor = function(parent) {
 			if (background != '') {
 				target.removeClass('green_bg');
 				target.removeClass('red_bg');
+				target.removeClass('white_bg');
 				target.addClass(background);
 			}
 			if (border != '') {
 				target.removeClass('purple_border');
 				target.removeClass('red_border');
+				target.removeClass('black_border');
 				target.addClass(border);
 			}
 			if (shadow != '') {
@@ -981,23 +963,28 @@ var VQI_PathwayEditor = function(parent) {
 			target.data('cnv', cnv);
 			target.data('mut', mut);
 
-			// RNA
-			if (rna > 5) {
+			if (rna > 0) {
 				setNodeStyle(target, 'red_bg', '', '');
-			} else if (rna < 6) {
+			} else if (rna < 0) {
 				setNodeStyle(target, 'green_bg', '', '');
+			} else {
+				setNodeStyle(target, 'white_bg', '', '');
 			}
 
-			if (cnv > 5) {
+			if (cnv > 0) {
 				setNodeStyle(target, '', 'red_border', '');
-			} else if (cnv < 6) {
+			} else if (cnv < 0) {
 				setNodeStyle(target, '', 'purple_border', '');
+			} else {
+				setNodeStyle(target, '', 'black_border', '');
 			}
 
-			if (mut > 5) {
+			if (mut > 0) {
 				setNodeStyle(target, '', '', 'red_shadow');
-			} else if (mut < 6) {
+			} else if (mut <= 0) {
 				setNodeStyle(target, '', '', 'no_shadow');
+			} else {
+				setNodeStyle(target, '', '', '');
 			}
 
 			coloredNodes.push({
@@ -1087,6 +1074,8 @@ var VQI_PathwayEditor = function(parent) {
 		dialogNode = $("#" + parent + "-dialog-form-node").dialog({
 			open : function(event) {
 				document.getElementById(parent + "-gene-name").value = target.data('name');
+				document.getElementById(parent + "-width").value = target.data('Height');
+				document.getElementById(parent + "-height").value = target.data('Width');
 				document.getElementById(parent + "-type-node").value = target.data('Type');
 				if ( typeof (target.data('rna')) != "undefined")
 					document.getElementById(parent + "-rna").value = target.data('rna');
