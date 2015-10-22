@@ -31,7 +31,10 @@ var VQI_PathwayEditor = function (parent) {
     //	var parentDiv = document.getElementById(parent);
 
     var strVar = "";
-    strVar += "	<input id=\"" + parent + "-file\" value=\"Pick File\" type=\"file\"><\/input>";
+    strVar += " <label for=\"" + parent + "-file-pathway\">Local Pathway File:<\/label>";
+    strVar += "	<input id=\"" + parent + "-file-pathway\" value=\"Pick Pathway File\" type=\"file\"><\/input>";
+    strVar += " <label for=\"" + parent + "-file-coloring\">Local Pathway Coloring:<\/label>";
+    strVar += "	<input id=\"" + parent + "-file-coloring\" value=\"Pick Spray File\" type=\"file\"><\/input>";
     strVar += " <label for=\"" + parent + "-pathwaySelector\">Pathway:<\/label>";
     strVar += " <select style=\"width: 150px\" id=\"" + parent + "-pathwaySelector\" name=\"" + parent + "-pathwaySelector\">";
     strVar += "  	<option selected=\"\">Please Select<\/option>";
@@ -173,9 +176,15 @@ var VQI_PathwayEditor = function (parent) {
     document.getElementById(parent).innerHTML = strVar;
 
     $(function () {// on dom ready
-        function onChange(event) {
+        function onChangePathwayFile(event) {
             var reader = new FileReader();
-            reader.onload = onReaderLoad;
+            reader.onload = onPathwayReaderLoad;
+            reader.readAsText(event.target.files[0]);
+        }
+        
+        function onChangeColoringFile(event) {
+            var reader = new FileReader();
+            reader.onload = onColoringReaderLoad;
             reader.readAsText(event.target.files[0]);
         }
 
@@ -211,6 +220,7 @@ var VQI_PathwayEditor = function (parent) {
                 insertPathway: obj
             }, function (data) {
                 console.log(data);
+                refreshPathwayList();
                 dialogPathwaySaveAs.dialog("close");
             });
         }
@@ -225,10 +235,44 @@ var VQI_PathwayEditor = function (parent) {
             });
         }
 
-        function onReaderLoad(event) {
+        function onPathwayReaderLoad(event) {
             var obj = JSON.parse(event.target.result);
             setElements(obj);
         }
+        
+        function onColoringReaderLoad(event) {
+            var list = this.result.split('\n');
+          	sprayColor(list);
+        }
+        
+       
+		function sprayColor(list) {
+			var lines = [];
+			for (var line = 1; line < list.length; line++) {
+				lines[line] = list[line].split('\t');
+				var target = cy.elements("node[name = \"" + lines[line][0]+ "\"]");
+				var mut = lines[line][1];
+				var cnv = lines[line][2];
+				var rna = lines[line][3];
+				if (rna > 5) {
+					setNodeStyle(target, 'red_bg', '', '');
+				} else if (rna < 6) {
+					setNodeStyle(target, 'green_bg', '', '');
+				}
+
+				if (cnv > 5) {
+					setNodeStyle(target, '', 'red_border', '');
+				} else if (cnv < 6) {
+					setNodeStyle(target, '', 'purple_border', '');
+				}
+
+				if (mut > 5) {
+					setNodeStyle(target, '', '', 'red_shadow');
+				} else if (mut < 6) {
+					setNodeStyle(target, '', '', 'no_shadow');
+				}
+			}
+		}
 
         function removeNodes(event) {
             saveState();
@@ -449,6 +493,26 @@ var VQI_PathwayEditor = function (parent) {
         function produceJSON(event) {
             download(states[states.length - 1], "data.txt", "text/plain");
         }
+        
+		function refreshPathwayList() {
+			var select = document.getElementById(parent + "-pathwaySelector");
+
+			$.get(services['pathwayfinder'], {
+				pathwayList : '1'
+			}, function(data) {
+				var obj = JSON.parse(data);
+				for (var i = 0; i < obj.length; i++) {
+					var opt = obj[i].NAME;
+					var val = obj[i].ID;
+					var el = document.createElement("option");
+					el.textContent = opt;
+					el.value = val;
+					select.appendChild(el);
+				}
+			});
+
+		}
+
 
         function findPath(Json, sid, vid) {
             var nodes = Json['elements']['nodes'];
@@ -1110,23 +1174,10 @@ var VQI_PathwayEditor = function (parent) {
             }
         });
 
-        var select = document.getElementById(parent + "-pathwaySelector");
+		refreshPathwayList();
 
-        $.get(services['pathwayfinder'], {
-            pathwayList: '1'
-        }, function (data) {
-            var obj = JSON.parse(data);
-            for (var i = 0; i < obj.length; i++) {
-                var opt = obj[i].NAME;
-                var val = obj[i].ID;
-                var el = document.createElement("option");
-                el.textContent = opt;
-                el.value = val;
-                select.appendChild(el);
-            }
-        });
-
-        document.getElementById(parent + '-file').addEventListener('change', onChange);
+        document.getElementById(parent + '-file-pathway').addEventListener('change', onChangePathwayFile);
+       	document.getElementById(parent + '-file-coloring').addEventListener('change', onChangeColoringFile); 
         document.getElementById(parent + '-findPath').addEventListener('click', dialogPathfindOpen);
         document.getElementById(parent + '-findObject').addEventListener('click', findObject);
         document.getElementById(parent + '-deleteNodes').addEventListener('click', removeNodes);
