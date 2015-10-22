@@ -984,21 +984,21 @@ var VQI_PathwayEditor = function (parent) {
             target.data('mut', mut);
 
             // RNA
-            if (rna > 5) {
+            if (rna >= 0) {
                 setNodeStyle(target, 'red_bg', '', '');
-            } else if (rna < 6){
+            } else if (rna < 0){
                 setNodeStyle(target, 'green_bg', '', '');
             }
 
-            if (cnv > 5) {
+            if (cnv >= 0) {
                 setNodeStyle(target, '', 'red_border', '');
-            } else if(cnv < 6) {
+            } else if(cnv < 0) {
                 setNodeStyle(target, '', 'purple_border', '');
             }
 
-            if (mut > 5) {
+            if (mut >= 0) {
                 setNodeStyle(target, '', '', 'red_shadow');
-            } else if(mut < 6){
+            } else if(mut < 0){
                 setNodeStyle(target, '', '', 'no_shadow');
             }
 
