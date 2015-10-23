@@ -382,8 +382,8 @@ var VQI_PathwayEditor = function(parent) {
 					Valign : "Middle",
 					Width : 80.75,
 					Height : 100,
-					id : "n" + bundleCounter,
-					name : "n" + bundleCounter,
+					id : "n" + nodeCounter,
+					name : "n" + nodeCounter,
 					selected : false
 				},
 				position : {
@@ -406,7 +406,7 @@ var VQI_PathwayEditor = function(parent) {
 							id : selectedForEditNodes[i].data('id'),
 							name : selectedForEditNodes[i].data('name'),
 							selected : selectedForEditNodes[i].data('selected'),
-							parent : "n" + bundleCounter
+							parent : "n" + nodeCounter
 						},
 						position : {
 							x : selectedForEditNodes[i].position('x'),
@@ -457,7 +457,7 @@ var VQI_PathwayEditor = function(parent) {
 			// Add new nodes
 			window.cy.add(nodes.concat(edges));
 
-			bundleCounter++;
+			nodeCounter++;
 
 			// Remove dialog box
 			dialogBundle.dialog("close");
@@ -806,7 +806,23 @@ var VQI_PathwayEditor = function(parent) {
 				},
 				ready : function() {
 					window.cy = this;
-
+					
+					for (var i = 0; i < obj.elements.nodes.length; i++) {
+						if(obj.elements.nodes[i].data.id.substring(0, 1) == "n"){
+							var number = parseInt(obj.elements.nodes[i].data.id.substring(1,obj.elements.nodes.length-1));
+							if(number > nodeCounter)
+								nodeCounter = number+1;
+						}
+					}
+					console.log(nodeCounter);
+					for (var i = 0; i < obj.elements.edges.length; i++) {
+						if(obj.elements.edges[i].data.id.substring(0, 1) == "e"){
+							var number = parseInt(obj.elements.edges[i].data.id.substring(1,obj.elements.edges.length-1));
+							if(number > edgeCounter)
+								edgeCounter = number+1;
+						}
+					}
+					console.log(edgeCounter);
 					// add custom event
 					var cy = $('#' + parent + '-cy').cytoscape('get');
 					var tappedBefore = null;
@@ -822,7 +838,7 @@ var VQI_PathwayEditor = function(parent) {
 							tappedBefore = tappedNow;
 						}
 					});
-
+					
 					// custom event handlers
 					cy.on('click', 'node', function(event) {
 						if (orderedSelectedNodes.length < 2)
