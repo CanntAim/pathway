@@ -2,7 +2,8 @@ var VQI_PathwayEditor = function(parent) {
 	//Web services
 	var services = {};
 //        var serverURL = "http://137.99.11.36/pathwayVisual/PathwayParser";
-        var serverURL = "http://bibci.engr.uconn.edu/yuz12012/pathwayVisual/PathwayParser/";
+//        var serverURL = "http://bibci.engr.uconn.edu/yuz12012/pathwayVisual/PathwayParser/";
+        var serverURL = "/yuz12012/pathwayVisual/PathwayParser";
 	services['pathwayfinder'] = serverURL + '/ajaxJSON.php';
 	services['pathwaySaver'] = serverURL + '/updateDB_json.php';
 	services['objectfinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
