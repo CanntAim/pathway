@@ -218,13 +218,15 @@ var VQI_PathwayEditor = function(parent) {
 
 		function onColoringReaderLoad(event) {
 			var list = this.result.split('\n');
-			sprayColor(list);
-		}
-
-		function sprayColor(list) {
 			var lines = [];
+			
 			for (var line = 1; line < list.length; line++) {
 				lines[line] = list[line].split('\t');
+			
+			sprayColor(lines);
+		}
+
+		function sprayColor(lines) {
 				var target = cy.elements("node[name = \"" + lines[line][0] + "\"]");
 				var mut = lines[line][1];
 				var cnv = lines[line][2];
@@ -566,9 +568,7 @@ var VQI_PathwayEditor = function(parent) {
 							findEdgeBySource(t);
 						} else {//there is a loop
 							continue;
-
 						}
-
 					}
 				}
 				if (end == true) {
