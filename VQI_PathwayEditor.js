@@ -222,12 +222,14 @@ var VQI_PathwayEditor = function(parent) {
 			
 			for (var line = 1; line < list.length; line++) {
 				lines[line] = list[line].split('\t');
+			}
 			
 			sprayColor(lines);
 		}
 
 		function sprayColor(lines) {
-				var target = cy.elements("node[name = \"" + lines[line][0] + "\"]");
+			for (var line = 1; line < lines.length; line++) {
+				var target = window.cy.elements("node[name = \"" + lines[line][0] + "\"]");
 				var mut = lines[line][1];
 				var cnv = lines[line][2];
 				var rna = lines[line][3];
@@ -620,14 +622,14 @@ var VQI_PathwayEditor = function(parent) {
 					btn.appendChild(t);
 					btn.addEventListener('click', function(event) {
 							var k = parseInt(event.currentTarget.innerHTML);
-							cy.$('node').unselect();
-							cy.$('edge').unselect();
+							window.cy.$('node').unselect();
+							window.cy.$('edge').unselect();
 							for (var j = 0; j < selectedPaths[k].length; j++) {
-								cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").select();
-								var sourceNode = cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('source');
-								var targetNode = cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('target');
-								cy.elements("node[id = \"" + targetNode + "\"]").select();
-								cy.elements("node[id = \"" + sourceNode + "\"]").select();
+								window.cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").select();
+								var sourceNode = window.cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('source');
+								var targetNode = window.cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('target');
+								window.cy.elements("node[id = \"" + targetNode + "\"]").select();
+								window.cy.elements("node[id = \"" + sourceNode + "\"]").select();
 							}	
 					});
 					path.appendChild(btn);
@@ -639,16 +641,16 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function saveState() {
-			var nodes = cy.$('node');
-			var edges = cy.$('edge');
+			var nodes = window.cy.$('node');
+			var edges = window.cy.$('edge');
 			var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :' + JSON.stringify(header) + ',"elements" : {"nodes" :' + JSON.stringify(nodes.jsons()) + ',"edges" :' + JSON.stringify(edges.jsons()) + '}}';
 			states.push(data);
 		}
 
 		function undo() {
 			if (states.length > 1) {
-				cy.$('node').remove();
-				cy.$('edge').remove();
+				window.cy.$('node').remove();
+				window.cy.$('edge').remove();
 				stateRecycle.push(states.pop());
 				var obj = JSON.parse(states[states.length - 1]);
 				window.cy.add(obj.elements)
@@ -657,8 +659,8 @@ var VQI_PathwayEditor = function(parent) {
 
 		function redo() {
 			if (stateRecycle.length > 1) {
-				cy.$('node').remove();
-				cy.$('edge').remove();
+				window.cy.$('node').remove();
+				window.cy.$('edge').remove();
 				states.push(stateRecycle.pop());
 				var obj = JSON.parse(states[states.length - 1]);
 				window.cy.add(obj.elements)
