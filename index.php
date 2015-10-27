@@ -12,10 +12,17 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 </head>
 <body>
+	<button id ="test" type="button">Test External!</button>
 	<div id="parent"></div>
 	<script src="VQI_Observable.js"></script>
 	<script src="VQI_PathwayEditor.js"></script>
-    <script>var objVQI_PathwayEditor = new VQI_PathwayEditor("parent");</script>
+    <script>
+    	var objVQI_PathwayEditor = new VQI_PathwayEditor("parent");
+    	function wrapper(){
+    		objVQI_PathwayEditor.testExternal();
+    	}
+    	document.getElementById("test").addEventListener("click", wrapper); 	
+    </script>
 	<!--<script src="main.js"></script>-->
 </body>
 </html>

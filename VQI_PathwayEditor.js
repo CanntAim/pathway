@@ -1,12 +1,17 @@
 var VQI_PathwayEditor = function(parent) {
+	
+	var self = this;
+	
 	//Web services
+	var serverURL = "http://bibci.engr.uconn.edu/yuz12012/pathwayVisual/PathwayParser/";
 	var services = {};
-	services['pathwayfinder'] = 'http://137.99.11.36/pathwayVisual/PathwayParser/ajaxJSON.php';
-	services['pathwaySaver'] = 'http://137.99.11.36/pathwayVisual/PathwayParser/updateDB_json.php';
-	services['objectfinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
+	services['pathwayFinder'] = serverURL + '/ajaxJSON.php';
+	services['pathwaySaver'] =  serverURL + '/updateDB_json.php';
+	services['objectFinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
 
 	// Globals
 	var states = [];
+	var types = ["bundleOne","bundleTwo","genes","geneProduct","protein","rna","microRNA","kinase","ligand","receptor","biologicalProcess","label"];
 	var stateRecycle = [];
 	var lastEvent = 0;
 	var selectedForQueryNodes = [];
@@ -22,36 +27,29 @@ var VQI_PathwayEditor = function(parent) {
 	var header = "";
 	var counts = {};
 	var str_info;
-	//var rna2Color = {'red_bg',[1,2,3,4,5],'green_bg',[6,7,8,9,10]}
-	//var cnv2Color = {'red_border',[1,2,3,4,5],'purple_border',[6,7,8,9,10]}
-	//var mut2Color = {'',[1,2,3,4,5],'red_shadow',[6,7,8,9,10]}
-
-	// Outer Control Layout
-
-	//	var parentDiv = document.getElementById(parent);
 
 	var strVar = "";
 	strVar += " <label for=\"" + parent + "-file-pathway\">Local Pathway File:<\/label>";
 	strVar += "	<input id=\"" + parent + "-file-pathway\" value=\"Pick Pathway File\" type=\"file\"><\/input>";
 	strVar += " <label for=\"" + parent + "-file-coloring\">Local Pathway Coloring:<\/label>";
 	strVar += "	<input id=\"" + parent + "-file-coloring\" value=\"Pick Spray File\" type=\"file\"><\/input>";
-	strVar += " <label for=\"" + parent + "-pathwaySelector\">Pathway:<\/label>";
-	strVar += " <select style=\"width: 150px\" id=\"" + parent + "-pathwaySelector\" name=\"" + parent + "-pathwaySelector\">";
+	strVar += " <label for=\"" + parent + "-pathway-selector\">Pathway:<\/label>";
+	strVar += " <select style=\"width: 150px\" id=\"" + parent + "-pathway-selector\" name=\"" + parent + "-pathway-selector\">";
 	strVar += "  	<option selected=\"\">Please Select<\/option>";
 	strVar += "	<\/select>";
-	strVar += "	<input id=\"" + parent + "-addNode\" value=\"Add Node\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-addEdge\" value=\"Add Edge\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-deleteEdges\" value=\"Delete Selected Edge(s)\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-deleteNodes\" value=\"Delete Selected Node(s)\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-add-node\" value=\"Add Node\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-add-edge\" value=\"Add Edge\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-delete-edges\" value=\"Delete Selected Edge(s)\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-delete-nodes\" value=\"Delete Selected Node(s)\" type=\"button\"><\/input>";
 	strVar += "	<input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\"><\/input>";
 	strVar += "	<input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-findPath\" value=\"Find Pathway\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-produceJSON\" value=\"Export JSON\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-findpath\" value=\"Find Pathway\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-produce-JSON\" value=\"Export JSON\" type=\"button\"><\/input>";
 	strVar += "	<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\"><\/input>";
 	strVar += "	<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-pathwaySave\" value=\"Save\" type=\"button\"><\/input>";
-	strVar += "	<input id=\"" + parent + "-pathwaySaveAs\" value=\"SaveAs\" type=\"button\"><\/input>";
-	strVar += " <input id=\"" + parent + "-findObject\" value=\"Find Object\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-pathway-save\" value=\"Save\" type=\"button\"><\/input>";
+	strVar += "	<input id=\"" + parent + "-pathway-saveAs\" value=\"SaveAs\" type=\"button\"><\/input>";
+	strVar += " <input id=\"" + parent + "-find-object\" value=\"Find Object\" type=\"button\"><\/input>";
 	strVar += " <div id=\"" + parent + "-dialog-table\" title=\"Object Table\">";
 	strVar += "	<table id=\"" + parent + "-inner-table\" class=\".table\">"
 	strVar += "		<tr>"
@@ -77,8 +75,8 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "      			<label for=\"" + parent + "-type-bundle\">type:<\/label>";
 	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-bundle\" name=\"" + parent + "-type-bundle\">";
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>bundle_type_1<\/option>";
-	strVar += "  					<option>bundle_type_2<\/option>";
+	strVar += "  					<option>bundleOne<\/option>";
+	strVar += "  					<option>bundleTwo<\/option>";
 	strVar += "				<\/select>";
 	strVar += "    		<\/fieldset>";
 	strVar += " 		<\/form>";
@@ -122,8 +120,17 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "      			<label for=\"" + parent + "-type-node\">type:<\/label>";
 	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" name=\"" + parent + "-type-node\">";
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>bundle_type_1<\/option>";
-	strVar += "  					<option>bundle_type_2<\/option>";
+	strVar += "  					<option>bundleOne<\/option>";
+	strVar += "  					<option>bundleTwo<\/option>";
+	strVar += "  					<option>geneProduct<\/option>";
+	strVar += "  					<option>protein<\/option>";
+	strVar += "  					<option>rna<\/option>";
+	strVar += "  					<option>microRNA<\/option>";
+	strVar += "  					<option>kinase<\/option>";
+	strVar += "  					<option>ligand<\/option>";
+	strVar += "  					<option>receptor<\/option>";
+	strVar += "  					<option>biologicalProcess<\/option>";
+	strVar += "  					<option>label<\/option>";
 	strVar += "					<\/select>";
 	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
 	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-rna\" name=\"" + parent + "-rna\">";
@@ -164,11 +171,10 @@ var VQI_PathwayEditor = function(parent) {
 			}
 			loadCounts++;
 		}
-
-		function onSelect(event) {
-			var val = event.target.value;
-			$.post(services['pathwayfinder'], {
-				pid : val
+		
+		function loadPathway(id){
+			$.post(services['pathwayFinder'], {
+				pid : id
 			}, function(data) {
 				console.log(data);
 				console.log(obj);
@@ -176,6 +182,12 @@ var VQI_PathwayEditor = function(parent) {
 				setElements(obj);
 			});
 		}
+
+		function onSelect(event) {
+			var id = event.target.value;
+			loadPathway(id);
+		}
+		
 
 		function saveAsPathway(event) {
 			var obj = JSON.parse(states[states.length - 1]);
@@ -266,7 +278,7 @@ var VQI_PathwayEditor = function(parent) {
 				group : "nodes",
 				data : {
 					LabelSize : 10,
-					Type : "Protein",
+					Type : "protein",
 					Valign : "Middle",
 					Width : 100,
 					Height : 25,
@@ -468,9 +480,9 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function refreshPathwayList() {
-			var select = document.getElementById(parent + "-pathwaySelector");
+			var select = document.getElementById(parent + "-pathway-selector");
 
-			$.get(services['pathwayfinder'], {
+			$.get(services['pathwayFinder'], {
 				pathwayList : '1'
 			}, function(data) {
 				var obj = JSON.parse(data);
@@ -652,282 +664,6 @@ var VQI_PathwayEditor = function(parent) {
 				window.cy.add(obj.elements)
 			}
 		}
-
-		function visual_pathway(obj) {
-			$('#' + parent + '-cy').cytoscape({
-				style : cytoscape.stylesheet()
-
-				// node elements default css (unselected state)
-				.selector('node').css({
-					'content' : 'data(name)',
-					'text-valign' : 'center',
-					'color' : 'black',
-					'padding-left' : 2,
-					'padding-right' : 2,
-					'font-family' : 'data(LabelSize)',
-					'background-color' : 'white'
-				}).selector('node[Type="GeneProduct"]').css({
-					'shape' : 'rectangle',
-					'width' : 'data(Width)',
-					'height' : 'data(Height)',
-					'text-valign' : 'middle',
-					'background-color' : 'white',
-					'border-color' : 'black',
-					'border-width' : 1
-				}).selector('node[Type="Protein"]').css({
-					'shape' : 'rectangle',
-					'width' : 'data(Width)',
-					'height' : 'data(Height)',
-					'background-color' : 'white',
-					'color' : '#ff3333',
-					'border-color' : '#ff3333',
-					'border-style' : 'solid',
-					'border-width' : 1
-				}).selector('node[Type="unknown"]').css({
-					'shape' : 'rectangle',
-					'background-color' : 'grey',
-					'color' : 'grey',
-					'border-color' : 'grey',
-					'border-style' : 'solid',
-					'border-width' : 1
-				}).selector('node[Type="bundle_type_1"]').css({
-					'shape' : 'rectangle',
-					'background-color' : 'white',
-					'color' : 'white',
-					'border-color' : 'black',
-					'border-style' : 'solid',
-					'border-width' : 1
-				}).selector('node[Type="bundle_type_2"]').css({
-					'shape' : 'roundrectangle',
-					'background-color' : 'white',
-					'color' : 'white',
-					'border-color' : 'black',
-					'border-style' : 'solid',
-					'border-width' : 1
-				}).selector('node[Shape="Brace"]').css({
-					'shape' : 'rectangle',
-					'width' : '1',
-					'height' : 'data(Width)',
-					'background-color' : 'black',
-					'color' : 'black',
-					'border-color' : 'black',
-					'border-style' : 'solid',
-					'border-width' : 1
-				}).selector('node[FillColor="ffffff"]').css({
-					'background-color' : 'white',
-					'color' : 'blue',
-					'text-halign' : 'center',
-					'text-valign' : 'top'
-				})
-
-				// edge elements default css (unselected)
-				.selector('edge').css({
-					'line-color' : 'black',
-					'line-style' : 'solid',
-					'width' : 1
-				}).selector('edge[LineStyle="Dashed"]').css({
-					'line-style' : 'dashed',
-					'line-color' : 'black',
-					'background-color' : 'black',
-					'color' : 'black'
-				}).selector('edge[EndArrow="Arrow"]').css({
-					'target-arrow-shape' : 'triangle',
-					'target-arrow-color' : 'black',
-					'target-arrow-fill' : 'filled'
-				}).selector('edge[EndArrow="TBar"]').css({
-					'target-arrow-shape' : 'tee',
-					'target-arrow-color' : 'black',
-					'target-arrow-fill' : 'filled'
-				}).selector('edge[ConnectorType="Elbow"]').css({
-					'line-color' : 'yellow',
-					'line-style' : 'solid'
-				})
-
-				// node & edge elements (selected state)
-				.selector('edge:selected').css({
-					'background-color' : 'green',
-					'line-color' : 'green',
-					'target-arrow-color' : 'green',
-					'source-arrow-color' : 'green'
-				}).selector('node:selected').css({
-					'background-color' : 'green'
-				})
-
-				// misc
-				.selector('.faded').css({
-					'opacity' : 1,
-					'text-opacity' : 0
-				})
-
-				// query purpose
-				.selector('.green_bg').css({
-					'background-color' : 'LightGreen',
-					'color' : 'black'
-				}).selector('.red_bg').css({
-					'background-color' : 'LightSalmon',
-					'color' : 'black'
-				}).selector('.white_bg').css({
-					'background-color' : 'white',
-					'color' : 'black'
-				}).selector('.purple_border').css({
-					'border-color' : 'MediumPurple',
-					'border-width' : 3
-				}).selector('.red_border').css({
-					'border-color' : 'red',
-					'border-width' : 3
-				}).selector('.black_border').css({
-					'border-color' : 'black',
-					'border-width' : 3
-				}).selector('.red_shadow').css({
-					'shadow-opacity' : 1,
-					'shadow-color' : 'red',
-					'border-width' : 1
-				}).selector('.no_shadow').css({
-					'shadow-opacity' : 0,
-					'shadow-color' : 'red',
-					'border-width' : 1
-				}).selector('.red_circle').css({
-					'background-color' : 'red',
-					'shape' : 'ellipse',
-					'background-opacity' : 0.5
-				}).selector('.green_circle').css({
-					'background-color' : 'green',
-					'shape' : 'ellipse',
-					'background-opacity' : 0.5
-				}).selector('.reset_all').css({
-					'background-color' : 'white',
-					'border-color' : 'black',
-					'border-width' : 1
-				}),
-				elements : obj.elements,
-				layout : {
-					name : 'preset',
-					padding : 10
-				},
-				ready : function() {
-					window.cy = this;
-					
-					for (var i = 0; i < obj.elements.nodes.length; i++) {
-						if(obj.elements.nodes[i].data.id.substring(0, 1) == "n"){
-							var number = parseInt(obj.elements.nodes[i].data.id.substring(1,obj.elements.nodes.length-1));
-							if(number > nodeCounter)
-								nodeCounter = number+1;
-						}
-					}
-					console.log(nodeCounter);
-					for (var i = 0; i < obj.elements.edges.length; i++) {
-						if(obj.elements.edges[i].data.id.substring(0, 1) == "e"){
-							var number = parseInt(obj.elements.edges[i].data.id.substring(1,obj.elements.edges.length-1));
-							if(number > edgeCounter)
-								edgeCounter = number+1;
-						}
-					}
-					console.log(edgeCounter);
-					// add custom event
-					var cy = $('#' + parent + '-cy').cytoscape('get');
-					var tappedBefore = null;
-					cy.on('tap', function(event) {
-						var tappedNow = event.cyTarget;
-						setTimeout(function() {
-							tappedBefore = null;
-						}, 300);
-						if (tappedBefore === tappedNow) {
-							tappedNow.trigger('doubleTap');
-							tappedBefore = null;
-						} else {
-							tappedBefore = tappedNow;
-						}
-					});
-					
-					// custom event handlers
-					cy.on('click', 'node', function(event) {
-						if (orderedSelectedNodes.length < 2)
-							orderedSelectedNodes.push(event.cyTarget);
-						else
-							orderedSelectedNodes.shift();
-						orderedSelectedNodes.push(event.cyTarget);
-					});
-
-					cy.on('doubleTap', 'node', function(event) {
-						target = event.cyTarget;
-						dialogNode.dialog("open");
-					});
-
-					cy.on('doubleTap', 'edge', function(event) {
-						target = event.cyTarget;
-						dialogEdge.dialog("open");
-					});
-
-					cy.on('select', 'node', function(event) {
-						selectedForEditNodes = cy.$('node:selected');
-						//			    	saveState();
-					});
-
-					cy.on('unselect', 'node', function(event) {
-						selectedForEditNodes = cy.$('node:selected');
-						//			    	saveState();
-					});
-
-					cy.on('select', 'edge', function(event) {
-						selectedForEditEdges = cy.$('edge:selected');
-						//			    	saveState();
-					});
-
-					cy.on('unselect', 'edge', function(event) {
-						selectedForEditEdges = cy.$('edge:selected');
-						//			    	saveState();
-					});
-
-					cy.on('free', 'node', function(event) {
-						saveState();
-					});
-
-					cy.on('data', 'node', function(event) {
-						//					saveState();
-					});
-
-					cy.on('style', 'node', function(event) {
-						//					saveState();
-					});
-
-					saveState();
-				},
-				// initial viewport state:
-				zoom : 1,
-				pan : {
-					x : 0,
-					y : 0
-				},
-				// interaction options:
-				minZoom : 1e-50,
-				maxZoom : 1e50,
-				zoomingEnabled : true,
-				userZoomingEnabled : true,
-				panningEnabled : true,
-				userPanningEnabled : true,
-				boxSelectionEnabled : true,
-				selectionType : 'additive',
-				touchTapThreshold : 8,
-				desktopTapThreshold : 4,
-				autolock : false,
-				autoungrabify : false,
-				autounselectify : false,
-				// rendering options:
-				headless : false,
-				styleEnabled : true,
-				hideEdgesOnViewport : false,
-				hideLabelsOnViewport : false,
-				textureOnViewport : false,
-				motionBlur : false,
-				motionBlurOpacity : 0.2,
-				wheelSensitivity : 1,
-				pixelRatio : 1,
-				initrender : function(evt) {/* ... */
-				},
-				renderer : {/* ... */}
-			});
-		}
-
 		function clone(obj) {
 			if (null == obj || "object" != typeof obj)
 				return obj;
@@ -1059,7 +795,7 @@ var VQI_PathwayEditor = function(parent) {
 		function findObject(event) {
 			console.log(coloredNodes);
 			var val = event.target.value;
-			$.post(services['objectfinder'], {
+			$.post(services['objectFinder'], {
 				pattern : JSON.stringify(coloredNodes)
 			}, function(data) {
 				if (data == "[]")
@@ -1086,29 +822,379 @@ var VQI_PathwayEditor = function(parent) {
 
 					var name = row.insertCell(0)
 					var percentage = row.insertCell(1);
-					var rna_distance = row.insertCell(2);
-					var cnv_distance = row.insertCell(3);
-					var mut_distance = row.insertCell(4);
+					var rnaDistance = row.insertCell(2);
+					var cnvDistance = row.insertCell(3);
+					var mutDistance = row.insertCell(4);
 
 					// Add some text to the new cells:
 
 					if (n == 0) {
 						name.innerHTML = "name";
 						percentage.innerHTML = "percentage";
-						rna_distance.innerHTML = "rna";
-						cnv_distance.innerHTML = "cnv";
-						mut_distance.innerHTML = "mut";
+						rnaDistance.innerHTML = "rna";
+						cnvDistance.innerHTML = "cnv";
+						mutDistance.innerHTML = "mut";
 					} else {
 						name.innerHTML = array[n-1][0];
 						percentage.innerHTML = array[n-1][1][0];
-						rna_distance.innerHTML = array[n-1][1][1];
-						cnv_distance.innerHTML = array[n-1][1][2];
-						mut_distance.innerHTML = array[n-1][1][3];
+						rnaDistance.innerHTML = array[n-1][1][1];
+						cnvDistance.innerHTML = array[n-1][1][2];
+						mutDistance.innerHTML = array[n-1][1][3];
 					}
 				}
 				//document.getElementById(parent + "-dialog-table").innerHTML = data;
 				dialogTable.dialog("open")
 				console.log(data);
+			});
+		}
+		
+		function visual_pathway(obj) {
+			$('#' + parent + '-cy').cytoscape({
+				style : cytoscape.stylesheet()
+
+				// node elements default css (unselected state)
+				.selector('node').css({
+					'content' : 'data(name)',
+					'padding-left' : 2,
+					'padding-right' : 2,
+					'font-family' : 'data(LabelSize)'
+				})
+				.selector('node[Type="bundleOne"]').css({
+					'shape' : 'roundrectangle',
+					'background-color' : 'lightgray',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="bundleTwo"]').css({
+					'shape' : 'roundrectangle',
+					'background-color' : 'gray',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="gene"]').css({
+					'shape' : 'rectangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="geneProduct"]').css({
+					'shape' : 'circle',
+					'radius' : 5,
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="protein"]').css({
+					'shape' : 'rectangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="rna"]').css({
+					'shape' : 'circle',
+					'radius' : 5,
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'dotted',
+					'border-width' : 1
+				}).selector('node[Type="microRNA"]').css({
+					'shape' : 'circle',
+					'radius' : 5,
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'dashed',
+					'border-width' : 1
+				}).selector('node[Type="kinase"]').css({
+					'shape' : 'rectangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'dashed',
+					'border-width' : 1
+				}).selector('node[Type="ligand"]').css({
+					'shape' : 'rectangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'dotted',
+					'border-width' : 1
+				}).selector('node[Type="receptor"]').css({
+					'shape' : 'rectangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'double',
+					'border-width' : 1
+				}).selector('node[Type="biologicalProcess"]').css({
+					'shape' : 'roundrectangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="label"]').css({
+					'shape' : 'rectangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'middle',
+					'background-color' : 'white',
+					'border-color' : 'white',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Shape="Brace"]').css({
+					'shape' : 'rectangle',
+					'width' : '1',
+					'height' : 'data(Width)',
+					'background-color' : 'black',
+					'color' : 'black',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				})
+
+				// edge elements default css (unselected)
+				.selector('edge').css({
+					'line-color' : 'black',
+					'line-style' : 'solid',
+					'width' : 1
+				}).selector('edge[EndArrow="Arrow"]').css({
+					'target-arrow-shape' : 'triangle',
+					'target-arrow-color' : 'black',
+					'target-arrow-fill' : 'filled'
+				}).selector('edge[EndArrow="TBar"]').css({
+					'target-arrow-shape' : 'tee',
+					'target-arrow-color' : 'black',
+					'target-arrow-fill' : 'filled'
+				})
+
+				// node & edge elements (selected state)
+				.selector('edge:selected').css({
+					'background-color' : 'green',
+					'line-color' : 'green',
+					'target-arrow-color' : 'green',
+					'source-arrow-color' : 'green'
+				}).selector('node:selected').css({
+					'background-color' : 'green'
+				})
+
+				// misc
+				.selector('.faded').css({
+					'opacity' : 1,
+					'text-opacity' : 0
+				})
+
+				// query purpose
+				.selector('.green_bg').css({
+					'background-color' : 'lightgreen',
+					'color' : 'black'
+				}).selector('.red_bg').css({
+					'background-color' : 'lightsalmon',
+					'color' : 'black'
+				}).selector('.white_bg').css({
+					'background-color' : 'white',
+					'color' : 'black'
+				}).selector('.purple_border').css({
+					'border-color' : 'mediumpurple',
+					'border-width' : 3
+				}).selector('.red_border').css({
+					'border-color' : 'red',
+					'border-width' : 3
+				}).selector('.black_border').css({
+					'border-color' : 'black',
+					'border-width' : 3
+				}).selector('.red_shadow').css({
+					'shadow-opacity' : 1,
+					'shadow-color' : 'red',
+					'border-width' : 1
+				}).selector('.no_shadow').css({
+					'shadow-opacity' : 0,
+					'shadow-color' : 'red',
+					'border-width' : 1
+				}).selector('.red_circle').css({
+					'background-color' : 'red',
+					'shape' : 'ellipse',
+					'background-opacity' : 0.5
+				}).selector('.green_circle').css({
+					'background-color' : 'green',
+					'shape' : 'ellipse',
+					'background-opacity' : 0.5
+				}).selector('.reset_all').css({
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-width' : 1
+				}),
+				layout : {
+					name : 'preset',
+					padding : 10
+				},
+				ready : function() {
+					window.cy = this;
+					
+					for (var i = 0; i < obj.elements.nodes.length; i++) {
+						if(obj.elements.nodes[i].data.id.substring(0, 1) == "n"){
+							var number = parseInt(obj.elements.nodes[i].data.id.substring(1,obj.elements.nodes.length-1));
+							if(number > nodeCounter)
+								nodeCounter = number+1;
+						}
+					}
+					console.log(nodeCounter);
+					
+					for (var i = 0; i < obj.elements.edges.length; i++) {
+						if(obj.elements.edges[i].data.id.substring(0, 1) == "e"){
+							var number = parseInt(obj.elements.edges[i].data.id.substring(1,obj.elements.edges.length-1));
+							if(number > edgeCounter)
+								edgeCounter = number+1;
+						}
+					}
+					console.log(edgeCounter);
+					
+					for (var i = 0; i < obj.elements.nodes.length; i++) {
+						if(types.indexOf(obj.elements.nodes[i].data.Type)== -1){
+							console.log(obj.elements.nodes[i].data.Type);
+							obj.elements.nodes[i].data.Type = "label";
+						}
+					}	
+					
+					// Remove old nodes
+					window.cy.$('node').remove();
+					window.cy.$('edge').remove();
+					
+					// Add processed nodes
+					window.cy.add(obj.elements);		
+					
+					// add custom event
+					var cy = $('#' + parent + '-cy').cytoscape('get');
+					var tappedBefore = null;
+					cy.on('tap', function(event) {
+						var tappedNow = event.cyTarget;
+						setTimeout(function() {
+							tappedBefore = null;
+						}, 300);
+						if (tappedBefore === tappedNow) {
+							tappedNow.trigger('doubleTap');
+							tappedBefore = null;
+						} else {
+							tappedBefore = tappedNow;
+						}
+					});
+					
+					// custom event handlers
+					cy.on('click', 'node', function(event) {
+						if (orderedSelectedNodes.length < 2)
+							orderedSelectedNodes.push(event.cyTarget);
+						else
+							orderedSelectedNodes.shift();
+						orderedSelectedNodes.push(event.cyTarget);
+					});
+
+					cy.on('doubleTap', 'node', function(event) {
+						target = event.cyTarget;
+						dialogNode.dialog("open");
+					});
+
+					cy.on('doubleTap', 'edge', function(event) {
+						target = event.cyTarget;
+						dialogEdge.dialog("open");
+					});
+
+					cy.on('select', 'node', function(event) {
+						selectedForEditNodes = cy.$('node:selected');
+						//			    	saveState();
+					});
+
+					cy.on('unselect', 'node', function(event) {
+						selectedForEditNodes = cy.$('node:selected');
+						//			    	saveState();
+					});
+
+					cy.on('select', 'edge', function(event) {
+						selectedForEditEdges = cy.$('edge:selected');
+						//			    	saveState();
+					});
+
+					cy.on('unselect', 'edge', function(event) {
+						selectedForEditEdges = cy.$('edge:selected');
+						//			    	saveState();
+					});
+
+					cy.on('free', 'node', function(event) {
+						saveState();
+					});
+
+					cy.on('data', 'node', function(event) {
+						//					saveState();
+					});
+
+					cy.on('style', 'node', function(event) {
+						//					saveState();
+					});
+
+					saveState();
+				},
+				// initial viewport state:
+				zoom : 1,
+				pan : {
+					x : 0,
+					y : 0
+				},
+				// interaction options:
+				minZoom : 1e-50,
+				maxZoom : 1e50,
+				zoomingEnabled : true,
+				userZoomingEnabled : true,
+				panningEnabled : true,
+				userPanningEnabled : true,
+				boxSelectionEnabled : true,
+				selectionType : 'additive',
+				touchTapThreshold : 8,
+				desktopTapThreshold : 4,
+				autolock : false,
+				autoungrabify : false,
+				autounselectify : false,
+				// rendering options:
+				headless : false,
+				styleEnabled : true,
+				hideEdgesOnViewport : false,
+				hideLabelsOnViewport : false,
+				textureOnViewport : false,
+				motionBlur : false,
+				motionBlurOpacity : 0.2,
+				wheelSensitivity : 1,
+				pixelRatio : 1,
+				initrender : function(evt) {/* ... */
+				},
+				renderer : {/* ... */}
 			});
 		}
 
@@ -1128,8 +1214,8 @@ var VQI_PathwayEditor = function(parent) {
 		dialogNode = $("#" + parent + "-dialog-form-node").dialog({
 			open : function(event) {
 				document.getElementById(parent + "-gene-name").value = target.data('name');
-				document.getElementById(parent + "-width").value = target.data('Height');
-				document.getElementById(parent + "-height").value = target.data('Width');
+				document.getElementById(parent + "-width").value = target.data('Width');
+				document.getElementById(parent + "-height").value = target.data('Height');
 				document.getElementById(parent + "-type-node").value = target.data('Type');
 				if ( typeof (target.data('rna')) != "undefined")
 					document.getElementById(parent + "-rna").value = target.data('rna');
@@ -1220,23 +1306,36 @@ var VQI_PathwayEditor = function(parent) {
 		});
 
 		refreshPathwayList();
-
+		
 		document.getElementById(parent + '-file-pathway').addEventListener('change', onChangePathwayFile);
 		document.getElementById(parent + '-file-coloring').addEventListener('change', onChangeColoringFile);
-		document.getElementById(parent + '-findPath').addEventListener('click', dialogPathfindOpen);
-		document.getElementById(parent + '-findObject').addEventListener('click', findObject);
-		document.getElementById(parent + '-deleteNodes').addEventListener('click', removeNodes);
-		document.getElementById(parent + '-pathwaySelector').addEventListener('change', onSelect);
-		document.getElementById(parent + '-pathwaySaveAs').addEventListener('click', dialogPathwaySaveAsOpen);
-		document.getElementById(parent + '-pathwaySave').addEventListener('click', savePathway);
-		document.getElementById(parent + '-deleteNodes').addEventListener('click', removeNodes);
-		document.getElementById(parent + '-deleteEdges').addEventListener('click', removeEdges);
-		document.getElementById(parent + '-addNode').addEventListener('click', addNode);
-		document.getElementById(parent + '-addEdge').addEventListener('click', addEdge);
+		document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
+		document.getElementById(parent + '-find-object').addEventListener('click', findObject);
+		document.getElementById(parent + '-delete-nodes').addEventListener('click', removeNodes);
+		document.getElementById(parent + '-pathway-selector').addEventListener('change', onSelect);
+		document.getElementById(parent + '-pathway-saveAs').addEventListener('click', dialogPathwaySaveAsOpen);
+		document.getElementById(parent + '-pathway-save').addEventListener('click', savePathway);
+		document.getElementById(parent + '-delete-nodes').addEventListener('click', removeNodes);
+		document.getElementById(parent + '-delete-edges').addEventListener('click', removeEdges);
+		document.getElementById(parent + '-add-node').addEventListener('click', addNode);
+		document.getElementById(parent + '-add-edge').addEventListener('click', addEdge);
 		document.getElementById(parent + '-bundle').addEventListener('click', dialogBundleOpen);
 		document.getElementById(parent + '-unbundle').addEventListener('click', unbundle);
-		document.getElementById(parent + '-produceJSON').addEventListener('click', produceJSON);
+		document.getElementById(parent + '-produce-JSON').addEventListener('click', produceJSON);
 		document.getElementById(parent + '-undo').addEventListener('click', undo);
 		document.getElementById(parent + '-redo').addEventListener('click', redo);
+		
+		//external functions
+		self.loadPathwayExternal = function(id){
+			loadPathway(id);
+		}
+		
+		self.sprayColorExternal = function(list){
+			sprayColor(list);
+		}
+		
+		self.testExternal = function(){
+			console.log(print);	
+		}
 	});
 };
