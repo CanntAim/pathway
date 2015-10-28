@@ -304,7 +304,7 @@ var VQI_PathwayEditor = function(parent) {
 				} else if (rna < 0) {
 					setNodeStyle(target, 'green_bg', '', '');
 				} else {
-					setNodeStyle(target, 'white_bg', '', '');
+					setNodeStyle(target, '', '', '');
 				}
 
 				if (cnv > 0) {
@@ -312,7 +312,7 @@ var VQI_PathwayEditor = function(parent) {
 				} else if (cnv < 0) {
 					setNodeStyle(target, '', 'purple_border', '');
 				} else {
-					setNodeStyle(target, '', 'black_border', '');
+					setNodeStyle(target, '', '', '');
 				}
 
 				if (mut > 0) {
@@ -744,6 +744,17 @@ var VQI_PathwayEditor = function(parent) {
 				target.removeClass('red_shadow');
 				target.removeClass('no_shadow');
 				target.addClass(shadow);
+			}
+			
+			if(background == '' && border == '' && shadow == ''){
+				target.removeClass('green_bg');
+				target.removeClass('red_bg');
+				target.removeClass('white_bg');
+				target.removeClass('purple_border');
+				target.removeClass('red_border');
+				target.removeClass('black_border');
+				target.removeClass('red_shadow');
+				target.removeClass('no_shadow');
 			}
 		}
 
