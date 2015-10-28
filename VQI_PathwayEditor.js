@@ -3,7 +3,7 @@ var VQI_PathwayEditor = function(parent) {
 	var self = this;
 
 	//Web services
-	var serverURL = "http://bibci.engr.uconn.edu/yuz12012/pathwayVisual/PathwayParser/";
+	var serverURL = "http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser";
 	var services = {};
 	services['pathwayFinder'] = serverURL + '/ajaxJSON.php';
 	services['pathwaySaver'] = serverURL + '/updateDB_json.php';
@@ -159,6 +159,7 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
 	strVar += "  					<option>bundleOne<\/option>";
 	strVar += "  					<option>bundleTwo<\/option>";
+	strVar += "  					<option>gene<\/option>";
 	strVar += "  					<option>geneProduct<\/option>";
 	strVar += "  					<option>protein<\/option>";
 	strVar += "  					<option>rna<\/option>";
@@ -926,7 +927,7 @@ var VQI_PathwayEditor = function(parent) {
 					'border-style' : 'solid',
 					'border-width' : 1
 				}).selector('node[Type="gene"]').css({
-					'shape' : 'rectangle',
+					'shape' : 'roundrectangle',
 					'width' : 'data(Width)',
 					'height' : 'data(Height)',
 					'color' : 'black',
