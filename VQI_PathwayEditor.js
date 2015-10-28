@@ -801,7 +801,7 @@ var VQI_PathwayEditor = function(parent) {
 			} else if (rna < 0) {
 				setNodeStyle(target, 'green_bg', '', '');
 			} else {
-				setNodeStyle(target, 'white_bg', '', '');
+				setNodeStyle(target, '', '', '');
 			}
 
 			if (cnv > 0) {
@@ -809,7 +809,7 @@ var VQI_PathwayEditor = function(parent) {
 			} else if (cnv < 0) {
 				setNodeStyle(target, '', 'purple_border', '');
 			} else {
-				setNodeStyle(target, '', 'black_border', '');
+				setNodeStyle(target, '', '', '');
 			}
 
 			if (mut > 0) {
