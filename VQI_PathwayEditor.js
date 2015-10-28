@@ -79,10 +79,10 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "			<\/div>";
 	strVar += " 	<li\">";
 	strVar += " 	<li>";
-	strVar += "			<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "			<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\" class=\"btn btn-primary dropdown-toggle\"><\/input>";
 	strVar += " 	<\/li>";
 	strVar += " 	<li>";
-	strVar += "			<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "			<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\" class=\"btn btn-primary dropdown-toggle\"><\/input>";
 	strVar += " 	<\/li>";
 	strVar += " <\/ul>";
 	strVar += " <\/div>";
