@@ -2,27 +2,10 @@ var VQI_PathwayEditor = function(parent) {
 
 	var self = this;
 
-	// layout options
-	var layoutOptions = {
-		name : 'grid',
-		fit : true, // whether to fit the viewport to the graph
-		padding : 30, // padding used on fit
-		boundingBox : undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-		avoidOverlap : true, // prevents node overlap, may overflow boundingBox if not enough space
-		rows : 500, // force num of rows in the grid
-		columns : 500, // force num of cols in the grid
-		position : function(node) {
-		}, // returns { row, col } for element
-		sort : undefined, // a sorting function to order the nodes; e.g. function(a, b){ return a.data('weight') - b.data('weight') }
-		animate : false, // whether to transition the node positions
-		animationDuration : 500, // duration of animation in ms if enabled
-		ready : undefined, // callback on layoutready
-		stop : undefined // callback on layoutstop
-	};
-
 	//Web services
 	var serverURL = "http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser";
 	var services = {};
+	
 	services['pathwayFinder'] = serverURL + '/ajaxJSON.php';
 	services['pathwaySaver'] = serverURL + '/updateDB_json.php';
 	services['objectFinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
@@ -105,7 +88,7 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += " <\/ul>";
 	strVar += " <\/div>";
 	strVar += " <\/nav>";
-	strVar += " <div id=\"" + parent + "-dialog-table\" title=\"Object Table\">";
+	strVar += " <div id=\"" + parent + "-dialog-table\" title=\"Result\">";
 	strVar += "	<table id=\"" + parent + "-inner-table\" class=\".table\">";
 	strVar += "		<tr>";
 	strVar += "         <td>name</td>";
@@ -115,17 +98,26 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "			<td>mut distance</td>";
 	strVar += "	</table>";
 	strVar += "	<\/div>";
-	strVar += " <div id=\"" + parent + "-dialog-form-save-as-pathway\" title=\"Find path\">";
-	strVar += " 		<form>";
+	strVar += " <div id=\"" + parent + "-dialog-form-save-as-pathway\" title=\"SaveAs\">";
+	strVar += " 		<form role=\"form\">";
 	strVar += "    		<fieldset>";
 	strVar += "      			<label for=\"" + parent + "-pathway-name\">pathway-name:<\/label>";
-	strVar += " 				<input type=\"text\" name=\"" + parent + "-pathway-name\" id=\"" + parent + "-pathway-name\"><br>";
-	strVar += " 				<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
+	strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-pathway-name\" id=\"" + parent + "-pathway-name\"><br>";
+	strVar += " 				<input type=\"submit\" class=\"btn btn-default\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
 	strVar += "    		<\/fieldset>";
 	strVar += " 		<\/form>";
 	strVar += "	<\/div>";
-	strVar += " <div id=\"" + parent + "-dialog-bundle\" title=\"Find path\">";
-	strVar += " 		<form>";
+	strVar += " <div id=\"" + parent + "-dialog-form-new-pathway\" title=\"New Pathway\">";
+	strVar += " 		<form role=\"form\">";
+	strVar += "    		<fieldset>";
+	strVar += "      			<label for=\"" + parent + "-new-pathway-name\">pathway-name:<\/label>";
+	strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-new-pathway-name\" id=\"" + parent + "-new-pathway-name\"><br>";
+	strVar += " 				<input type=\"submit\" class=\"btn btn-default\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
+	strVar += "    		<\/fieldset>";
+	strVar += " 		<\/form>";
+	strVar += "	<\/div>";
+	strVar += " <div id=\"" + parent + "-dialog-bundle\" title=\"Bundle\">";
+	strVar += " 		<form role=\"form\">";
 	strVar += "    		<fieldset>";
 	strVar += "      			<label for=\"" + parent + "-type-bundle\">type:<\/label>";
 	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-bundle\" name=\"" + parent + "-type-bundle\">";
@@ -137,23 +129,23 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += " 		<\/form>";
 	strVar += "	<\/div>";
 	strVar += " <div id=\"" + parent + "-dialog-form-find-path\" title=\"Find path\">";
-	strVar += " 		<form>";
+	strVar += " 		<form role=\"form\">";
 	strVar += "    		<fieldset>";
 	strVar += "      			<label for=\"" + parent + "-sid\">sid:<\/label>";
-	strVar += " 				<input type=\"text\" name=\"" + parent + "-sid\" id=\"" + parent + "-sid\"><br>";
+	strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-sid\" id=\"" + parent + "-sid\"><br>";
 	strVar += "      			<label for=\"" + parent + "-vid\">vid:<\/label>";
-	strVar += " 				<input type=\"text\" name=\"" + parent + "-vid\" id=\"" + parent + "-vid\"><br>";
+	strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-vid\" id=\"" + parent + "-vid\"><br>";
 	strVar += " 				<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
 	strVar += "    		<\/fieldset>";
 	strVar += " 		<\/form>";
 	strVar += "	<\/div>";
 	strVar += "	<div id=\"" + parent + "-dialog-form-edge\" title=\"Edit edge\">";
-	strVar += " 		<form>";
+	strVar += " 		<form role=\"form\">";
 	strVar += "    		<fieldset>";
 	strVar += "      			<label for=\"" + parent + "-direction\">change direction:<\/label>";
-	strVar += "      			<input type=\"checkbox\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
+	strVar += "      			<input type=\"checkbox\" class=\"form-control\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-type-edge\">type:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-edge\" name=\"" + parent + "-type-edge\">";
+	strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-type-edge\" name=\"" + parent + "-type-edge\">";
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
 	strVar += "  					<option>TBar<\/option>";
 	strVar += "  					<option>Arrow<\/option>";
@@ -163,17 +155,25 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "    		<\/fieldset>";
 	strVar += "  		<\/form>";
 	strVar += "	<\/div>";
+	strVar += "<div id=\"" + parent + "-intro-hero-unit\" class=\"container\">";
+  	strVar += "		<div class=\"jumbotron\">";
+    strVar += "			<h1>Pathway Editor</h1>"; 
+    strVar += "			<p><i>Alpha version of the pathway editor. You can either start a new pathway or load an existing one...</i></p>";
+    strVar += " 		<input id=\"" + parent + "-new-pathway\" value=\"New Pathway\" type=\"button\" class=\"btn btn-success\"><\/input>";	
+    strVar += " 		<a id=\"" + parent + "-link-github\" type=\"button\" class=\"btn btn-success\" href=\"https://github.uconn.edu/ivp08001/pathway\">Github Source<\/a>";	
+  	strVar += "     </div>";
+	strVar += " </div>";
 	strVar += "	<div id=\"" + parent + "-dialog-form-node\" title=\"Edit node\">";
-	strVar += " 		<form>";
+	strVar += " 		<form role=\"form\">";
 	strVar += "    		<fieldset>";
 	strVar += "      			<label for=\"" + parent + "-gene-name\">gene-name:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"" + parent + "-gene-name\" id=\"" + parent + "-gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-gene-name\" class=\"form-control\" id=\"" + parent + "-gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-height\">height:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "-height\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "-height\" class=\"form-control\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
-	strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
+	strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" class=\"form-control\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-type-node\">type:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" name=\"" + parent + "-type-node\">";
+	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" class=\"form-control\" name=\"" + parent + "-type-node\">";
 	strVar += "  					<option selected=\"\">Please Select<\/option>";
 	strVar += "  					<option>bundleOne<\/option>";
 	strVar += "  					<option>bundleTwo<\/option>";
@@ -189,11 +189,11 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "  					<option>label<\/option>";
 	strVar += "					<\/select>";
 	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
-	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-rna\" name=\"" + parent + "-rna\">";
+	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-rna\" class=\"form-control\" name=\"" + parent + "-rna\">";
 	strVar += "					<label for=\"" + parent + "-cnv\">CNV:<\/label>";
-	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-cnv\" name=\"" + parent + "-cnv\">";
+	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-cnv\" class=\"form-control\" name=\"" + parent + "-cnv\">";
 	strVar += "					<label for=\"" + parent + "-mut\">MUT:<\/label>";
-	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" name=\"" + parent + "-mut\">";
+	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" class=\"form-control\" name=\"" + parent + "-mut\">";
 	strVar += " 			    <input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
 	strVar += "    		<\/fieldset>";
 	strVar += "  		<\/form>";
@@ -203,6 +203,17 @@ var VQI_PathwayEditor = function(parent) {
 	document.getElementById(parent).innerHTML = strVar;
 
 	$(function() {// on dom ready
+		
+		function newPathway(event) {
+			var name = document.getElementById(parent + "-new-pathway-name").value;
+			var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :{"shared_name":"","ID":"","BOARDWIDTH":"","BOARDHEIGHT":"","LICENSE":"CC BY 2.0","ORGANISM":"","NAME":"","INSTRUCTION":"","AUTHOR":"","VERSION":"","PATHWAY_TYPE":"original","SUID":205,"__Annotations":[],"selected":true},"elements" : {"nodes" :[],"edges" :[]}}'
+			var obj = JSON.parse(data);
+			var heroUnit = document.getElementById(parent + "-intro-hero-unit");
+			heroUnit.parentNode.removeChild(heroUnit);
+			setElements(obj);
+			dialogNewPathway.dialog("close");
+		}
+		
 		function onChangePathwayFile(event) {
 			var reader = new FileReader();
 			reader.onload = onPathwayReaderLoad;
@@ -258,8 +269,9 @@ var VQI_PathwayEditor = function(parent) {
 			$.post(services['pathwayFinder'], {
 				pid : id
 			}, function(data) {
-				console.log(data);
-				console.log(obj);
+				var heroUnit = document.getElementById(parent + "-intro-hero-unit");
+				if(heroUnit != null)
+					heroUnit.parentNode.removeChild(heroUnit);
 				var obj = JSON.parse(data);
 				setElements(obj);
 			});
@@ -671,6 +683,7 @@ var VQI_PathwayEditor = function(parent) {
 
 		function wrapperFindPath() {
 			saveState();
+			
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			var sid = orderedSelectedNodes[0]._private.data['id'];
 			var vid = orderedSelectedNodes[1]._private.data['id'];
@@ -709,6 +722,10 @@ var VQI_PathwayEditor = function(parent) {
 							var targetNode = cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('target');
 							cy.elements("node[id = \"" + targetNode + "\"]").select();
 							cy.elements("node[id = \"" + sourceNode + "\"]").select();
+							cy.$('node').style("opacity", 0.2);
+							cy.$('edge').style("opacity", 0.2);
+							cy.$('node:selected').style("opacity", 1.0);
+							cy.$('edge:selected').style("opacity", 1.0);
 						}
 					});
 					path.appendChild(btn);
@@ -877,6 +894,10 @@ var VQI_PathwayEditor = function(parent) {
 			dialogNode.dialog("close");
 		}
 
+		function dialogNewPathwayOpen(event) {
+			dialogNewPathway.dialog("open");
+		}
+
 		function dialogBundleOpen(event) {
 			dialogBundle.dialog("open");
 		}
@@ -954,7 +975,9 @@ var VQI_PathwayEditor = function(parent) {
 					'content' : 'data(name)',
 					'padding-left' : 2,
 					'padding-right' : 2,
-					'font-family' : 'data(LabelSize)'
+					'font-family' : 'data(LabelSize)',
+					'opacity' : 0.75,
+					'text-opacity' : 0.75
 				}).selector('node[Type="bundleOne"]').css({
 					'shape' : 'roundrectangle',
 					'background-color' : 'lightgray',
@@ -1083,6 +1106,8 @@ var VQI_PathwayEditor = function(parent) {
 				.selector('edge').css({
 					'line-color' : 'black',
 					'line-style' : 'solid',
+					'opacity' : 0.75,
+					'text-opacity' : 0.75,
 					'width' : 1
 				}).selector('edge[EndArrow="Arrow"]').css({
 					'target-arrow-shape' : 'triangle',
@@ -1099,15 +1124,13 @@ var VQI_PathwayEditor = function(parent) {
 					'background-color' : 'green',
 					'line-color' : 'green',
 					'target-arrow-color' : 'green',
-					'source-arrow-color' : 'green'
+					'source-arrow-color' : 'green',
+					'opacity' : 1.0,
+					'text-opacity' : 1.0
 				}).selector('node:selected').css({
-					'background-color' : 'green'
-				})
-
-				// misc
-				.selector('.faded').css({
-					'opacity' : 1,
-					'text-opacity' : 0
+					'background-color' : 'green',
+					'opacity' : 1.0,
+					'text-opacity' : 1.0
 				})
 
 				// query purpose
@@ -1137,19 +1160,11 @@ var VQI_PathwayEditor = function(parent) {
 					'shadow-opacity' : 0,
 					'shadow-color' : 'red',
 					'border-width' : 1
-				}).selector('.red_circle').css({
-					'background-color' : 'red',
-					'shape' : 'ellipse',
-					'background-opacity' : 0.5
-				}).selector('.green_circle').css({
-					'background-color' : 'green',
-					'shape' : 'ellipse',
-					'background-opacity' : 0.5
-				}).selector('.reset_all').css({
-					'background-color' : 'white',
-					'border-color' : 'black',
-					'border-width' : 1
 				}),
+				layout : {
+					name : 'preset',
+					padding : 10
+				},
 				ready : function() {
 					var cy = $('#' + parent + '-cy').cytoscape('get');
 
@@ -1175,9 +1190,6 @@ var VQI_PathwayEditor = function(parent) {
 							obj.elements.nodes[i].data.Type = "label";
 						}
 					}
-
-					// Set layout
-					cy.layout(layoutOptions);
 
 					// Add processed nodes
 					cy.add(obj.elements);
@@ -1278,7 +1290,7 @@ var VQI_PathwayEditor = function(parent) {
 				textureOnViewport : false,
 				motionBlur : false,
 				motionBlurOpacity : 0.2,
-				wheelSensitivity : 1,
+				wheelSensitivity : 0.2,
 				pixelRatio : 1,
 				initrender : function(evt) {/* ... */
 				},
@@ -1293,6 +1305,11 @@ var VQI_PathwayEditor = function(parent) {
 			buttons : {
 				Cancel : function() {
 					dialogTable.dialog("close");
+					var cy = $('#' + parent + '-cy').cytoscape('get');
+					cy.$('node').removeStyle("opacity");
+					cy.$('edge').removeStyle("opacity");
+					cy.$('node:selected').removeStyle("opacity");
+					cy.$('edge:selected').removeStyle("opacity");
 				}
 			},
 			close : function() {
@@ -1379,6 +1396,20 @@ var VQI_PathwayEditor = function(parent) {
 			}
 		});
 
+		dialogNewPathway = $("#" + parent + "-dialog-form-new-pathway").dialog({
+			autoOpen : false,
+			height : 300,
+			width : 350,
+			buttons : {
+				"submit" : newPathway,
+				Cancel : function() {
+					dialogNewPathway.dialog("close");
+				}
+			},
+			close : function() {
+			}
+		});
+
 		dialogBundle = $("#" + parent + "-dialog-bundle").dialog({
 			autoOpen : false,
 			height : 300,
@@ -1395,6 +1426,7 @@ var VQI_PathwayEditor = function(parent) {
 
 		refreshPathwayList();
 
+		document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
 		document.getElementById(parent + '-file-pathway').addEventListener('change', onChangePathwayFile);
 		document.getElementById(parent + '-file-coloring').addEventListener('change', onChangeColoringFile);
 		document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
