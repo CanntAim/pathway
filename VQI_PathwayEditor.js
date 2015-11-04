@@ -289,9 +289,18 @@ var VQI_PathwayEditor = function(parent) {
 			$.post(services['pathwaySaver'], {
 				insertPathway : obj
 			}, function(data) {
-				console.log(data);
-				refreshPathwayList();
-				dialogPathwaySaveAs.dialog("close");
+				if (data == "Duplicate Pathway!") {
+					$.post(services['pathwaySaver'], {
+						updatePathway : obj
+					}, function(data) {
+						//							parentDOM = document.getElementById(parent + '-cy');
+						//							parentDOM.appendChild(document.createTextNode("<div class=\"alert alert-success\"><strong>Success!</strong> Indicates a successful or positive action.</div>"));
+						dialogPathwaySaveAs.dialog("close");
+					});
+				} else {
+					refreshPathwayList();
+					dialogPathwaySaveAs.dialog("close");
+				}
 			});
 		}
 
@@ -725,6 +734,7 @@ var VQI_PathwayEditor = function(parent) {
 					} else {
 						var btn = document.createElement("button");
 						var t = document.createTextNode((n - 1).toString());
+						btn.className = "btn btn-link";
 						btn.appendChild(t);
 						btn.addEventListener('click', function(event) {
 							var k = parseInt(event.currentTarget.innerHTML);
@@ -743,7 +753,7 @@ var VQI_PathwayEditor = function(parent) {
 							}
 						});
 						path.appendChild(btn);
-						score.appendChild(document.createTextNode(getPathScore(selectedPaths[n-1], scoreJSON).toString()));
+						score.appendChild(document.createTextNode(getPathScore(selectedPaths[n - 1], scoreJSON).toString()));
 					}
 				}
 				//document.getElementById(parent + "-dialog-table").innerHTML = data;
