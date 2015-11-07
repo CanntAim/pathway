@@ -21,7 +21,6 @@ var VQI_PathwayEditor = function(parent) {
 	var orderedSelectedNodes = [];
 	var selectedForEditEdges = [];
 	var coloredNodes = [];
-	var bundleCounter = 0;
 	var edgeCounter = 0;
 	var nodeCounter = 0;
 	var loadCounts = 0;
@@ -54,8 +53,7 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "				<ul class=\"dropdown-menu\">";
 	strVar += "					<li><input id=\"" + parent + "-add-node\" value=\"Add Node\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
 	strVar += "					<li><input id=\"" + parent + "-add-edge\" value=\"Add Edge\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += " 				<li><input id=\"" + parent + "-delete-nodes\" value=\"Delete Selected Node(s)\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += " 				<li><input id=\"" + parent + "-delete-edges\" value=\"Delete Selected Edge(s)\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
+	strVar += " 				<li><input id=\"" + parent + "-delete-elements\" value=\"Delete Selected Element(s)\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
 	strVar += "					<li><input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
 	strVar += "					<li><input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
 	strVar += "				<\/ul>";
@@ -205,12 +203,17 @@ var VQI_PathwayEditor = function(parent) {
 
 	$(function() {// on dom ready
 
+		function removeHeroUnit() {
+			var heroUnit = document.getElementById(parent + "-intro-hero-unit");
+			if (heroUnit != null)
+				heroUnit.parentNode.removeChild(heroUnit);
+		}
+
 		function newPathway(event) {
 			var name = document.getElementById(parent + "-new-pathway-name").value;
 			var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :{"shared_name":"","ID":"","BOARDWIDTH":"","BOARDHEIGHT":"","LICENSE":"CC BY 2.0","ORGANISM":"","NAME":"","INSTRUCTION":"","AUTHOR":"","VERSION":"","PATHWAY_TYPE":"original","SUID":205,"__Annotations":[],"selected":true},"elements" : {"nodes" :[],"edges" :[]}}'
 			var obj = JSON.parse(data);
-			var heroUnit = document.getElementById(parent + "-intro-hero-unit");
-			heroUnit.parentNode.removeChild(heroUnit);
+			removeHeroUnit();
 			setElements(obj);
 			dialogNewPathway.dialog("close");
 		}
@@ -219,6 +222,11 @@ var VQI_PathwayEditor = function(parent) {
 			var reader = new FileReader();
 			reader.onload = onPathwayReaderLoad;
 			reader.readAsText(event.target.files[0]);
+			removeHeroUnit();
+		}
+
+		function collapseBundle(event) {
+
 		}
 
 		function onChangeColoringFile(event) {
@@ -263,6 +271,7 @@ var VQI_PathwayEditor = function(parent) {
 				// Add processed nodes
 				cy.add(obj.elements);
 			}
+			saveState();
 			loadCounts++;
 		}
 
@@ -270,9 +279,7 @@ var VQI_PathwayEditor = function(parent) {
 			$.post(services['pathwayFinder'], {
 				pid : id
 			}, function(data) {
-				var heroUnit = document.getElementById(parent + "-intro-hero-unit");
-				if (heroUnit != null)
-					heroUnit.parentNode.removeChild(heroUnit);
+				removeHeroUnit();
 				var obj = JSON.parse(data);
 				setElements(obj);
 			});
@@ -293,8 +300,6 @@ var VQI_PathwayEditor = function(parent) {
 					$.post(services['pathwaySaver'], {
 						updatePathway : obj
 					}, function(data) {
-						//							parentDOM = document.getElementById(parent + '-cy');
-						//							parentDOM.appendChild(document.createTextNode("<div class=\"alert alert-success\"><strong>Success!</strong> Indicates a successful or positive action.</div>"));
 						dialogPathwaySaveAs.dialog("close");
 					});
 				} else {
@@ -367,13 +372,9 @@ var VQI_PathwayEditor = function(parent) {
 			}
 		}
 
-		function removeNodes(event) {
+		function removeElements(event) {
 			saveState();
 			selectedForEditNodes.remove();
-		}
-
-		function removeEdges(event) {
-			saveState();
 			selectedForEditEdges.remove();
 		}
 
@@ -391,7 +392,7 @@ var VQI_PathwayEditor = function(parent) {
 					Valign : "Middle",
 					Width : 100,
 					Height : 25,
-					id : name,
+					id : "n" + nodeCounter,
 					name : name,
 					selected : false
 				},
@@ -406,8 +407,8 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function addEdge(event) {
-			var cy = $('#' + parent + '-cy').cytoscape('get');
 			saveState();
+			var cy = $('#' + parent + '-cy').cytoscape('get');
 			for (var i = 0; i < selectedForEditNodes.length - 1; i++) {
 				var sourceE = selectedForEditNodes[i].data('id');
 				var targetE = selectedForEditNodes[i + 1].data('id');
@@ -440,53 +441,145 @@ var VQI_PathwayEditor = function(parent) {
 			}
 		}
 
-		function unbundle(event) {
-			saveState();
-
-			var nodes = [];
-			var edges = [];
-
-			var cy = $('#' + parent + '-cy').cytoscape('get');
-
-			for (var i = 0; i < selectedForEditNodes.size(); i++) {
-				nodes.push({
-					group : "nodes",
-					data : {
-						LabelSize : selectedForEditNodes[i].data('LabelSize'),
-						Type : selectedForEditNodes[i].data('Type'),
-						Valign : selectedForEditNodes[i].data('Valign'),
-						Width : selectedForEditNodes[i].data('Width'),
-						Height : selectedForEditNodes[i].data('Height'),
-						id : selectedForEditNodes[i].data('id'),
-						name : selectedForEditNodes[i].data('name'),
-						selected : selectedForEditNodes[i].data('selected'),
-					},
-					position : {
-						x : selectedForEditNodes[i].position('x'),
-						y : selectedForEditNodes[i].position('y')
+		function unbundleRecursive(node, parents, edges, nodes, rCounter) {
+			rCounter++;
+			if (rCounter == 1 && node.isParent()) {
+				parents.push(node);
+				for (var x = 0; x < node.children().size(); x++) {
+					if (node.parent().length != 0) {
+						nodes.push({
+							group : "nodes",
+							data : {
+								LabelSize : node.children()[x].data('LabelSize'),
+								Type : node.children()[x].data('Type'),
+								Valign : node.children()[x].data('Valign'),
+								Width : node.children()[x].data('Width'),
+								Height : node.children()[x].data('Height'),
+								id : node.children()[x].data('id'),
+								name : node.children()[x].data('name'),
+								selected : node.children()[x].data('selected'),
+								parent : node.parent().data('id')
+							},
+							position : {
+								x : node.children()[x].position('x'),
+								y : node.children()[x].position('y')
+							}
+						});
+					} else {
+						nodes.push({
+							group : "nodes",
+							data : {
+								LabelSize : node.children()[x].data('LabelSize'),
+								Type : node.children()[x].data('Type'),
+								Valign : node.children()[x].data('Valign'),
+								Width : node.children()[x].data('Width'),
+								Height : node.children()[x].data('Height'),
+								id : node.children()[x].data('id'),
+								name : node.children()[x].data('name'),
+								selected : node.children()[x].data('selected')
+							},
+							position : {
+								x : node.children()[x].position('x'),
+								y : node.children()[x].position('y')
+							}
+						});
 					}
-				});
+					for (var j = 0; j < node.children()[x].connectedEdges().size(); j++) {
+						edges.push({
+							group : "edges",
+							data : {
+								id : node.children()[x].connectedEdges()[j].data('id'),
+								LineThickness : node.children()[x].connectedEdges()[j].data('LineThickness'),
+								EndArrow : node.children()[x].connectedEdges()[j].data('EndArrow'),
+								Coords : node.children()[x].connectedEdges()[j].data('Coords'),
+								ZOrder : node.children()[x].connectedEdges()[j].data('ZOrder'),
+								source : node.children()[x].connectedEdges()[j].data('source'),
+								target : node.children()[x].connectedEdges()[j].data('target'),
+								StartArrow : node.children()[x].connectedEdges()[j].data('StartArrow'),
+								selected : node.children()[x].connectedEdges()[j].data('selected')
+							}
+						})
+					}
+					unbundleRecursive(node.children()[x], parents, edges, nodes, rCounter);
+				}
+			} else if (rCounter > 1 && node.isParent()) {
+				for (var x = 0; x < node.children().size(); x++) {
+					if (node.length != 0) {
+						nodes.push({
+							group : "nodes",
+							data : {
+								LabelSize : node.children()[x].data('LabelSize'),
+								Type : node.children()[x].data('Type'),
+								Valign : node.children()[x].data('Valign'),
+								Width : node.children()[x].data('Width'),
+								Height : node.children()[x].data('Height'),
+								id : node.children()[x].data('id'),
+								name : node.children()[x].data('name'),
+								selected : node.children()[x].data('selected'),
+								parent : node.data('id')
+							},
+							position : {
+								x : node.children()[x].position('x'),
+								y : node.children()[x].position('y')
+							}
+						});
+					} else {
+						nodes.push({
+							group : "nodes",
+							data : {
+								LabelSize : node.children()[x].data('LabelSize'),
+								Type : node.children()[x].data('Type'),
+								Valign : node.children()[x].data('Valign'),
+								Width : node.children()[x].data('Width'),
+								Height : node.children()[x].data('Height'),
+								id : node.children()[x].data('id'),
+								name : node.children()[x].data('name'),
+								selected : node.children()[x].data('selected')
+							},
+							position : {
+								x : node.children()[x].position('x'),
+								y : node.children()[x].position('y')
+							}
+						});
+					}
 
-				for (var j = 0; j < selectedForEditNodes[i].connectedEdges().size(); j++) {
-					edges.push({
-						group : "edges",
-						data : {
-							id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
-							LineThickness : selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
-							EndArrow : selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
-							Coords : selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
-							ZOrder : selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
-							source : selectedForEditNodes[i].connectedEdges()[j].data('source'),
-							target : selectedForEditNodes[i].connectedEdges()[j].data('target'),
-							StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
-							selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
-						}
-					})
+					for (var j = 0; j < node.children()[x].connectedEdges().size(); j++) {
+						edges.push({
+							group : "edges",
+							data : {
+								id : node.children()[x].connectedEdges()[j].data('id'),
+								LineThickness : node.children()[x].connectedEdges()[j].data('LineThickness'),
+								EndArrow : node.children()[x].connectedEdges()[j].data('EndArrow'),
+								Coords : node.children()[x].connectedEdges()[j].data('Coords'),
+								ZOrder : node.children()[x].connectedEdges()[j].data('ZOrder'),
+								source : node.children()[x].connectedEdges()[j].data('source'),
+								target : node.children()[x].connectedEdges()[j].data('target'),
+								StartArrow : node.children()[x].connectedEdges()[j].data('StartArrow'),
+								selected : node.children()[x].connectedEdges()[j].data('selected')
+							}
+						})
+					}
+					unbundleRecursive(node.children()[x], parents, edges, nodes, rCounter);
 				}
 			}
+		}
 
-			// Remove old nodes
-			selectedForEditNodes.remove();
+		function unbundle(event) {
+			saveState();
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			var parents = [];
+			var nodes = [];
+			var edges = [];
+			var rCounter = 0;
+
+			for (var i = 0; i < selectedForEditNodes.size(); i++) {
+				unbundleRecursive(selectedForEditNodes[i], parents, edges, nodes, rCounter);
+			}
+
+			// Remove parents (in the instance that they haven't been removed!)
+			for (var i = 0; i < parents.length; i++) {
+				parents[i].remove();
+			}
 
 			// Add new nodes
 			cy.add(nodes.concat(edges));
@@ -582,6 +675,7 @@ var VQI_PathwayEditor = function(parent) {
 			// Add new nodes
 			cy.add(nodes.concat(edges));
 
+			// increment nodeCounter to insure unique id
 			nodeCounter++;
 
 			// Remove dialog box
@@ -700,8 +794,6 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function wrapperFindPath() {
-			saveState();
-
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			var sid = orderedSelectedNodes[0]._private.data['id'];
 			var vid = orderedSelectedNodes[1]._private.data['id'];
@@ -756,7 +848,6 @@ var VQI_PathwayEditor = function(parent) {
 						score.appendChild(document.createTextNode(getPathScore(selectedPaths[n - 1], scoreJSON).toString()));
 					}
 				}
-				//document.getElementById(parent + "-dialog-table").innerHTML = data;
 				dialogTable.dialog("open");
 				dialogPathfind.dialog("close");
 			})
@@ -953,8 +1044,6 @@ var VQI_PathwayEditor = function(parent) {
 						array[i][1][j] = array[i][1][j].replace(/[^\d.-]/g, '');
 					}
 				}
-
-				console.log(array);
 
 				var table = document.getElementById(parent + "-inner-table");
 				var length = document.getElementById(parent + "-inner-table").rows.length;
@@ -1461,12 +1550,10 @@ var VQI_PathwayEditor = function(parent) {
 		document.getElementById(parent + '-file-coloring').addEventListener('change', onChangeColoringFile);
 		document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
 		document.getElementById(parent + '-find-object').addEventListener('click', findObject);
-		document.getElementById(parent + '-delete-nodes').addEventListener('click', removeNodes);
 		document.getElementById(parent + '-pathway-selector').addEventListener('change', onSelect);
 		document.getElementById(parent + '-pathway-saveAs').addEventListener('click', dialogPathwaySaveAsOpen);
 		document.getElementById(parent + '-pathway-save').addEventListener('click', savePathway);
-		document.getElementById(parent + '-delete-nodes').addEventListener('click', removeNodes);
-		document.getElementById(parent + '-delete-edges').addEventListener('click', removeEdges);
+		document.getElementById(parent + '-delete-elements').addEventListener('click', removeElements);
 		document.getElementById(parent + '-add-node').addEventListener('click', addNode);
 		document.getElementById(parent + '-add-edge').addEventListener('click', addEdge);
 		document.getElementById(parent + '-bundle').addEventListener('click', dialogBundleOpen);
