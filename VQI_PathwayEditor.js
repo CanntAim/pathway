@@ -384,6 +384,14 @@ var VQI_PathwayEditor = function(parent) {
 			var name = "n" + nodeCounter;
 			var node = [];
 
+			// Screen Dimensions
+			var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+			var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+			var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+			var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+			var left = ((width / 2) - (100 / 2)) + dualScreenLeft;
+			var top = ((height / 2) - (25 / 2)) + dualScreenTop;
+
 			node.push({
 				group : "nodes",
 				data : {
@@ -396,9 +404,9 @@ var VQI_PathwayEditor = function(parent) {
 					name : name,
 					selected : false
 				},
-				position : {
-					x : 500,
-					y : 500
+				renderedPosition : {
+					x : left,
+					y : top
 				}
 			})
 
@@ -585,6 +593,46 @@ var VQI_PathwayEditor = function(parent) {
 			cy.add(nodes.concat(edges));
 		}
 
+		function recursiveBundle(node, edges, nodes) {
+			nodes.push({
+				group : "nodes",
+				data : {
+					LabelSize : node.data('LabelSize'),
+					Type : node.data('Type'),
+					Valign : node.data('Valign'),
+					Width : node.data('Width'),
+					Height : node.data('Height'),
+					id : node.data('id'),
+					name : node.data('name'),
+					selected : node.data('selected'),
+					parent : node.data('parent')
+				},
+				position : {
+					x : node.position('x'),
+					y : node.position('y')
+				}
+			});
+			for (var j = 0; j < node.connectedEdges().size(); j++) {
+				edges.push({
+					group : "edges",
+					data : {
+						id : node.connectedEdges()[j].data('id'),
+						LineThickness : node.connectedEdges()[j].data('LineThickness'),
+						EndArrow : node.connectedEdges()[j].data('EndArrow'),
+						Coords : node.connectedEdges()[j].data('Coords'),
+						ZOrder : node.connectedEdges()[j].data('ZOrder'),
+						source : node.connectedEdges()[j].data('source'),
+						target : node.connectedEdges()[j].data('target'),
+						StartArrow : node.connectedEdges()[j].data('StartArrow'),
+						selected : node.connectedEdges()[j].data('selected')
+					}
+				})
+			}
+			for (var i = 0; i < node.children().size(); i++) {
+				recursiveBundle(node.children()[i], edges, nodes);
+			}
+		}
+
 		function bundle(event) {
 			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
@@ -612,7 +660,7 @@ var VQI_PathwayEditor = function(parent) {
 
 			// Create copies of old nodes
 			for (var i = 0; i < selectedForEditNodes.size(); i++) {
-				if ( typeof selectedForEditNodes[i].data('parent') == 'undefined') {
+				if (!selectedForEditNodes[i].isChild()) {
 					nodes.push({
 						group : "nodes",
 						data : {
@@ -631,41 +679,25 @@ var VQI_PathwayEditor = function(parent) {
 							y : selectedForEditNodes[i].position('y')
 						}
 					});
-				} else {
-					nodes.push({
-						group : "nodes",
-						data : {
-							LabelSize : selectedForEditNodes[i].data('LabelSize'),
-							Type : selectedForEditNodes[i].data('Type'),
-							Valign : selectedForEditNodes[i].data('Valign'),
-							Width : selectedForEditNodes[i].data('Width'),
-							Height : selectedForEditNodes[i].data('Height'),
-							id : selectedForEditNodes[i].data('id'),
-							name : selectedForEditNodes[i].data('name'),
-							selected : selectedForEditNodes[i].data('selected'),
-							parent : selectedForEditNodes[i].data('parent')
-						},
-						position : {
-							x : selectedForEditNodes[i].position('x'),
-							y : selectedForEditNodes[i].position('y')
-						}
-					});
+					for (var j = 0; j < selectedForEditNodes[i].connectedEdges().size(); j++) {
+						edges.push({
+							group : "edges",
+							data : {
+								id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
+								LineThickness : selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
+								EndArrow : selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
+								Coords : selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
+								ZOrder : selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
+								source : selectedForEditNodes[i].connectedEdges()[j].data('source'),
+								target : selectedForEditNodes[i].connectedEdges()[j].data('target'),
+								StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
+								selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
+							}
+						})
+					}
 				}
-				for (var j = 0; j < selectedForEditNodes[i].connectedEdges().size(); j++) {
-					edges.push({
-						group : "edges",
-						data : {
-							id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
-							LineThickness : selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
-							EndArrow : selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
-							Coords : selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
-							ZOrder : selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
-							source : selectedForEditNodes[i].connectedEdges()[j].data('source'),
-							target : selectedForEditNodes[i].connectedEdges()[j].data('target'),
-							StartArrow : selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
-							selected : selectedForEditNodes[i].connectedEdges()[j].data('selected')
-						}
-					})
+				if (selectedForEditNodes[i].isParent() || selectedForEditNodes[i].isChild()) {
+					recursiveBundle(selectedForEditNodes[i], edges, nodes);
 				}
 			}
 
@@ -674,7 +706,10 @@ var VQI_PathwayEditor = function(parent) {
 
 			// Add new nodes
 			cy.add(nodes.concat(edges));
-
+			
+			if(!cy.elements("node[id = \"n" + nodeCounter + "\"]").isParent())
+				cy.elements("node[id = \"n" + nodeCounter + "\"]").remove();
+			
 			// increment nodeCounter to insure unique id
 			nodeCounter++;
 
