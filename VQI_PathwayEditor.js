@@ -18,8 +18,9 @@ var VQI_PathwayEditor = function(parent) {
 	var lastEvent = 0;
 	var selectedForQueryNodes = [];
 	var selectedForEditNodes = [];
-	var orderedSelectedNodes = [];
 	var selectedForEditEdges = [];
+	var orderedSelectedNodes = [];
+	var grabbedCollapsedForEditNodes = [];
 	var coloredNodes = [];
 	var edgeCounter = 0;
 	var nodeCounter = 0;
@@ -56,6 +57,8 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += " 				<li><input id=\"" + parent + "-delete-elements\" value=\"Delete Selected Element(s)\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
 	strVar += "					<li><input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
 	strVar += "					<li><input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-collapse\" value=\"Collapse\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-expand\" value=\"Expand\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
 	strVar += "				<\/ul>";
 	strVar += "			</div>";
 	strVar += " 	<\/li>";
@@ -226,7 +229,31 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function collapseBundle(event) {
+			saveState();
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			for (var i = 0; i < selectedForEditNodes.size(); i++) {
+				if (selectedForEditNodes[i].isParent()) {
+					selectedForEditNodes[i].descendants().addClass('collapsed');
+					selectedForEditNodes[i].descendants().unselectify();
+					selectedForEditNodes[i].descendants().ungrabify();
+					selectedForEditNodes[i].descendants().positions({
+						x : selectedForEditNodes[i].position('x') + selectedForEditNodes[i].width() / 2,
+						y : selectedForEditNodes[i].position('y') + selectedForEditNodes[i].height() / 2
+					});
+				}
+			}
+		}
 
+		function expandBundle(event) {
+			saveState();
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			for (var i = 0; i < selectedForEditNodes.size(); i++) {
+				if (selectedForEditNodes[i].isParent()) {
+					selectedForEditNodes[i].descendants().removeClass('collapsed');
+					selectedForEditNodes[i].descendants().selectify();
+					selectedForEditNodes[i].descendants().grabify();
+				}
+			}
 		}
 
 		function onChangeColoringFile(event) {
@@ -270,6 +297,8 @@ var VQI_PathwayEditor = function(parent) {
 
 				// Add processed nodes
 				cy.add(obj.elements);
+				cy.center();
+				cy.fit();
 			}
 			saveState();
 			loadCounts++;
@@ -706,10 +735,10 @@ var VQI_PathwayEditor = function(parent) {
 
 			// Add new nodes
 			cy.add(nodes.concat(edges));
-			
-			if(!cy.elements("node[id = \"n" + nodeCounter + "\"]").isParent())
+
+			if (!cy.elements("node[id = \"n" + nodeCounter + "\"]").isParent())
 				cy.elements("node[id = \"n" + nodeCounter + "\"]").remove();
-			
+
 			// increment nodeCounter to insure unique id
 			nodeCounter++;
 
@@ -1310,6 +1339,11 @@ var VQI_PathwayEditor = function(parent) {
 					'shadow-opacity' : 0,
 					'shadow-color' : 'red',
 					'border-width' : 1
+				})
+
+				// collapse
+				.selector('.collapsed').css({
+					'opacity' : 0.01
 				}),
 				layout : {
 					name : 'preset',
@@ -1343,6 +1377,8 @@ var VQI_PathwayEditor = function(parent) {
 
 					// Add processed nodes
 					cy.add(obj.elements);
+					cy.center();
+					cy.fit();
 
 					// add custom event
 					var tappedBefore = null;
@@ -1398,8 +1434,19 @@ var VQI_PathwayEditor = function(parent) {
 						//			    	saveState();
 					});
 
-					cy.on('free', 'node', function(event) {
+					cy.on('grab', 'node', function(event) {
 						saveState();
+						if (cy.$('node:grabbed').isParent() && !cy.$('node:grabbed').descendants()[0].grabbable()) {
+							grabbedCollapsedForEditNodes = cy.$('node:grabbed');
+							grabbedCollapsedForEditNodes.descendants().grabify();
+						}
+					});
+
+					cy.on('free', 'node', function(event) {
+						//			    	saveState();
+						if (grabbedCollapsedForEditNodes.constructor !== Array)
+							grabbedCollapsedForEditNodes.descendants().ungrabify();
+						grabbedCollapsedForEditNodes = [];
 					});
 
 					cy.on('data', 'node', function(event) {
@@ -1572,6 +1619,7 @@ var VQI_PathwayEditor = function(parent) {
 			buttons : {
 				"submit" : bundle,
 				Cancel : function() {
+					dialogBundle.dialog("close");
 				}
 			},
 			close : function() {
@@ -1591,6 +1639,8 @@ var VQI_PathwayEditor = function(parent) {
 		document.getElementById(parent + '-delete-elements').addEventListener('click', removeElements);
 		document.getElementById(parent + '-add-node').addEventListener('click', addNode);
 		document.getElementById(parent + '-add-edge').addEventListener('click', addEdge);
+		document.getElementById(parent + '-expand').addEventListener('click', expandBundle);
+		document.getElementById(parent + '-collapse').addEventListener('click', collapseBundle);
 		document.getElementById(parent + '-bundle').addEventListener('click', dialogBundleOpen);
 		document.getElementById(parent + '-unbundle').addEventListener('click', unbundle);
 		document.getElementById(parent + '-produce-JSON').addEventListener('click', produceJSON);
