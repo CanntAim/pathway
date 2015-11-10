@@ -33,6 +33,9 @@ var VQI_PathwayEditor = function(parent) {
 	var strVar = "";
 	strVar += " <nav class=\"navbar navbar-default navbar-fixed-top\">";
 	strVar += " <div class=\"container-fluid\">";
+	strVar += " <div class=\"navbar-header\">";
+    strVar += " 	<a class=\"navbar-brand\" href=\"#\">Pathway name</a>";
+    strVar += " <\/div>";
 	strVar += " <ul class=\"nav navbar-nav\">";
 	strVar += " 	<li style=\"margin: 2px\">";
 	strVar += " 		<label for=\"" + parent + "-file-pathway\">Local Pathway File:<\/label>";
@@ -52,13 +55,14 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "			<div class=\"dropdown\">";
 	strVar += "  			<button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\">Edit<span class=\"caret\"><\/span><\/button>";
 	strVar += "				<ul class=\"dropdown-menu\">";
-	strVar += "					<li><input id=\"" + parent + "-add-node\" value=\"Add Node\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-add-edge\" value=\"Add Edge\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += " 				<li><input id=\"" + parent + "-delete-elements\" value=\"Delete Selected Element(s)\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-collapse\" value=\"Collapse\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-expand\" value=\"Expand\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-add-node\" value=\"Add Node\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-add-edge\" value=\"Add Edge\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += " 				<li><input id=\"" + parent + "-delete-elements\" value=\"Delete Selected Element(s)\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += " 				<li role=\"separator\" class=\"divider\"></li>";
+	strVar += "					<li><input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-collapse\" value=\"Collapse\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-expand\" value=\"Expand\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
 	strVar += "				<\/ul>";
 	strVar += "			</div>";
 	strVar += " 	<\/li>";
@@ -66,8 +70,8 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "			<div class=\"dropdown\">";
 	strVar += "  			<button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\">Process<span class=\"caret\"><\/span><\/button>";
 	strVar += "				<ul class=\"dropdown-menu\">";
-	strVar += "					<li><input id=\"" + parent + "-findpath\" value=\"Find Pathway\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-find-object\" value=\"Find Object\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-findpath\" value=\"Find Pathway\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-find-object\" value=\"Find Object\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
 	strVar += "				<\/ul>";
 	strVar += "			</div>";
 	strVar += " 	<\/li>";
@@ -75,17 +79,17 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "			<div class=\"dropdown\">";
 	strVar += "  			<button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\">Archive<span class=\"caret\"><\/span><\/button>";
 	strVar += "				<ul class=\"dropdown-menu\">";
-	strVar += "					<li><input id=\"" + parent + "-pathway-save\" value=\"Save\" type=\"button\" class=\"btn btn-link\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-pathway-saveAs\" value=\"SaveAs\" type=\"button\" class=\"btn btn-link\"><\/li>";
-	strVar += " 				<li><input id=\"" + parent + "-produce-JSON\" value=\"Export JSON\" type=\"button\" class=\"btn btn-link\"><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-pathway-save\" value=\"Save\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-pathway-saveAs\" value=\"SaveAs\" type=\"button\" class=\"btn btn-link disabled\"><\/li>";
+	strVar += " 				<li><input id=\"" + parent + "-produce-JSON\" value=\"Export JSON\" type=\"button\" class=\"btn btn-link disabled\"><\/li>";
 	strVar += "				<\/ul>";
 	strVar += "			<\/div>";
 	strVar += " 	<li\">";
 	strVar += " 	<li style=\"margin: 2px\">";
-	strVar += "			<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\" class=\"btn btn-primary dropdown-toggle\"><\/input>";
+	strVar += "			<input id=\"" + parent + "-undo\" value=\"Undo\" type=\"button\" class=\"btn btn-primary disabled\"><\/input>";
 	strVar += " 	<\/li>";
 	strVar += " 	<li style=\"margin: 2px\">";
-	strVar += "			<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\" class=\"btn btn-primary dropdown-toggle\"><\/input>";
+	strVar += "			<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\" class=\"btn btn-primary disabled\"><\/input>";
 	strVar += " 	<\/li>";
 	strVar += " <\/ul>";
 	strVar += " <\/div>";
@@ -123,8 +127,7 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "    		<fieldset>";
 	strVar += "      			<label for=\"" + parent + "-type-bundle\">type:<\/label>";
 	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-bundle\" name=\"" + parent + "-type-bundle\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>bundleOne<\/option>";
+	strVar += "  					<option selected=\"\">bundleOne<\/option>";
 	strVar += "  					<option>bundleTwo<\/option>";
 	strVar += "				<\/select>";
 	strVar += "    		<\/fieldset>";
@@ -148,8 +151,7 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "      			<input type=\"checkbox\" class=\"form-control\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-type-edge\">type:<\/label>";
 	strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-type-edge\" name=\"" + parent + "-type-edge\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>TBar<\/option>";
+	strVar += "  					<option selected=\"\">TBar<\/option>";
 	strVar += "  					<option>Arrow<\/option>";
 	strVar += "  					<option>Line<\/option>";
 	strVar += "				<\/select>";
@@ -176,19 +178,18 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" class=\"form-control\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
 	strVar += "      			<label for=\"" + parent + "-type-node\">type:<\/label>";
 	strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" class=\"form-control\" name=\"" + parent + "-type-node\">";
-	strVar += "  					<option selected=\"\">Please Select<\/option>";
-	strVar += "  					<option>bundleOne<\/option>";
-	strVar += "  					<option>bundleTwo<\/option>";
-	strVar += "  					<option>gene<\/option>";
-	strVar += "  					<option>geneProduct<\/option>";
-	strVar += "  					<option>protein<\/option>";
-	strVar += "  					<option>rna<\/option>";
-	strVar += "  					<option>microRNA<\/option>";
-	strVar += "  					<option>kinase<\/option>";
-	strVar += "  					<option>ligand<\/option>";
-	strVar += "  					<option>receptor<\/option>";
-	strVar += "  					<option>biologicalProcess<\/option>";
-	strVar += "  					<option>label<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-bundleOne\" selected=\"\">bundleOne<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-bundleTwo\">bundleTwo<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-gene\">gene<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-geneProduct\">geneProduct<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-protein\">protein<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-rna\">rna<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-mircoRNA\">microRNA<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-kinase\">kinase<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-ligand\">ligand<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-receptor\">receptor<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-biologicalProcess\">biologicalProcess<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-label\">label<\/option>";
 	strVar += "					<\/select>";
 	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
 	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-rna\" class=\"form-control\" name=\"" + parent + "-rna\">";
@@ -1374,7 +1375,24 @@ var VQI_PathwayEditor = function(parent) {
 							obj.elements.nodes[i].data.Type = "label";
 						}
 					}
-
+		
+					//un-disable options
+					$('#' + parent + '-select-bundleOne').removeClass('disabled');
+					$('#' + parent + '-add-node').removeClass('disabled');
+					$('#' + parent + '-add-edge').removeClass('disabled');
+					$('#' + parent + '-delete-elements').removeClass('disabled');
+					$('#' + parent + '-bundle').removeClass('disabled');
+					$('#' + parent + '-unbundle').removeClass('disabled');
+					$('#' + parent + '-collapse').removeClass('disabled');
+					$('#' + parent + '-expand').removeClass('disabled');
+					$('#' + parent + '-findpath').removeClass('disabled');
+					$('#' + parent + '-find-object').removeClass('disabled');
+					$('#' + parent + '-pathway-save').removeClass('disabled');
+					$('#' + parent + '-pathway-saveAs').removeClass('disabled');
+					$('#' + parent + '-produce-JSON').removeClass('disabled');
+					$('#' + parent + '-undo').removeClass('disabled');
+					$('#' + parent + '-redo').removeClass('disabled');
+					
 					// Add processed nodes
 					cy.add(obj.elements);
 					cy.center();
@@ -1520,6 +1538,33 @@ var VQI_PathwayEditor = function(parent) {
 
 		dialogNode = $("#" + parent + "-dialog-form-node").dialog({
 			open : function(event) {
+				if (!target.isParent()) {
+					document.getElementById(parent + '-select-bundleOne').disabled = true;
+					document.getElementById(parent + '-select-bundleTwo').disabled = true;
+					document.getElementById(parent + "-select-gene").disabled = false;
+					document.getElementById(parent + "-select-geneProduct").disabled = false;
+					document.getElementById(parent + "-select-protein").disabled = false;
+					document.getElementById(parent + "-select-rna").disabled = false;
+					document.getElementById(parent + "-select-mircoRNA").disabled = false;
+					document.getElementById(parent + "-select-kinase").disabled = false;
+					document.getElementById(parent + "-select-ligand").disabled = false;
+					document.getElementById(parent + "-select-receptor").disabled = false;
+					document.getElementById(parent + "-select-biologicalProcess").disabled = false;
+					document.getElementById(parent + "-select-label").disabled = false;
+				} else {
+					document.getElementById(parent + '-select-bundleOne').disabled = false;
+					document.getElementById(parent + '-select-bundleTwo').disabled = false;
+					document.getElementById(parent + "-select-gene").disabled = true;
+					document.getElementById(parent + "-select-geneProduct").disabled = true;
+					document.getElementById(parent + "-select-protein").disabled = true;
+					document.getElementById(parent + "-select-rna").disabled = true;
+					document.getElementById(parent + "-select-mircoRNA").disabled = true;
+					document.getElementById(parent + "-select-kinase").disabled = true;
+					document.getElementById(parent + "-select-ligand").disabled = true;
+					document.getElementById(parent + "-select-receptor").disabled = true;
+					document.getElementById(parent + "-select-biologicalProcess").disabled = true;
+					document.getElementById(parent + "-select-label").disabled = true;
+				}
 				document.getElementById(parent + "-gene-name").value = target.data('name');
 				document.getElementById(parent + "-width").value = target.data('Width');
 				document.getElementById(parent + "-height").value = target.data('Height');
@@ -1527,17 +1572,17 @@ var VQI_PathwayEditor = function(parent) {
 				if ( typeof (target.data('rna')) != "undefined")
 					document.getElementById(parent + "-rna").value = target.data('rna');
 				else
-					document.getElementById(parent + "-rna").value = 'Please Select';
+					document.getElementById(parent + "-rna").value = '0';
 
 				if ( typeof (target.data('cnv')) != "undefined")
 					document.getElementById(parent + "-cnv").value = target.data('cnv');
 				else
-					document.getElementById(parent + "-cnv").value = 'Please Select';
+					document.getElementById(parent + "-cnv").value = '0';
 
 				if ( typeof (target.data('mut')) != "undefined")
 					document.getElementById(parent + "-mut").value = target.data('mut');
 				else
-					document.getElementById(parent + "-mut").value = 'Please Select';
+					document.getElementById(parent + "-mut").value = '0';
 			},
 			autoOpen : false,
 			height : 300,
