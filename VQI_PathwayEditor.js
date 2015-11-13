@@ -198,7 +198,9 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "					<label for=\"" + parent + "-mut\">MUT:<\/label>";
 	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" class=\"form-control\" name=\"" + parent + "-mut\">";
 	strVar += " 			    <input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
-	strVar += "    		<\/fieldset>";
+	strVar += "    				<label for=\"" + parent + "-background-image\">Local Image File:<\/label>";
+	strVar += "					<input id=\"" + parent + "-background-image\" value=\"Pick an Image File\" type=\"file\"><\/input>";
+    strVar += "				<\/fieldset>";
 	strVar += "  		<\/form>";
 	strVar += "	<\/div>";
 	strVar += "	<div id=\"" + parent + "-cy\" style=\"height: 100%;width: 100%;position: absolute; left: 0;\"><\/div>";
@@ -1019,6 +1021,17 @@ var VQI_PathwayEditor = function(parent) {
 			}
 			dialogEdge.dialog("close");
 		}
+		
+		function onChangeBackgroundImageOnNode(event) {
+			var reader = new FileReader();
+			reader.onload = onBackgroundImageReaderLoad;
+			reader.readAsDataURL(event.target.files[0]);
+		}
+
+		function onBackgroundImageReaderLoad() {
+			var img = event.target.result;
+			target.style("background-image", img);
+		}
 
 		function editNode() {
 			saveState();
@@ -1672,10 +1685,11 @@ var VQI_PathwayEditor = function(parent) {
 		});
 
 		refreshPathwayList();
-
 		document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
 		document.getElementById(parent + '-file-pathway').addEventListener('change', onChangePathwayFile);
 		document.getElementById(parent + '-file-coloring').addEventListener('change', onChangeColoringFile);
+		document.getElementById(parent + '-background-image').addEventListener('change', onChangeBackgroundImageOnNode);
+		document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
 		document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
 		document.getElementById(parent + '-find-object').addEventListener('click', findObject);
 		document.getElementById(parent + '-pathway-selector').addEventListener('change', onSelect);
