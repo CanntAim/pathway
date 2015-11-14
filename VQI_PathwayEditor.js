@@ -29,13 +29,14 @@ var VQI_PathwayEditor = function(parent) {
 	var header = "";
 	var counts = {};
 	var strInfo;
+	var highestZOrder = 999;
 
 	var strVar = "";
 	strVar += " <nav class=\"navbar navbar-default navbar-fixed-top\">";
 	strVar += " <div class=\"container-fluid\">";
 	strVar += " <div class=\"navbar-header\">";
-    strVar += " 	<a class=\"navbar-brand\" href=\"#\">Pathway name</a>";
-    strVar += " <\/div>";
+	strVar += " 	<a class=\"navbar-brand\" href=\"#\">Pathway name</a>";
+	strVar += " <\/div>";
 	strVar += " <ul class=\"nav navbar-nav\">";
 	strVar += " 	<li style=\"margin: 2px\">";
 	strVar += " 		<label for=\"" + parent + "-file-pathway\">Local Pathway File:<\/label>";
@@ -149,12 +150,18 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "    		<fieldset>";
 	strVar += "      			<label for=\"" + parent + "-direction\">change direction:<\/label>";
 	strVar += "      			<input type=\"checkbox\" class=\"form-control\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
-	strVar += "      			<label for=\"" + parent + "-type-edge\">type:<\/label>";
-	strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-type-edge\" name=\"" + parent + "-type-edge\">";
+	strVar += "      			<label for=\"" + parent + "-arrow-type-edge\">arrow type:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-arrow-type-edge\" name=\"" + parent + "-arrow-type-edge\">";
 	strVar += "  					<option selected=\"\">TBar<\/option>";
 	strVar += "  					<option>Arrow<\/option>";
 	strVar += "  					<option>Line<\/option>";
-	strVar += "				<\/select>";
+	strVar += "					<\/select>";
+	strVar += "      			<label for=\"" + parent + "-line-type-edge\">line type:<\/label>";
+	strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-line-type-edge\" name=\"" + parent + "-line-type-edge\">";
+	strVar += "  					<option selected=\"\">Solid<\/option>";
+	strVar += "  					<option>Dotted<\/option>";
+	strVar += "  					<option>Dashed<\/option>";
+	strVar += "					<\/select>";
 	strVar += " 			<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
 	strVar += "    		<\/fieldset>";
 	strVar += "  		<\/form>";
@@ -200,7 +207,13 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += " 			    <input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
 	strVar += "    				<label for=\"" + parent + "-background-image\">Local Image File:<\/label>";
 	strVar += "					<input id=\"" + parent + "-background-image\" value=\"Pick an Image File\" type=\"file\"><\/input>";
-    strVar += "				<\/fieldset>";
+	strVar += "    				<label for=\"" + parent + "-background-image-remove\">Remove Background image:<\/label>";
+	strVar += "					<input id=\"" + parent + "-background-image-remove\" value=\"Remove\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    				<label for=\"" + parent + "-node-move-to-background\">Move to Background:<\/label>";
+	strVar += "    				<input id=\"" + parent + "-node-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    				<label for=\"" + parent + "-node-move-to-foreground\">Move to Foreground:<\/label>";
+	strVar += "    				<input id=\"" + parent + "-node-move-to-foreground\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "				<\/fieldset>";
 	strVar += "  		<\/form>";
 	strVar += "	<\/div>";
 	strVar += "	<div id=\"" + parent + "-cy\" style=\"height: 100%;width: 100%;position: absolute; left: 0;\"><\/div>";
@@ -265,11 +278,31 @@ var VQI_PathwayEditor = function(parent) {
 			reader.readAsText(event.target.files[0]);
 		}
 
+		function postAddProcessing() {
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			
+			//Post-Add Process
+			for (var i = 0; i < cy.$("node").length; i++) {
+				if ( typeof (cy.$("node")[i].data("backgroundImage")) != undefined && cy.$("node")[i].data("backgroundImage") != "") {
+					cy.$("node")[i].style("backgroundImage", cy.$("node")[i].data("backgroundImage"));
+				}
+			}
+
+			for (var i = 0; i < cy.$("node").length; i++) {
+				if ( typeof (cy.$("node")[i].data("zIndex")) != undefined) {
+					cy.$("node")[i].style("zIndex", cy.$("node")[i].data("zIndex"));
+				}
+			}
+		}
+
 		function setElements(obj) {
 			if (loadCounts == 0) {
 				header = obj.data;
 				visualPathway(obj);
 			} else {
+
+				// Pre-Add process
+
 				var cy = $('#' + parent + '-cy').cytoscape('get');
 				for (var i = 0; i < obj.elements.nodes.length; i++) {
 					obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x + 1000 * loadCounts;
@@ -298,10 +331,14 @@ var VQI_PathwayEditor = function(parent) {
 					}
 				}
 
-				// Add processed nodes
+				// Add nodes
 				cy.add(obj.elements);
 				cy.center();
 				cy.fit();
+
+				//Post-Add Process
+				postAddProcessing();
+
 			}
 			saveState();
 			loadCounts++;
@@ -434,7 +471,9 @@ var VQI_PathwayEditor = function(parent) {
 					Height : 25,
 					id : "n" + nodeCounter,
 					name : name,
-					selected : false
+					selected : false,
+					backgroundImage: "",
+					zIndex: 0
 				},
 				renderedPosition : {
 					x : left,
@@ -444,6 +483,7 @@ var VQI_PathwayEditor = function(parent) {
 
 			nodeCounter++;
 			cy.add(node);
+			postAddProcessing();
 		}
 
 		function addEdge(event) {
@@ -459,6 +499,7 @@ var VQI_PathwayEditor = function(parent) {
 					group : "edges",
 					data : {
 						id : "e" + edgeCounter,
+						Type : "Solid",
 						LineThickness : 1.0,
 						EndArrow : "Line",
 						Coords : [{
@@ -478,6 +519,7 @@ var VQI_PathwayEditor = function(parent) {
 
 				edgeCounter++;
 				cy.add(edge);
+				postAddProcessing();
 			}
 		}
 
@@ -498,7 +540,9 @@ var VQI_PathwayEditor = function(parent) {
 								id : node.children()[x].data('id'),
 								name : node.children()[x].data('name'),
 								selected : node.children()[x].data('selected'),
-								parent : node.parent().data('id')
+								parent : node.parent().data('id'),
+								backgroundImage: node.children()[x].data('backgroundImage'),
+								zIndex: node.children()[x].data('zIndex')
 							},
 							position : {
 								x : node.children()[x].position('x'),
@@ -516,7 +560,9 @@ var VQI_PathwayEditor = function(parent) {
 								Height : node.children()[x].data('Height'),
 								id : node.children()[x].data('id'),
 								name : node.children()[x].data('name'),
-								selected : node.children()[x].data('selected')
+								selected : node.children()[x].data('selected'),
+								backgroundImage: node.children()[x].data('backgroundImage'),
+								zIndex: node.children()[x].data('zIndex')
 							},
 							position : {
 								x : node.children()[x].position('x'),
@@ -529,6 +575,7 @@ var VQI_PathwayEditor = function(parent) {
 							group : "edges",
 							data : {
 								id : node.children()[x].connectedEdges()[j].data('id'),
+								Type : node.children()[x].connectedEdges()[j].data('Type'),
 								LineThickness : node.children()[x].connectedEdges()[j].data('LineThickness'),
 								EndArrow : node.children()[x].connectedEdges()[j].data('EndArrow'),
 								Coords : node.children()[x].connectedEdges()[j].data('Coords'),
@@ -556,7 +603,9 @@ var VQI_PathwayEditor = function(parent) {
 								id : node.children()[x].data('id'),
 								name : node.children()[x].data('name'),
 								selected : node.children()[x].data('selected'),
-								parent : node.data('id')
+								parent : node.data('id'),
+								backgroundImage: node.children()[x].data('backgroundImage'),
+								zIndex: node.children()[x].data('zIndex')
 							},
 							position : {
 								x : node.children()[x].position('x'),
@@ -574,7 +623,9 @@ var VQI_PathwayEditor = function(parent) {
 								Height : node.children()[x].data('Height'),
 								id : node.children()[x].data('id'),
 								name : node.children()[x].data('name'),
-								selected : node.children()[x].data('selected')
+								selected : node.children()[x].data('selected'),
+								backgroundImage: node.children()[x].data('backgroundImage'),
+								zIndex: node.children()[x].data('zIndex')
 							},
 							position : {
 								x : node.children()[x].position('x'),
@@ -588,6 +639,7 @@ var VQI_PathwayEditor = function(parent) {
 							group : "edges",
 							data : {
 								id : node.children()[x].connectedEdges()[j].data('id'),
+								Type : node.children()[x].connectedEdges()[j].data('Type'),
 								LineThickness : node.children()[x].connectedEdges()[j].data('LineThickness'),
 								EndArrow : node.children()[x].connectedEdges()[j].data('EndArrow'),
 								Coords : node.children()[x].connectedEdges()[j].data('Coords'),
@@ -623,6 +675,7 @@ var VQI_PathwayEditor = function(parent) {
 
 			// Add new nodes
 			cy.add(nodes.concat(edges));
+			postAddProcessing();
 		}
 
 		function recursiveBundle(node, edges, nodes) {
@@ -637,7 +690,9 @@ var VQI_PathwayEditor = function(parent) {
 					id : node.data('id'),
 					name : node.data('name'),
 					selected : node.data('selected'),
-					parent : node.data('parent')
+					parent : node.data('parent'),
+					backgroundImage: node.data('backgroundImage'),
+					zIndex: node.data('zIndex')
 				},
 				position : {
 					x : node.position('x'),
@@ -649,6 +704,7 @@ var VQI_PathwayEditor = function(parent) {
 					group : "edges",
 					data : {
 						id : node.connectedEdges()[j].data('id'),
+						Type : node.connectedEdges()[j].data('Type'),
 						LineThickness : node.connectedEdges()[j].data('LineThickness'),
 						EndArrow : node.connectedEdges()[j].data('EndArrow'),
 						Coords : node.connectedEdges()[j].data('Coords'),
@@ -682,7 +738,9 @@ var VQI_PathwayEditor = function(parent) {
 					Height : 100,
 					id : "n" + nodeCounter,
 					name : "n" + nodeCounter,
-					selected : false
+					selected : false,
+					backgroundImage: "",
+					zIndex: 0
 				},
 				position : {
 					x : 500,
@@ -704,7 +762,10 @@ var VQI_PathwayEditor = function(parent) {
 							id : selectedForEditNodes[i].data('id'),
 							name : selectedForEditNodes[i].data('name'),
 							selected : selectedForEditNodes[i].data('selected'),
-							parent : "n" + nodeCounter
+							parent : "n" + nodeCounter,
+							backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
+							zIndex: selectedForEditNodes[i].data('zIndex')
+							
 						},
 						position : {
 							x : selectedForEditNodes[i].position('x'),
@@ -716,6 +777,7 @@ var VQI_PathwayEditor = function(parent) {
 							group : "edges",
 							data : {
 								id : selectedForEditNodes[i].connectedEdges()[j].data('id'),
+								Type : selectedForEditNodes[i].connectedEdges()[j].data('Type'),
 								LineThickness : selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
 								EndArrow : selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
 								Coords : selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
@@ -738,6 +800,7 @@ var VQI_PathwayEditor = function(parent) {
 
 			// Add new nodes
 			cy.add(nodes.concat(edges));
+			postAddProcessing();
 
 			if (!cy.elements("node[id = \"n" + nodeCounter + "\"]").isParent())
 				cy.elements("node[id = \"n" + nodeCounter + "\"]").remove();
@@ -935,7 +998,8 @@ var VQI_PathwayEditor = function(parent) {
 				cy.$('edge').remove();
 				stateRecycle.push(states.pop());
 				var obj = JSON.parse(states[states.length - 1]);
-				cy.add(obj.elements)
+				cy.add(obj.elements);
+				postAddProcessing();
 			}
 		}
 
@@ -947,6 +1011,7 @@ var VQI_PathwayEditor = function(parent) {
 				states.push(stateRecycle.pop());
 				var obj = JSON.parse(states[states.length - 1]);
 				cy.add(obj.elements)
+				postAddProcessing();
 			}
 		}
 
@@ -996,9 +1061,11 @@ var VQI_PathwayEditor = function(parent) {
 			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			var direction = document.getElementById(parent + "-direction").value;
-			var type = document.getElementById(parent + "-type-edge").value;
-			target.data('StartArrow', type);
-			target.data('EndArrow', type);
+			var arrowType = document.getElementById(parent + "-arrow-type-edge").value;
+			var lineType = document.getElementById(parent + "-line-type-edge").value;
+			target.data('StartArrow', arrowType);
+			target.data('EndArrow', arrowType);
+			target.data('Type', lineType);
 			if (document.getElementById(parent + '-direction').checked) {
 				var edge = [];
 
@@ -1006,6 +1073,7 @@ var VQI_PathwayEditor = function(parent) {
 					group : "edges",
 					data : {
 						id : target.data('id'),
+						Type : target.data('Type'),
 						LineThickness : target.data('LineThickness'),
 						EndArrow : target.data('EndArrow'),
 						Coords : target.data('Coords'),
@@ -1018,10 +1086,30 @@ var VQI_PathwayEditor = function(parent) {
 				})
 				target.remove();
 				cy.add(edge);
+				postAddProcessing();
 			}
 			dialogEdge.dialog("close");
 		}
-		
+
+		function moveNodetoBackground(event) {
+			saveState();
+			target.style("z-index", 0);
+			target.data("zIndex", 0);
+		}
+
+		function moveNodetoForeground(event) {
+			saveState();
+			highestZOrder++;
+			target.style("z-index", highestZOrder);
+			target.data("zIndex", highestZOrder);
+		}
+
+		function removeBackgroundImageOnNode(event) {
+			saveState();
+			target.removeStyle("background-image");
+			target.data("backgroundImage", "");
+		}
+
 		function onChangeBackgroundImageOnNode(event) {
 			var reader = new FileReader();
 			reader.onload = onBackgroundImageReaderLoad;
@@ -1029,8 +1117,10 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function onBackgroundImageReaderLoad() {
+			saveState();
 			var img = event.target.result;
 			target.style("background-image", img);
+			target.data("backgroundImage", img);
 		}
 
 		function editNode() {
@@ -1169,6 +1259,7 @@ var VQI_PathwayEditor = function(parent) {
 					'padding-left' : 2,
 					'padding-right' : 2,
 					'font-family' : 'data(LabelSize)',
+					'background-image-opacity' : .75,
 					'opacity' : 0.75,
 					'text-opacity' : 0.75
 				}).selector('node[Type="bundleOne"]').css({
@@ -1302,6 +1393,10 @@ var VQI_PathwayEditor = function(parent) {
 					'opacity' : 0.75,
 					'text-opacity' : 0.75,
 					'width' : 1
+				}).selector('edge[EndArrow="Line"]').css({
+					'target-arrow-shape' : 'line',
+					'target-arrow-color' : 'black',
+					'target-arrow-fill' : 'filled'
 				}).selector('edge[EndArrow="Arrow"]').css({
 					'target-arrow-shape' : 'triangle',
 					'target-arrow-color' : 'black',
@@ -1310,7 +1405,14 @@ var VQI_PathwayEditor = function(parent) {
 					'target-arrow-shape' : 'tee',
 					'target-arrow-color' : 'black',
 					'target-arrow-fill' : 'filled'
+				}).selector('edge[Type="Solid"]').css({
+					'line-style' : 'solid'
+				}).selector('edge[Type="Dashed"]').css({
+					'line-style' : 'dashed'
+				}).selector('edge[Type="Dotted"]').css({
+					'line-style' : 'dotted'
 				})
+
 
 				// node & edge elements (selected state)
 				.selector('edge:selected').css({
@@ -1388,7 +1490,7 @@ var VQI_PathwayEditor = function(parent) {
 							obj.elements.nodes[i].data.Type = "label";
 						}
 					}
-		
+
 					//un-disable options
 					$('#' + parent + '-select-bundleOne').removeClass('disabled');
 					$('#' + parent + '-add-node').removeClass('disabled');
@@ -1405,11 +1507,14 @@ var VQI_PathwayEditor = function(parent) {
 					$('#' + parent + '-produce-JSON').removeClass('disabled');
 					$('#' + parent + '-undo').removeClass('disabled');
 					$('#' + parent + '-redo').removeClass('disabled');
-					
+
 					// Add processed nodes
 					cy.add(obj.elements);
 					cy.center();
 					cy.fit();
+
+					// Post-Add Process
+					postAddProcessing();
 
 					// add custom event
 					var tappedBefore = null;
@@ -1689,6 +1794,9 @@ var VQI_PathwayEditor = function(parent) {
 		document.getElementById(parent + '-file-pathway').addEventListener('change', onChangePathwayFile);
 		document.getElementById(parent + '-file-coloring').addEventListener('change', onChangeColoringFile);
 		document.getElementById(parent + '-background-image').addEventListener('change', onChangeBackgroundImageOnNode);
+		document.getElementById(parent + '-background-image-remove').addEventListener('click', removeBackgroundImageOnNode);
+		document.getElementById(parent + '-node-move-to-background').addEventListener('click', moveNodetoBackground);
+		document.getElementById(parent + '-node-move-to-foreground').addEventListener('click', moveNodetoForeground);
 		document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
 		document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
 		document.getElementById(parent + '-find-object').addEventListener('click', findObject);
