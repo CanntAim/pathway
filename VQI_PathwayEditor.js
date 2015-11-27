@@ -13,7 +13,7 @@ var VQI_PathwayEditor = function(parent) {
 
 	// Globals
 	var states = [];
-	var types = ["bundleOne", "bundleTwo", "genes", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "label"];
+	var types = ["bundleOne", "bundleTwo", "genes", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "triangle","ellipse","pentagon","hexagon","heptagon","octagon","star","diamond","vee","rhomboid","label"];
 	var stateRecycle = [];
 	var lastEvent = 0;
 	var selectedForQueryNodes = [];
@@ -162,6 +162,10 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "  					<option>Dotted<\/option>";
 	strVar += "  					<option>Dashed<\/option>";
 	strVar += "					<\/select>";
+	strVar += "    				<label for=\"" + parent + "-edge-move-to-background\">Move to Background:<\/label>";
+	strVar += "    				<input id=\"" + parent + "-edge-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    				<label for=\"" + parent + "-edge-move-to-foreground\">Move to Foreground:<\/label>";
+	strVar += "    				<input id=\"" + parent + "-edge-move-to-foreground\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
 	strVar += " 			<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
 	strVar += "    		<\/fieldset>";
 	strVar += "  		<\/form>";
@@ -196,6 +200,16 @@ var VQI_PathwayEditor = function(parent) {
 	strVar += "  					<option id=\"" + parent + "-select-ligand\">ligand<\/option>";
 	strVar += "  					<option id=\"" + parent + "-select-receptor\">receptor<\/option>";
 	strVar += "  					<option id=\"" + parent + "-select-biologicalProcess\">biologicalProcess<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-triangle\">triangle<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-ellipse\">ellipse<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-pentagon\">pentagon<\/option>";	
+	strVar += "  					<option id=\"" + parent + "-select-hexagon\">hexagon<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-heptagon\">heptagon<\/option>";	
+	strVar += "  					<option id=\"" + parent + "-select-octagon\">octagon<\/option>";	
+	strVar += "  					<option id=\"" + parent + "-select-star\">star<\/option>";	
+	strVar += "  					<option id=\"" + parent + "-select-diamond\">diamond<\/option>";	
+	strVar += "  					<option id=\"" + parent + "-select-vee\">vee<\/option>";	
+	strVar += "  					<option id=\"" + parent + "-select-rhomboid\">rhomboid<\/option>";	
 	strVar += "  					<option id=\"" + parent + "-select-label\">label<\/option>";
 	strVar += "					<\/select>";
 	strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
@@ -918,9 +932,29 @@ var VQI_PathwayEditor = function(parent) {
 		function getPathScore(edgeArray, scoreJSON) {
 			var sum = 0;
 			for (var i = 0; i < edgeArray.length; i++) {
-				sum = sum + scoreJSON[edgeArray[i]];
+				sum=sum+(i+1)*scoreJSON[edgeArray[i]]/edgeArray.length;
 			}
 			return sum / edgeArray.length;
+		}
+		
+		function convertEdgePathtoNodePath(selectedPaths){
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			var nodePath = [];
+			for (var n = 0; n < selectedPaths.length; n++) {
+				nodePath.push([])
+				for (var j = 0; j < selectedPaths[n].length; j++) {
+					if(j < selectedPaths[n].length-1){
+						var sourceNode = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
+						nodePath[n].push(sourceNode);
+					} else {
+						var sourceNode = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
+						var targetNode = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('target');
+						nodePath[n].push(sourceNode);
+						nodePath[n].push(targetNode);
+					}
+				}
+			}
+			return nodePath;
 		}
 
 		function wrapperFindPath() {
@@ -929,36 +963,41 @@ var VQI_PathwayEditor = function(parent) {
 			var vid = orderedSelectedNodes[1]._private.data['id'];
 			$.post(services['pathwayScorer'], {
 				data_json : JSON.parse(states[states.length - 1])
-			}, function(data) {
-				var scoreJSON = JSON.parse(data);
+			}, function(yue_data) {
 				var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
-				var table = document.getElementById(parent + "-inner-table");
-				var length = document.getElementById(parent + "-inner-table").rows.length;
+				var nodePaths = convertEdgePathtoNodePath(selectedPaths);
+				$.post(services['objectFinder'], {
+					data_paths : JSON.stringify(nodePaths)
+				}, function(tham_data) {
+					console.log(tham_data)
+					var scoreJSON = JSON.parse(yue_data);
+					var table = document.getElementById(parent + "-inner-table");
+					var length = document.getElementById(parent + "-inner-table").rows.length;
 
-				if ( typeof (selectedPaths) == "undefined") {
-					dialogPathfind.dialog("close");
-				}
+					if ( typeof (selectedPaths) == "undefined") {
+						dialogPathfind.dialog("close");
+					}
 
-				for (var n = 0; n < length; n++) {
-					table.deleteRow(0);
-				}
-				for (var n = 0; n <= selectedPaths.length; n++) {
-					var row = table.insertRow();
+					for (var n = 0; n < length; n++) {
+						table.deleteRow(0);
+					}
+					for (var n = 0; n <= selectedPaths.length; n++) {
+						var row = table.insertRow();
 
-					var path = row.insertCell(0);
-					var score = row.insertCell(1);
+						var path = row.insertCell(0);
+						var score = row.insertCell(1);
 
-					// Add some text to the new cells:
+						// Add some text to the new cells:
 
-					if (n == 0) {
-						path.innerHTML = "<i><h3>paths</h3></i>";
-						score.innerHTML = "<i><h3>scores</h3></i>"
-					} else {
-						var btn = document.createElement("button");
-						var t = document.createTextNode((n - 1).toString());
-						btn.className = "btn btn-link";
-						btn.appendChild(t);
-						btn.addEventListener('click', function(event) {
+						if (n == 0) {
+							path.innerHTML = "<i><h3>paths</h3></i>";
+							score.innerHTML = "<i><h3>scores</h3></i>"
+						} else {
+							var btn = document.createElement("button");
+							var t = document.createTextNode((n - 1).toString());
+							btn.className = "btn btn-link";
+							btn.appendChild(t);
+							btn.addEventListener('click', function(event) {
 							var k = parseInt(event.currentTarget.innerHTML);
 							cy.$('node').unselect();
 							cy.$('edge').unselect();
@@ -972,14 +1011,15 @@ var VQI_PathwayEditor = function(parent) {
 								cy.$('edge').style("opacity", 0.2);
 								cy.$('node:selected').style("opacity", 1.0);
 								cy.$('edge:selected').style("opacity", 1.0);
-							}
-						});
-						path.appendChild(btn);
-						score.appendChild(document.createTextNode(getPathScore(selectedPaths[n - 1], scoreJSON).toString()));
+								}
+							});
+							path.appendChild(btn);
+							score.appendChild(document.createTextNode(getPathScore(selectedPaths[n - 1], scoreJSON).toString()));
+						}
 					}
-				}
-				dialogTable.dialog("open");
-				dialogPathfind.dialog("close");
+					dialogTable.dialog("open");
+					dialogPathfind.dialog("close");			
+				});
 			})
 		}
 
@@ -1091,13 +1131,13 @@ var VQI_PathwayEditor = function(parent) {
 			dialogEdge.dialog("close");
 		}
 
-		function moveNodetoBackground(event) {
+		function moveElementtoBackground(event) {
 			saveState();
 			target.style("z-index", 0);
 			target.data("zIndex", 0);
 		}
 
-		function moveNodetoForeground(event) {
+		function moveElementtoForeground(event) {
 			saveState();
 			highestZOrder++;
 			target.style("z-index", highestZOrder);
@@ -1119,8 +1159,9 @@ var VQI_PathwayEditor = function(parent) {
 		function onBackgroundImageReaderLoad() {
 			saveState();
 			var img = event.target.result;
-			target.style("background-image", img);
+			target.data('Type', "image");
 			target.data("backgroundImage", img);
+			target.style("background-image", img);
 		}
 
 		function editNode() {
@@ -1365,6 +1406,106 @@ var VQI_PathwayEditor = function(parent) {
 					'border-color' : 'black',
 					'border-style' : 'solid',
 					'border-width' : 1
+				}).selector('node[Type="triangle"]').css({
+					'shape' : 'triangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="ellipse"]').css({
+					'shape' : 'ellipse',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="pentagon"]').css({
+					'shape' : 'pentagon',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="hexagon"]').css({
+					'shape' : 'hexagon',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="heptagon"]').css({
+					'shape' : 'heptagon',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="octagon"]').css({
+					'shape' : 'octagon',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="star"]').css({
+					'shape' : 'star',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="diamond"]').css({
+					'shape' : 'diamond',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="vee"]').css({
+					'shape' : 'vee',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="rhomboid"]').css({
+					'shape' : 'rhomboid',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'white',
+					'border-color' : 'black',
+					'border-style' : 'solid',
+					'border-width' : 1
 				}).selector('node[Type="label"]').css({
 					'shape' : 'rectangle',
 					'width' : 'data(Width)',
@@ -1372,6 +1513,16 @@ var VQI_PathwayEditor = function(parent) {
 					'color' : 'black',
 					'text-valign' : 'center',
 					'background-color' : 'white',
+					'border-color' : 'white',
+					'border-style' : 'solid',
+					'border-width' : 1
+				}).selector('node[Type="image"]').css({
+					'shape' : 'rectangle',
+					'width' : 'data(Width)',
+					'height' : 'data(Height)',
+					'color' : 'black',
+					'text-valign' : 'center',
+					'background-color' : 'rgba(155,155,155,0)',
 					'border-color' : 'white',
 					'border-style' : 'solid',
 					'border-width' : 1
@@ -1668,6 +1819,16 @@ var VQI_PathwayEditor = function(parent) {
 					document.getElementById(parent + "-select-ligand").disabled = false;
 					document.getElementById(parent + "-select-receptor").disabled = false;
 					document.getElementById(parent + "-select-biologicalProcess").disabled = false;
+					document.getElementById(parent + "-select-triangle").disabled = false;
+					document.getElementById(parent + "-select-ellipse").disabled = false;
+					document.getElementById(parent + "-select-pentagon").disabled = false;
+					document.getElementById(parent + "-select-hexagon").disabled = false;
+					document.getElementById(parent + "-select-heptagon").disabled = false;
+					document.getElementById(parent + "-select-octagon").disabled = false;
+					document.getElementById(parent + "-select-star").disabled = false;
+					document.getElementById(parent + "-select-diamond").disabled = false;
+					document.getElementById(parent + "-select-vee").disabled = false;
+					document.getElementById(parent + "-select-rhomboid").disabled = false;
 					document.getElementById(parent + "-select-label").disabled = false;
 				} else {
 					document.getElementById(parent + '-select-bundleOne').disabled = false;
@@ -1681,6 +1842,16 @@ var VQI_PathwayEditor = function(parent) {
 					document.getElementById(parent + "-select-ligand").disabled = true;
 					document.getElementById(parent + "-select-receptor").disabled = true;
 					document.getElementById(parent + "-select-biologicalProcess").disabled = true;
+					document.getElementById(parent + "-select-triangle").disabled = true;
+					document.getElementById(parent + "-select-ellipse").disabled = true;
+					document.getElementById(parent + "-select-pentagon").disabled = true;
+					document.getElementById(parent + "-select-hexagon").disabled = true;
+					document.getElementById(parent + "-select-heptagon").disabled = true;
+					document.getElementById(parent + "-select-octagon").disabled = true;
+					document.getElementById(parent + "-select-star").disabled = true;
+					document.getElementById(parent + "-select-diamond").disabled = true;
+					document.getElementById(parent + "-select-vee").disabled = true;
+					document.getElementById(parent + "-select-rhomboid").disabled = true;
 					document.getElementById(parent + "-select-label").disabled = true;
 				}
 				document.getElementById(parent + "-gene-name").value = target.data('name');
@@ -1795,8 +1966,10 @@ var VQI_PathwayEditor = function(parent) {
 		document.getElementById(parent + '-file-coloring').addEventListener('change', onChangeColoringFile);
 		document.getElementById(parent + '-background-image').addEventListener('change', onChangeBackgroundImageOnNode);
 		document.getElementById(parent + '-background-image-remove').addEventListener('click', removeBackgroundImageOnNode);
-		document.getElementById(parent + '-node-move-to-background').addEventListener('click', moveNodetoBackground);
-		document.getElementById(parent + '-node-move-to-foreground').addEventListener('click', moveNodetoForeground);
+		document.getElementById(parent + '-node-move-to-background').addEventListener('click', moveElementtoBackground);
+		document.getElementById(parent + '-node-move-to-foreground').addEventListener('click', moveElementtoForeground);
+		document.getElementById(parent + '-edge-move-to-background').addEventListener('click', moveElementtoBackground);
+		document.getElementById(parent + '-edge-move-to-foreground').addEventListener('click', moveElementtoForeground);
 		document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
 		document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
 		document.getElementById(parent + '-find-object').addEventListener('click', findObject);
