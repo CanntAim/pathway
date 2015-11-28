@@ -299,6 +299,7 @@ var VQI_PathwayEditor = function(parent) {
 			for (var i = 0; i < cy.$("node").length; i++) {
 				if ( typeof (cy.$("node")[i].data("backgroundImage")) != undefined && cy.$("node")[i].data("backgroundImage") != "") {
 					cy.$("node")[i].style("backgroundImage", cy.$("node")[i].data("backgroundImage"));
+					cy.$("node")[i].data("Type", "image");
 				}
 			}
 
@@ -1522,7 +1523,7 @@ var VQI_PathwayEditor = function(parent) {
 					'height' : 'data(Height)',
 					'color' : 'black',
 					'text-valign' : 'center',
-					'background-color' : 'rgba(155,155,155,0)',
+					'background-opacity' : 0,
 					'border-color' : 'white',
 					'border-style' : 'solid',
 					'border-width' : 1
@@ -1634,7 +1635,7 @@ var VQI_PathwayEditor = function(parent) {
 								edgeCounter = number + 1;
 						}
 					}
-
+					
 					for (var i = 0; i < obj.elements.nodes.length; i++) {
 						if (types.indexOf(obj.elements.nodes[i].data.Type) == -1) {
 							console.log(obj.elements.nodes[i].data.Type);
