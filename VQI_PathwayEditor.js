@@ -1526,7 +1526,8 @@ var VQI_PathwayEditor = function(parent) {
 					'background-opacity' : 0,
 					'border-color' : 'white',
 					'border-style' : 'solid',
-					'border-width' : 1
+					'border-width' : 1,
+					'background-fit' : 'contain'
 				}).selector('node[Shape="Brace"]').css({
 					'shape' : 'rectangle',
 					'width' : '1',
