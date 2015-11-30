@@ -458,8 +458,10 @@ var VQI_PathwayEditor = function(parent) {
 
 		function removeElements(event) {
 			saveState();
-			selectedForEditNodes.remove();
-			selectedForEditEdges.remove();
+			if(selectedForEditNodes.length > 0)
+				selectedForEditNodes.remove();
+			if(selectedForEditEdges.length > 0)
+				selectedForEditEdges.remove();
 		}
 
 		function addNode(event) {
