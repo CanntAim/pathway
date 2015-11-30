@@ -1638,6 +1638,20 @@ var VQI_PathwayEditor = function(parent) {
 					}
 					
 					for (var i = 0; i < obj.elements.nodes.length; i++) {
+						if (types.indexOf(obj.elements.nodes[i].data.zIndex) == -1) {
+							console.log(obj.elements.nodes[i].data.zIndex);
+							obj.elements.nodes[i].data.zIndex = 0;
+						}
+					}
+					
+					for (var i = 0; i < obj.elements.nodes.length; i++) {
+						if (types.indexOf(obj.elements.nodes[i].data.backgroundImage) == -1) {
+							console.log(obj.elements.nodes[i].data.backgroundImage);
+							obj.elements.nodes[i].data.backgroundImage = "";
+						}
+					}
+					
+					for (var i = 0; i < obj.elements.nodes.length; i++) {
 						if (types.indexOf(obj.elements.nodes[i].data.Type) == -1) {
 							console.log(obj.elements.nodes[i].data.Type);
 							obj.elements.nodes[i].data.Type = "label";
