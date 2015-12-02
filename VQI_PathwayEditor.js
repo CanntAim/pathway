@@ -7,8 +7,9 @@ var VQI_PathwayEditor = function(parent) {
 	var services = {};
 
 	services['pathwayFinder'] = serverURL + 'PathwayParser/ajaxJSON.php';
-	services['pathwayScorer'] = 'http://137.99.11.36/pathwayVisual/ScoreSystem/getScore.php';
 	services['pathwaySaver'] = serverURL + 'PathwayParser/updateDB_json.php';
+        services['pathwayScorer'] = 'http://137.99.11.36/pathwayVisual/ScoreSystem/getScore.php';
+        services['pathwayWeightedScorer'] = 'http://137.99.11.36/pathway2/pathwayweightedscorer.php';
 	services['objectFinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
 
 	// Globals
@@ -947,13 +948,19 @@ var VQI_PathwayEditor = function(parent) {
 				nodePath.push([])
 				for (var j = 0; j < selectedPaths[n].length; j++) {
 					if(j < selectedPaths[n].length-1){
-						var sourceNode = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
-						nodePath[n].push(sourceNode);
+						var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
+                                                var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
+                                                console.log(sourceNodeName);
+						nodePath[n].push(sourceNodeName);
 					} else {
-						var sourceNode = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
-						var targetNode = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('target');
-						nodePath[n].push(sourceNode);
-						nodePath[n].push(targetNode);
+						var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
+						var targetNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('target');
+                                                var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
+                                                var targetNodeName = cy.elements("node[id = \"" + targetNodeId + "\"]").data('name');
+						nodePath[n].push(sourceNodeName);
+						nodePath[n].push(targetNodeName);
+                                                console.log(sourceNodeName);
+                                                console.log(targetNodeName);
 					}
 				}
 			}
@@ -969,6 +976,7 @@ var VQI_PathwayEditor = function(parent) {
 			}, function(yue_data) {
 				var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
 				var nodePaths = convertEdgePathtoNodePath(selectedPaths);
+                                console.log(JSON.stringify(nodePaths));
 				$.post(services['objectFinder'], {
 					data_paths : JSON.stringify(nodePaths)
 				}, function(tham_data) {
