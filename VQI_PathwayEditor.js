@@ -33,7 +33,7 @@ var VQI_PathwayEditor = function(parent) {
 	var highestZOrder = 999;
 
 	var strVar = "";
-	strVar += " <nav class=\"navbar navbar-default navbar-fixed-top\">";
+	strVar += " <nav class=\"navbar navbar-default\">";
 	strVar += " <div class=\"container-fluid\">";
 	strVar += " <div class=\"navbar-header\">";
 	strVar += " 	<a class=\"navbar-brand\" href=\"#\">Pathway name</a>";
@@ -377,14 +377,13 @@ var VQI_PathwayEditor = function(parent) {
 
 		function saveAsPathway(event) {
 			var obj = JSON.parse(states[states.length - 1]);
-			JSON.stringify(obj);
 			obj.data.NAME = document.getElementById(parent + "-pathway-name").value;
 			$.post(services['pathwaySaver'], {
-				insertPathway : obj
+				insertPathway : JSON.stringify(obj)
 			}, function(data) {
 				if (data == "Duplicate Pathway!") {
 					$.post(services['pathwaySaver'], {
-						updatePathway : obj
+						updatePathway : JSON.stringify(obj)
 					}, function(data) {
 						dialogPathwaySaveAs.dialog("close");
 					});
@@ -397,9 +396,8 @@ var VQI_PathwayEditor = function(parent) {
 
 		function savePathway(event) {
 			var obj = JSON.parse(states[states.length - 1]);
-			JSON.stringify(obj);
 			$.post(services['pathwaySaver'], {
-				updatePathway : obj
+				updatePathway : JSON.stringify(obj)
 			}, function(data) {
 				console.log(data);
 				dialogPathwaySaveAs.dialog("close");
