@@ -377,6 +377,7 @@ var VQI_PathwayEditor = function(parent) {
 
 		function saveAsPathway(event) {
 			var obj = JSON.parse(states[states.length - 1]);
+			JSON.stringify(obj);
 			obj.data.NAME = document.getElementById(parent + "-pathway-name").value;
 			$.post(services['pathwaySaver'], {
 				insertPathway : obj
@@ -396,6 +397,7 @@ var VQI_PathwayEditor = function(parent) {
 
 		function savePathway(event) {
 			var obj = JSON.parse(states[states.length - 1]);
+			JSON.stringify(obj);
 			$.post(services['pathwaySaver'], {
 				updatePathway : obj
 			}, function(data) {
@@ -845,6 +847,9 @@ var VQI_PathwayEditor = function(parent) {
 				pathwayList : '1'
 			}, function(data) {
 				var obj = JSON.parse(data);
+				var el = document.createElement("option");
+				el.textContent = "Select pathway";
+				select.appendChild(el);
 				for (var i = 0; i < obj.length; i++) {
 					var opt = obj[i].NAME;
 					var val = obj[i].ID;
@@ -976,7 +981,6 @@ var VQI_PathwayEditor = function(parent) {
 			}, function(yue_data) {
 				var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
 				var nodePaths = convertEdgePathtoNodePath(selectedPaths);
-                                console.log(JSON.stringify(nodePaths));
 				$.post(services['objectFinder'], {
 					data_paths : JSON.stringify(nodePaths)
 				}, function(tham_data) {
