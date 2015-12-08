@@ -381,7 +381,9 @@ var VQI_PathwayEditor = function(parent) {
 			$.post(services['pathwaySaver'], {
 				insertPathway : JSON.stringify(obj)
 			}, function(data) {
-				if (data == "Duplicate Pathway!") {
+				console.log(data)
+				if (data != "Success!") {
+					console.log("duplicate-found! calling update rather than insert.")
 					$.post(services['pathwaySaver'], {
 						updatePathway : JSON.stringify(obj)
 					}, function(data) {
@@ -975,7 +977,7 @@ var VQI_PathwayEditor = function(parent) {
 			var sid = orderedSelectedNodes[0]._private.data['id'];
 			var vid = orderedSelectedNodes[1]._private.data['id'];
 			$.post(services['pathwayScorer'], {
-				data_json : JSON.parse(states[states.length - 1])
+				data_json : JSON.stringify(JSON.parse(states[states.length - 1]))
 			}, function(yue_data) {
 				var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
 				var nodePaths = convertEdgePathtoNodePath(selectedPaths);
@@ -999,12 +1001,14 @@ var VQI_PathwayEditor = function(parent) {
 
 						var path = row.insertCell(0);
 						var score = row.insertCell(1);
+						var fdr = row.insertCell(2);
 
 						// Add some text to the new cells:
 
 						if (n == 0) {
 							path.innerHTML = "<i><h3>paths</h3></i>";
 							score.innerHTML = "<i><h3>scores</h3></i>"
+							fdr.innerHTML = "<i><h3>fdr</h3></i>"
 						} else {
 							var btn = document.createElement("button");
 							var t = document.createTextNode((n - 1).toString());
@@ -1773,6 +1777,7 @@ var VQI_PathwayEditor = function(parent) {
 					});
 
 					saveState();
+					sprayColor(self.sprayData);
 				},
 				// initial viewport state:
 				zoom : 1,
@@ -2016,16 +2021,8 @@ var VQI_PathwayEditor = function(parent) {
 		document.getElementById(parent + '-redo').addEventListener('click', redo);
 
 		//external functions
-		self.loadPathwayExternal = function(id) {
-			loadPathway(id);
-		}
-
-		self.sprayColorExternal = function(list) {
-			sprayColor(list);
-		}
-
-		self.testExternal = function() {
-			console.log(print);
-		}
+		self.setDataToSpray = function(data){
+            this.sprayData = data;
+        };
 	});
 };
