@@ -260,7 +260,6 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function collapseBundle(event) {
-			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			for (var i = 0; i < selectedForEditNodes.size(); i++) {
 				if (selectedForEditNodes[i].isParent()) {
@@ -273,10 +272,10 @@ var VQI_PathwayEditor = function(parent) {
 					});
 				}
 			}
+			saveState();
 		}
 
 		function expandBundle(event) {
-			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			for (var i = 0; i < selectedForEditNodes.size(); i++) {
 				if (selectedForEditNodes[i].isParent()) {
@@ -285,12 +284,14 @@ var VQI_PathwayEditor = function(parent) {
 					selectedForEditNodes[i].descendants().grabify();
 				}
 			}
+			saveState();
 		}
 
 		function onChangeColoringFile(event) {
 			var reader = new FileReader();
 			reader.onload = onColoringReaderLoad;
 			reader.readAsText(event.target.files[0]);
+			saveState();
 		}
 
 		function postAddProcessing() {
@@ -298,15 +299,57 @@ var VQI_PathwayEditor = function(parent) {
 			
 			//Post-Add Process
 			for (var i = 0; i < cy.$("node").length; i++) {
-				if ( typeof (cy.$("node")[i].data("backgroundImage")) != undefined && cy.$("node")[i].data("backgroundImage") != "") {
+				if ( typeof (cy.$("node")[i].data("backgroundImage")) != "undefined" && cy.$("node")[i].data("backgroundImage") != "") {
 					cy.$("node")[i].style("backgroundImage", cy.$("node")[i].data("backgroundImage"));
 					cy.$("node")[i].data("Type", "image");
 				}
 			}
 
 			for (var i = 0; i < cy.$("node").length; i++) {
-				if ( typeof (cy.$("node")[i].data("zIndex")) != undefined) {
+				if ( typeof (cy.$("node")[i].data("zIndex")) != "undefined") {
 					cy.$("node")[i].style("zIndex", cy.$("node")[i].data("zIndex"));
+				}
+			}
+		}
+		
+		function preAddProcessing(obj) {
+			for (var i = 0; i < obj.elements.nodes.length; i++) {
+				if (obj.elements.nodes[i].data.id.substring(0, 1) == "n") {
+					var number = parseInt(obj.elements.nodes[i].data.id.substring(1, obj.elements.nodes.length - 1));
+					if (number > nodeCounter)
+						nodeCounter = number + 1;
+				}
+					
+				if (types.indexOf(obj.elements.nodes[i].data.backgroundImage) == -1) {
+					obj.elements.nodes[i].data.backgroundImage = "";
+				}
+					
+				if (types.indexOf(obj.elements.nodes[i].data.zIndex) == -1) {
+					obj.elements.nodes[i].data.zIndex = 0;
+				}
+					
+				if (types.indexOf(obj.elements.nodes[i].data.Type) == -1) {
+					obj.elements.nodes[i].data.Type = "label";
+				}
+					
+				if (typeof (obj.elements.nodes[i].data.rna) == "undefined") {
+					obj.elements.nodes[i].data.rna = 0;
+				}
+				
+				if (typeof (obj.elements.nodes[i].data.cnv) == "undefined") {
+					obj.elements.nodes[i].data.cnv = 0;
+				}
+					
+				if (typeof (obj.elements.nodes[i].data.mut) == "undefined") {
+					obj.elements.nodes[i].data.mut = 0;
+				}
+			}
+			
+			for (var i = 0; i < obj.elements.edges.length; i++) {
+				if (obj.elements.edges[i].data.id.substring(0, 1) == "e") {
+					var number = parseInt(obj.elements.edges[i].data.id.substring(1, obj.elements.edges.length - 1));
+					if (number > edgeCounter)
+						edgeCounter = number + 1;
 				}
 			}
 		}
@@ -324,28 +367,7 @@ var VQI_PathwayEditor = function(parent) {
 					obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x + 1000 * loadCounts;
 				}
 
-				for (var i = 0; i < obj.elements.nodes.length; i++) {
-					if (obj.elements.nodes[i].data.id.substring(0, 1) == "n") {
-						var number = parseInt(obj.elements.nodes[i].data.id.substring(1, obj.elements.nodes.length - 1));
-						if (number > nodeCounter)
-							nodeCounter = number + 1;
-					}
-				}
-
-				for (var i = 0; i < obj.elements.edges.length; i++) {
-					if (obj.elements.edges[i].data.id.substring(0, 1) == "e") {
-						var number = parseInt(obj.elements.edges[i].data.id.substring(1, obj.elements.edges.length - 1));
-						if (number > edgeCounter)
-							edgeCounter = number + 1;
-					}
-				}
-
-				for (var i = 0; i < obj.elements.nodes.length; i++) {
-					if (types.indexOf(obj.elements.nodes[i].data.Type) == -1) {
-						console.log(obj.elements.nodes[i].data.Type);
-						obj.elements.nodes[i].data.Type = "label";
-					}
-				}
+				preProcessingAdd(obj);
 
 				// Add nodes
 				cy.add(obj.elements);
@@ -356,8 +378,8 @@ var VQI_PathwayEditor = function(parent) {
 				postAddProcessing();
 
 			}
-			saveState();
 			loadCounts++;
+			saveState();
 		}
 
 		function loadPathway(id) {
@@ -381,12 +403,12 @@ var VQI_PathwayEditor = function(parent) {
 			$.post(services['pathwaySaver'], {
 				insertPathway : JSON.stringify(obj)
 			}, function(data) {
-				console.log(data)
 				if (data != "Success!") {
-					console.log("duplicate-found! calling update rather than insert.")
+					obj.data.ID = data;
 					$.post(services['pathwaySaver'], {
 						updatePathway : JSON.stringify(obj)
 					}, function(data) {
+						console.log(data)
 						dialogPathwaySaveAs.dialog("close");
 					});
 				} else {
@@ -460,15 +482,14 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function removeElements(event) {
-			saveState();
 			if(selectedForEditNodes.length > 0)
 				selectedForEditNodes.remove();
 			if(selectedForEditEdges.length > 0)
 				selectedForEditEdges.remove();
+			saveState();
 		}
 
 		function addNode(event) {
-			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			var name = "n" + nodeCounter;
 			var node = [];
@@ -504,10 +525,10 @@ var VQI_PathwayEditor = function(parent) {
 			nodeCounter++;
 			cy.add(node);
 			postAddProcessing();
+			saveState();
 		}
 
 		function addEdge(event) {
-			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			for (var i = 0; i < selectedForEditNodes.length - 1; i++) {
 				var sourceE = selectedForEditNodes[i].data('id');
@@ -540,6 +561,7 @@ var VQI_PathwayEditor = function(parent) {
 				edgeCounter++;
 				cy.add(edge);
 				postAddProcessing();
+				saveState();
 			}
 		}
 
@@ -560,6 +582,9 @@ var VQI_PathwayEditor = function(parent) {
 								id : node.children()[x].data('id'),
 								name : node.children()[x].data('name'),
 								selected : node.children()[x].data('selected'),
+								cnv : node.children()[x].data('cnv'),
+								rna : node.children()[x].data('rna'),
+								mut : node.children()[x].data('mut'),
 								parent : node.parent().data('id'),
 								backgroundImage: node.children()[x].data('backgroundImage'),
 								zIndex: node.children()[x].data('zIndex')
@@ -581,6 +606,9 @@ var VQI_PathwayEditor = function(parent) {
 								id : node.children()[x].data('id'),
 								name : node.children()[x].data('name'),
 								selected : node.children()[x].data('selected'),
+								cnv : node.children()[x].data('cnv'),
+								rna : node.children()[x].data('rna'),
+								mut : node.children()[x].data('mut'),
 								backgroundImage: node.children()[x].data('backgroundImage'),
 								zIndex: node.children()[x].data('zIndex')
 							},
@@ -623,6 +651,9 @@ var VQI_PathwayEditor = function(parent) {
 								id : node.children()[x].data('id'),
 								name : node.children()[x].data('name'),
 								selected : node.children()[x].data('selected'),
+								cnv : node.children()[x].data('cnv'),
+								rna : node.children()[x].data('rna'),
+								mut : node.children()[x].data('mut'),
 								parent : node.data('id'),
 								backgroundImage: node.children()[x].data('backgroundImage'),
 								zIndex: node.children()[x].data('zIndex')
@@ -644,6 +675,9 @@ var VQI_PathwayEditor = function(parent) {
 								id : node.children()[x].data('id'),
 								name : node.children()[x].data('name'),
 								selected : node.children()[x].data('selected'),
+								cnv : node.children()[x].data('cnv'),
+								rna : node.children()[x].data('rna'),
+								mut : node.children()[x].data('mut'),
 								backgroundImage: node.children()[x].data('backgroundImage'),
 								zIndex: node.children()[x].data('zIndex')
 							},
@@ -677,7 +711,6 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function unbundle(event) {
-			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			var parents = [];
 			var nodes = [];
@@ -696,6 +729,7 @@ var VQI_PathwayEditor = function(parent) {
 			// Add new nodes
 			cy.add(nodes.concat(edges));
 			postAddProcessing();
+			saveState();
 		}
 
 		function recursiveBundle(node, edges, nodes) {
@@ -710,6 +744,9 @@ var VQI_PathwayEditor = function(parent) {
 					id : node.data('id'),
 					name : node.data('name'),
 					selected : node.data('selected'),
+					cnv : node.data('cnv'),
+					rna : node.data('rna'),
+					mut : node.data('mut'),
 					parent : node.data('parent'),
 					backgroundImage: node.data('backgroundImage'),
 					zIndex: node.data('zIndex')
@@ -742,7 +779,6 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function bundle(event) {
-			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			var type = document.getElementById(parent + "-type-bundle").value;
 			var nodes = [];
@@ -782,6 +818,9 @@ var VQI_PathwayEditor = function(parent) {
 							id : selectedForEditNodes[i].data('id'),
 							name : selectedForEditNodes[i].data('name'),
 							selected : selectedForEditNodes[i].data('selected'),
+							cnv : selectedForEditNodes[i].data('cnv'),
+							rna : selectedForEditNodes[i].data('rna'),
+							mut : selectedForEditNodes[i].data('mut'),
 							parent : "n" + nodeCounter,
 							backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
 							zIndex: selectedForEditNodes[i].data('zIndex')
@@ -830,6 +869,7 @@ var VQI_PathwayEditor = function(parent) {
 
 			// Remove dialog box
 			dialogBundle.dialog("close");
+			saveState();
 		}
 
 		function produceJSON(event) {
@@ -954,18 +994,27 @@ var VQI_PathwayEditor = function(parent) {
 				for (var j = 0; j < selectedPaths[n].length; j++) {
 					if(j < selectedPaths[n].length-1){
 						var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
-                                                var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
-                                                console.log(sourceNodeName);
-						nodePath[n].push(sourceNodeName);
+                        var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
+						var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('cnv');
+						var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
+						var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
+						nodePath[n].push({"name": sourceNodeName,"cnv":sourceNodeCnv,"rna":sourceNodeRna,"mut":sourceNodeMut});
 					} else {
 						var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
 						var targetNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('target');
-                                                var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
-                                                var targetNodeName = cy.elements("node[id = \"" + targetNodeId + "\"]").data('name');
-						nodePath[n].push(sourceNodeName);
-						nodePath[n].push(targetNodeName);
-                                                console.log(sourceNodeName);
-                                                console.log(targetNodeName);
+                        
+						var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
+						var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('cnv');
+						var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
+						var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
+                        
+						var targetNodeName = cy.elements("node[id = \"" + targetNodeId + "\"]").data('name');
+						var targetNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('cnv');
+						var targetNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
+						var targetNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
+						
+						nodePath[n].push({"name": sourceNodeName,"cnv":sourceNodeCnv,"rna":sourceNodeRna,"mut":sourceNodeMut});
+						nodePath[n].push({"name": targetNodeName,"cnv":targetNodeCnv,"rna":targetNodeRna,"mut":targetNodeMut});
 					}
 				}
 			}
@@ -981,6 +1030,7 @@ var VQI_PathwayEditor = function(parent) {
 			}, function(yue_data) {
 				var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
 				var nodePaths = convertEdgePathtoNodePath(selectedPaths);
+				console.log(JSON.stringify(nodePaths));
 				$.post(services['objectFinder'], {
 					data_paths : JSON.stringify(nodePaths)
 				}, function(tham_data) {
@@ -1115,7 +1165,6 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function editEdge() {
-			saveState();
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			var direction = document.getElementById(parent + "-direction").value;
 			var arrowType = document.getElementById(parent + "-arrow-type-edge").value;
@@ -1146,43 +1195,44 @@ var VQI_PathwayEditor = function(parent) {
 				postAddProcessing();
 			}
 			dialogEdge.dialog("close");
+			saveState();
 		}
 
 		function moveElementtoBackground(event) {
-			saveState();
 			target.style("z-index", 0);
 			target.data("zIndex", 0);
+			saveState();
 		}
 
 		function moveElementtoForeground(event) {
-			saveState();
 			highestZOrder++;
 			target.style("z-index", highestZOrder);
 			target.data("zIndex", highestZOrder);
+			saveState();
 		}
 
 		function removeBackgroundImageOnNode(event) {
-			saveState();
 			target.removeStyle("background-image");
 			target.data("backgroundImage", "");
+			saveState();
 		}
 
 		function onChangeBackgroundImageOnNode(event) {
 			var reader = new FileReader();
 			reader.onload = onBackgroundImageReaderLoad;
 			reader.readAsDataURL(event.target.files[0]);
+			saveState();
 		}
 
 		function onBackgroundImageReaderLoad() {
-			saveState();
 			var img = event.target.result;
 			target.data('Type', "image");
 			target.data("backgroundImage", img);
 			target.style("background-image", img);
+			saveState();
 		}
 
 		function editNode() {
-			saveState();
 			var name = document.getElementById(parent + "-gene-name").value;
 			var width = document.getElementById(parent + "-width").value;
 			var height = document.getElementById(parent + "-height").value;
@@ -1202,30 +1252,6 @@ var VQI_PathwayEditor = function(parent) {
 			target.data('cnv', cnv);
 			target.data('mut', mut);
 
-			if (rna > 0) {
-				setNodeStyle(target, 'red_bg', '', '');
-			} else if (rna < 0) {
-				setNodeStyle(target, 'green_bg', '', '');
-			} else {
-				setNodeStyle(target, '', '', '');
-			}
-
-			if (cnv > 0) {
-				setNodeStyle(target, '', 'red_border', '');
-			} else if (cnv < 0) {
-				setNodeStyle(target, '', 'purple_border', '');
-			} else {
-				setNodeStyle(target, '', '', '');
-			}
-
-			if (mut > 0) {
-				setNodeStyle(target, '', '', 'red_shadow');
-			} else if (mut <= 0) {
-				setNodeStyle(target, '', '', 'no_shadow');
-			} else {
-				setNodeStyle(target, '', '', '');
-			}
-
 			coloredNodes.push({
 				"gene_name" : node_name,
 				"rna" : rna,
@@ -1233,8 +1259,8 @@ var VQI_PathwayEditor = function(parent) {
 				"mut" : mut
 			});
 			$('#' + parent + '-variable').val($('#' + parent + '-variable').val() + coloredNodes);
-			console.log(coloredNodes);
 			dialogNode.dialog("close");
+			saveState();
 		}
 
 		function dialogNewPathwayOpen(event) {
@@ -1254,7 +1280,6 @@ var VQI_PathwayEditor = function(parent) {
 		}
 
 		function findObject(event) {
-			console.log(coloredNodes);
 			var val = event.target.value;
 			$.post(services['objectFinder'], {
 				pattern : JSON.stringify(coloredNodes)
@@ -1303,7 +1328,6 @@ var VQI_PathwayEditor = function(parent) {
 				}
 				//document.getElementById(parent + "-dialog-table").innerHTML = data;
 				dialogTable.dialog("open")
-				console.log(data);
 			});
 		}
 
@@ -1553,6 +1577,22 @@ var VQI_PathwayEditor = function(parent) {
 					'border-color' : 'black',
 					'border-style' : 'solid',
 					'border-width' : 1
+				}).selector('node[rna < 0]').css({
+					'background-color' : 'lightgreen',
+					'color' : 'black'
+				}).selector('node[rna > 0]').css({
+					'background-color' : 'lightsalmon',
+					'color' : 'black'
+				}).selector('node[cnv < 0]').css({
+					'border-color' : 'mediumpurple',
+					'border-width' : 3
+				}).selector('node[cnv > 0]').css({
+					'border-color' : 'red',
+					'border-width' : 3
+				}).selector('node[mut > 0]').css({
+					'shadow-opacity' : 1,
+					'shadow-color' : 'red',
+					'border-width' : 1
 				})
 
 				// edge elements default css (unselected)
@@ -1637,42 +1677,7 @@ var VQI_PathwayEditor = function(parent) {
 				ready : function() {
 					var cy = $('#' + parent + '-cy').cytoscape('get');
 
-					for (var i = 0; i < obj.elements.nodes.length; i++) {
-						if (obj.elements.nodes[i].data.id.substring(0, 1) == "n") {
-							var number = parseInt(obj.elements.nodes[i].data.id.substring(1, obj.elements.nodes.length - 1));
-							if (number > nodeCounter)
-								nodeCounter = number + 1;
-						}
-					}
-
-					for (var i = 0; i < obj.elements.edges.length; i++) {
-						if (obj.elements.edges[i].data.id.substring(0, 1) == "e") {
-							var number = parseInt(obj.elements.edges[i].data.id.substring(1, obj.elements.edges.length - 1));
-							if (number > edgeCounter)
-								edgeCounter = number + 1;
-						}
-					}
-					
-					for (var i = 0; i < obj.elements.nodes.length; i++) {
-						if (types.indexOf(obj.elements.nodes[i].data.zIndex) == -1) {
-							console.log(obj.elements.nodes[i].data.zIndex);
-							obj.elements.nodes[i].data.zIndex = 0;
-						}
-					}
-					
-					for (var i = 0; i < obj.elements.nodes.length; i++) {
-						if (types.indexOf(obj.elements.nodes[i].data.backgroundImage) == -1) {
-							console.log(obj.elements.nodes[i].data.backgroundImage);
-							obj.elements.nodes[i].data.backgroundImage = "";
-						}
-					}
-					
-					for (var i = 0; i < obj.elements.nodes.length; i++) {
-						if (types.indexOf(obj.elements.nodes[i].data.Type) == -1) {
-							console.log(obj.elements.nodes[i].data.Type);
-							obj.elements.nodes[i].data.Type = "label";
-						}
-					}
+					preAddProcessing(obj);
 
 					//un-disable options
 					$('#' + parent + '-select-bundleOne').removeClass('disabled');
@@ -1754,11 +1759,11 @@ var VQI_PathwayEditor = function(parent) {
 					});
 
 					cy.on('grab', 'node', function(event) {
-						saveState();
 						if (cy.$('node:grabbed').isParent() && !cy.$('node:grabbed').descendants()[0].grabbable()) {
 							grabbedCollapsedForEditNodes = cy.$('node:grabbed');
 							grabbedCollapsedForEditNodes.descendants().grabify();
 						}
+						saveState();
 					});
 
 					cy.on('free', 'node', function(event) {
