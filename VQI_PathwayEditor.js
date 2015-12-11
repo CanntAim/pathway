@@ -2030,9 +2030,21 @@ var VQI_PathwayEditor = function(parent) {
 		document.getElementById(parent + '-undo').addEventListener('click', undo);
 		document.getElementById(parent + '-redo').addEventListener('click', redo);
 
-		//external functions
-		self.setDataToSpray = function(data){
+       //external functions
+
+        self.loadPathwayExternal = function (id) {
+            loadPathway(id);
+        }
+
+        self.sprayColorExternal = function (list) {
+            sprayColor(list);
+        }
+
+        self.testExternal = function () {
+            console.log(print);
+        }
+        self.setDataToSpray = function (data) {
             this.sprayData = data;
         };
-	});
+    });
 };
