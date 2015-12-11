@@ -9,7 +9,7 @@ var VQI_PathwayEditor = function(parent) {
 	services['pathwayFinder'] = serverURL + 'PathwayParser/ajaxJSON.php';
 	services['pathwaySaver'] = serverURL + 'PathwayParser/updateDB_json.php';
         services['pathwayScorer'] = 'http://137.99.11.36/pathwayVisual/ScoreSystem/getScore.php';
-        services['pathwayWeightedScorer'] = 'http://137.99.11.36/pathway2/pathwayweightedscorer.php';
+        services['pathwayWeightedScorer'] = 'http://137.99.11.122/pathway2/pathwayweightedscorer.php';
 	services['objectFinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
 
 	// Globals
@@ -980,10 +980,12 @@ var VQI_PathwayEditor = function(parent) {
 
 		function getPathScore(edgeArray, scoreJSON) {
 			var sum = 0;
+			var max = 0;
 			for (var i = 0; i < edgeArray.length; i++) {
-				sum=sum+(i+1)*scoreJSON[edgeArray[i]]/edgeArray.length;
+				sum = sum + (i + 1) * scoreJSON[edgeArray[i]] / edgeArray.length;
+				max = max + (i + 1) / edgeArray.length;
 			}
-			return sum / edgeArray.length;
+			return parseFloat((sum / max).toFixed(5));
 		}
 		
 		function convertEdgePathtoNodePath(selectedPaths){
@@ -1031,11 +1033,13 @@ var VQI_PathwayEditor = function(parent) {
 				var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
 				var nodePaths = convertEdgePathtoNodePath(selectedPaths);
 				console.log(JSON.stringify(nodePaths));
-				$.post(services['objectFinder'], {
+				$.post(services['pathwayWeightedScorer'], {
 					data_paths : JSON.stringify(nodePaths)
 				}, function(tham_data) {
 					console.log(tham_data)
 					var scoreJSON = JSON.parse(yue_data);
+					var fdrJSON = JSON.parse(tham_data);
+					console.log(fdrJSON);
 					var table = document.getElementById(parent + "-inner-table");
 					var length = document.getElementById(parent + "-inner-table").rows.length;
 
@@ -1082,6 +1086,7 @@ var VQI_PathwayEditor = function(parent) {
 							});
 							path.appendChild(btn);
 							score.appendChild(document.createTextNode(getPathScore(selectedPaths[n - 1], scoreJSON).toString()));
+							fdr.appendChild(document.createTextNode(fdrJSON[n-1]));
 						}
 					}
 					dialogTable.dialog("open");
