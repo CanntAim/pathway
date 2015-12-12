@@ -1000,7 +1000,19 @@ var VQI_PathwayEditor = function(parent) {
 						var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('cnv');
 						var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
 						var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
-						nodePath[n].push({"name": sourceNodeName,"cnv":sourceNodeCnv,"rna":sourceNodeRna,"mut":sourceNodeMut});
+						if(cy.elements("node[id = \"" + sourceNodeId + "\"]").isParent()){
+							nodePath[n].push([]);
+							for(var k = 0; k < cy.elements("node[id = \"" + sourceNodeId + "\"]").children().length; k++){
+								var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.name
+								var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.cnv
+								var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.rna
+								var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.mut
+								nodePath[n][j].push({"name": sourceNodeName,"cnv":sourceNodeCnv,"rna":sourceNodeRna,"mut":sourceNodeMut});
+							}
+						} else {
+							nodePath[n].push([{"name": sourceNodeName,"cnv":sourceNodeCnv,"rna":sourceNodeRna,"mut":sourceNodeMut}]);
+							
+						}
 					} else {
 						var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
 						var targetNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('target');
@@ -1015,8 +1027,30 @@ var VQI_PathwayEditor = function(parent) {
 						var targetNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
 						var targetNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
 						
-						nodePath[n].push({"name": sourceNodeName,"cnv":sourceNodeCnv,"rna":sourceNodeRna,"mut":sourceNodeMut});
-						nodePath[n].push({"name": targetNodeName,"cnv":targetNodeCnv,"rna":targetNodeRna,"mut":targetNodeMut});
+						if(cy.elements("node[id = \"" + sourceNodeId + "\"]").isParent()){
+							nodePath[n].push([]);
+							for(var k = 0; k < cy.elements("node[id = \"" + sourceNodeId + "\"]").children().length; k++){
+								var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.name
+								var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.cnv
+								var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.rna
+								var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.mut
+								nodePath[n][j].push({"name": sourceNodeName,"cnv":sourceNodeCnv,"rna":sourceNodeRna,"mut":sourceNodeMut});
+							}
+						} else {
+							nodePath[n].push([{"name": sourceNodeName,"cnv":sourceNodeCnv,"rna":sourceNodeRna,"mut":sourceNodeMut}]);
+						}
+						if(cy.elements("node[id = \"" + targetNodeId + "\"]").isParent()){
+							nodePath[n].push([]);
+							for(var k = 0; k < cy.elements("node[id = \"" + targetNodeId + "\"]").children().length; k++){
+								var targetNodeName = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.name
+								var targetNodeCnv = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.cnv
+								var targetNodeRna = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.rna
+								var targetNodeMut = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.mut
+								nodePath[n][j].push({"name": targetNodeName,"cnv":targetNodeCnv,"rna":targetNodeRna,"mut":targetNodeMut});
+							}
+						} else {
+							nodePath[n].push([{"name": targetNodeName,"cnv":targetNodeCnv,"rna":targetNodeRna,"mut":targetNodeMut}]);
+						}
 					}
 				}
 			}
