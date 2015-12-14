@@ -506,7 +506,7 @@ var VQI_PathwayEditor = function(parent) {
 				group : "nodes",
 				data : {
 					LabelSize : 10,
-					Type : "protein",
+					Type : "gene",
 					Valign : "Middle",
 					Width : 100,
 					Height : 25,
@@ -1283,7 +1283,6 @@ var VQI_PathwayEditor = function(parent) {
 
 			var node_name = target.data("name");
 			selectedForQueryNodes.push(node_name);
-			var node_id = target.data("id");
 			var rna = document.getElementById(parent + "-rna").value;
 			var cnv = document.getElementById(parent + "-cnv").value;
 			var mut = document.getElementById(parent + "-mut").value;
@@ -1400,7 +1399,7 @@ var VQI_PathwayEditor = function(parent) {
 					'border-style' : 'solid',
 					'border-width' : 1
 				}).selector('node[Type="gene"]').css({
-					'shape' : 'roundrectangle',
+					'shape' : 'ellipse',
 					'width' : 'data(Width)',
 					'height' : 'data(Height)',
 					'color' : 'black',
