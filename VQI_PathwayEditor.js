@@ -14,7 +14,7 @@ var VQI_PathwayEditor = function(parent) {
 
 	// Globals
 	var states = [];
-	var types = ["bundleOne", "bundleTwo", "genes", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "triangle","ellipse","pentagon","hexagon","heptagon","octagon","star","diamond","vee","rhomboid","label"];
+	var types = ["bundleOne", "bundleTwo", "gene", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "triangle","ellipse","pentagon","hexagon","heptagon","octagon","star","diamond","vee","rhomboid","label"];
 	var stateRecycle = [];
 	var lastEvent = 0;
 	var selectedForQueryNodes = [];
