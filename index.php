@@ -15,7 +15,6 @@
 	<div id="parent"></div>
 	<script src="VQI_Observable.js"></script>
 	<script src="VQI_PathwayEditor.js"></script>
-    <script>var objVQI_PathwayEditor = new VQI_PathwayEditor("parent");</script>
-	<!--<script src="main.js"></script>-->
+	<script src="main.js"></script>
 </body>
 </html>

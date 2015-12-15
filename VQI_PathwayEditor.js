@@ -366,6 +366,10 @@ var VQI_PathwayEditor = function (parent) {
                 }
             }
         }
+		
+		function setElementsNoGUI(obj) {
+            preAddProcessing(obj);
+        }
 
         function setElements(obj) {
             if (loadCounts == 0) {
@@ -374,13 +378,12 @@ var VQI_PathwayEditor = function (parent) {
             } else {
 
                 // Pre-Add process
-
                 var cy = $('#' + parent + '-cy').cytoscape('get');
                 for (var i = 0; i < obj.elements.nodes.length; i++) {
                     obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x + 1000 * loadCounts;
                 }
 
-                preProcessingAdd(obj);
+                preAddProcessing(obj);
 
                 // Add nodes
                 cy.add(obj.elements);
@@ -400,8 +403,7 @@ var VQI_PathwayEditor = function (parent) {
                 pid: id
             }, function (data) {
                 removeHeroUnit();
-				fixed_data = data.replace("-.", "-0.");
-                var obj = JSON.parse(fixed_data);
+                var obj = JSON.parse(data);
                 setElements(obj);
             });
         }
@@ -454,7 +456,6 @@ var VQI_PathwayEditor = function (parent) {
             for (var line = 1; line < list.length; line++) {
                 lines[line] = list[line].split('\t');
             }
-
             sprayColor(lines);
         }
 
@@ -468,30 +469,6 @@ var VQI_PathwayEditor = function (parent) {
                 target.data('rna', rna);
                 target.data('cnv', cnv);
                 target.data('mut', mut);
-
-                if (rna > 0) {
-                    setNodeStyle(target, 'red_bg', '', '');
-                } else if (rna < 0) {
-                    setNodeStyle(target, 'green_bg', '', '');
-                } else {
-                    setNodeStyle(target, '', '', '');
-                }
-
-                if (cnv > 0) {
-                    setNodeStyle(target, '', 'red_border', '');
-                } else if (cnv < 0) {
-                    setNodeStyle(target, '', 'purple_border', '');
-                } else {
-                    setNodeStyle(target, '', '', '');
-                }
-
-                if (mut > 0) {
-                    setNodeStyle(target, '', '', 'red_shadow');
-                } else if (mut <= 0) {
-                    setNodeStyle(target, '', '', 'no_shadow');
-                } else {
-                    setNodeStyle(target, '', '', '');
-                }
             }
         }
 
@@ -579,6 +556,7 @@ var VQI_PathwayEditor = function (parent) {
             }
         }
 
+		//re-write
         function unbundleRecursive(node, parents, edges, nodes, rCounter) {
             rCounter++;
             if (rCounter == 1 && node.isParent()) {
@@ -724,6 +702,7 @@ var VQI_PathwayEditor = function (parent) {
             }
         }
 
+		//re-write
         function unbundle(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var parents = [];
@@ -745,7 +724,8 @@ var VQI_PathwayEditor = function (parent) {
             postAddProcessing();
             saveState();
         }
-
+		
+		//re-write
         function recursiveBundle(node, edges, nodes) {
             nodes.push({
                 group: "nodes",
@@ -792,6 +772,7 @@ var VQI_PathwayEditor = function (parent) {
             }
         }
 
+		//re-write
         function bundle(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var type = document.getElementById(parent + "-type-bundle").value;
@@ -1080,14 +1061,11 @@ var VQI_PathwayEditor = function (parent) {
             }, function (yue_data) {
                 var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
                 var nodePaths = convertEdgePathtoNodePath(selectedPaths);
-                console.log(JSON.stringify(nodePaths));
                 $.post(services['pathwayWeightedScorer'], {
                     data_paths: JSON.stringify(nodePaths)
                 }, function (tham_data) {
-                    console.log(tham_data)
                     var scoreJSON = JSON.parse(yue_data);
                     var fdrJSON = JSON.parse(tham_data);
-                    console.log(fdrJSON);
                     var table = document.getElementById(parent + "-inner-table");
                     var length = document.getElementById(parent + "-inner-table").rows.length;
 
@@ -1184,37 +1162,6 @@ var VQI_PathwayEditor = function (parent) {
                     copy[attr] = obj[attr];
             }
             return copy;
-        }
-
-        function setNodeStyle(target, background, border, shadow) {
-            if (background != '') {
-                target.removeClass('green_bg');
-                target.removeClass('red_bg');
-                target.removeClass('white_bg');
-                target.addClass(background);
-            }
-            if (border != '') {
-                target.removeClass('purple_border');
-                target.removeClass('red_border');
-                target.removeClass('black_border');
-                target.addClass(border);
-            }
-            if (shadow != '') {
-                target.removeClass('red_shadow');
-                target.removeClass('no_shadow');
-                target.addClass(shadow);
-            }
-
-            if (background == '' && border == '' && shadow == '') {
-                target.removeClass('green_bg');
-                target.removeClass('red_bg');
-                target.removeClass('white_bg');
-                target.removeClass('purple_border');
-                target.removeClass('red_border');
-                target.removeClass('black_border');
-                target.removeClass('red_shadow');
-                target.removeClass('no_shadow');
-            }
         }
 
         function editEdge() {
@@ -1718,8 +1665,8 @@ var VQI_PathwayEditor = function (parent) {
                     'border-width': 1
                 })
 
-                        // collapse
-                        .selector('.collapsed').css({
+                // collapse
+                .selector('.collapsed').css({
                     'opacity': 0.01
                 }),
                 layout: {
@@ -2077,7 +2024,7 @@ var VQI_PathwayEditor = function (parent) {
         document.getElementById(parent + '-undo').addEventListener('click', undo);
         document.getElementById(parent + '-redo').addEventListener('click', redo);
 
-        //external functions
+        //external GUI functions
 
         self.loadPathwayExternal = function (id) {
             loadPathway(id);
@@ -2087,11 +2034,34 @@ var VQI_PathwayEditor = function (parent) {
             sprayColor(list);
         }
 
-        self.testExternal = function () {
-            console.log(print);
-        }
         self.setDataToSpray = function (data) {
             this.sprayData = data;
         };
+		
+		//external No GUI functions
+		
+		self.loadPathwayExternalNoGUI = function (id) {
+            $.post(services['pathwayFinder'], {
+                pid: id
+            }, function (data) {
+                self.json = JSON.parse(data);
+				setElementsNoGUI(this.json);
+            });
+        }
+		
+        self.findPathAndScoreExternalYueNoGUI = function (sid, did) {
+            var paths = findPath(this.json, sid, did);
+			$.post(services['pathwayScorer'], {
+                data_json: JSON.stringify(this.json)
+            }, function (yue_data) {
+				var result = [] 
+				var scoreJSON = JSON.parse(yue_data);
+				for (var n = 0; n < paths.length; n++) {
+                    var score = getPathScore(paths[n], scoreJSON).toString();
+					result.push({"path": n, "edges": paths[n], "score": score});
+                }
+				return result;
+			});    
+        }
     });
 };
