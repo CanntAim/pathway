@@ -1006,17 +1006,14 @@ var VQI_PathwayEditor = function (parent) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var nodePath = [];
             for (var n = 0; n < selectedPaths.length; n++) {
-				var j = 0;
-				var markerHit = false;
                 nodePath.push([])
-                while (j < selectedPaths[n].length && markerHit == false) {
+                for (var j = 0; j < selectedPaths[n].length; j++) {
                     if (j < selectedPaths[n].length - 1) {
                         var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
                         var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
                         var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('cnv');
                         var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
                         var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
-						var sourceNodeType = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('Type');
                         if (cy.elements("node[id = \"" + sourceNodeId + "\"]").isParent()) {
                             nodePath[n].push([]);
                             for (var k = 0; k < cy.elements("node[id = \"" + sourceNodeId + "\"]").children().length; k++) {
@@ -1026,11 +1023,10 @@ var VQI_PathwayEditor = function (parent) {
                                 var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.mut
                                 nodePath[n][j].push({"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut});
                             }
-                        } else if(sourceNodeType != "diamond"){
-                            nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
                         } else {
-							markerHit = true;
-						}
+                            nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
+
+                        }
                     } else {
                         var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
                         var targetNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('target');
@@ -1039,13 +1035,11 @@ var VQI_PathwayEditor = function (parent) {
                         var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('cnv');
                         var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
                         var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
-						var sourceNodeType = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('Type');
 
                         var targetNodeName = cy.elements("node[id = \"" + targetNodeId + "\"]").data('name');
                         var targetNodeCnv = cy.elements("node[id = \"" + targetNodeId + "\"]").data('cnv');
                         var targetNodeRna = cy.elements("node[id = \"" + targetNodeId + "\"]").data('rna');
                         var targetNodeMut = cy.elements("node[id = \"" + targetNodeId + "\"]").data('mut');
-						var targetNodeType = cy.elements("node[id = \"" + targetNodeId + "\"]").data('Type');
 
                         if (cy.elements("node[id = \"" + sourceNodeId + "\"]").isParent()) {
                             nodePath[n].push([]);
@@ -1056,11 +1050,9 @@ var VQI_PathwayEditor = function (parent) {
                                 var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.mut
                                 nodePath[n][j].push({"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut});
                             }
-                        } else if(sourceNodeType != "diamond") {
-                            nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
                         } else {
-							markerHit = true;
-						}
+                            nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
+                        }
                         if (cy.elements("node[id = \"" + targetNodeId + "\"]").isParent()) {
                             nodePath[n].push([]);
                             for (var k = 0; k < cy.elements("node[id = \"" + targetNodeId + "\"]").children().length; k++) {
@@ -1070,13 +1062,10 @@ var VQI_PathwayEditor = function (parent) {
                                 var targetNodeMut = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.mut
                                 nodePath[n][j].push({"name": targetNodeName, "cnv": targetNodeCnv, "rna": targetNodeRna, "mut": targetNodeMut});
                             }
-                        } else if(targetNodeType != "diamond") {
-                            nodePath[n].push([{"name": targetNodeName, "cnv": targetNodeCnv, "rna": targetNodeRna, "mut": targetNodeMut}]);
                         } else {
-							markerHit = true;
-						}
+                            nodePath[n].push([{"name": targetNodeName, "cnv": targetNodeCnv, "rna": targetNodeRna, "mut": targetNodeMut}]);
+                        }
                     }
-					j++;
                 }
             }
             return nodePath;
@@ -1602,16 +1591,6 @@ var VQI_PathwayEditor = function (parent) {
                     'border-width': 1
                 }).selector('node[Type="rhomboid"]').css({
                     'shape': 'rhomboid',
-                    'width': 'data(Width)',
-                    'height': 'data(Height)',
-                    'color': 'black',
-                    'text-valign': 'center',
-                    'background-color': 'white',
-                    'border-color': 'black',
-                    'border-style': 'solid',
-                    'border-width': 1
-                }).selector('node[Type="rectangle"]').css({
-                    'shape': 'rectangle',
                     'width': 'data(Width)',
                     'height': 'data(Height)',
                     'color': 'black',
