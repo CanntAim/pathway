@@ -356,6 +356,15 @@ var VQI_PathwayEditor = function (parent) {
                 if (typeof (obj.elements.nodes[i].data.mut) == "undefined") {
                     obj.elements.nodes[i].data.mut = 0;
                 }
+
+                if (obj.elements.nodes[i].data.Type == "gene") {
+                    obj.elements.nodes[i].data.Height = 20;
+                    obj.elements.nodes[i].data.Width = 50;
+                } 
+//                else if (obj.elements.nodes[i].data.Type == "ellipse") {
+//                    obj.elements.nodes[i].data.Height = 20;
+//                    obj.elements.nodes[i].data.Width = 50;
+//                }
             }
 
             for (var i = 0; i < obj.elements.edges.length; i++) {
@@ -467,11 +476,11 @@ var VQI_PathwayEditor = function (parent) {
 
             for (var line = 1; line < lines.length; line++) {
                 var target = lines[line][0];
-				if(typeof(lookup[target]) != "undefined"){
-					lookup[target].mut = lines[line][1];
-					lookup[target].cnv = lines[line][2];
-					lookup[target].rna = lines[line][3];
-				}
+                if (typeof (lookup[target]) != "undefined") {
+                    lookup[target].mut = lines[line][1];
+                    lookup[target].cnv = lines[line][2];
+                    lookup[target].rna = lines[line][3];
+                }
             }
         }
 
@@ -1006,7 +1015,7 @@ var VQI_PathwayEditor = function (parent) {
             for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
                 if (obj.elements.nodes[i].data.parent != "") {
                     if (typeof (lookupNodes[obj.elements.nodes[i].data.parent].children) != "undefined" &&
-					lookupNodes[obj.elements.nodes[i].data.parent].children.indexOf(obj.elements.nodes[i].data) == -1)
+                            lookupNodes[obj.elements.nodes[i].data.parent].children.indexOf(obj.elements.nodes[i].data) == -1)
                         lookupNodes[obj.elements.nodes[i].data.parent].children.push(obj.elements.nodes[i].data);
                     else
                         lookupNodes[obj.elements.nodes[i].data.parent].children = [obj.elements.nodes[i].data];
@@ -1021,7 +1030,7 @@ var VQI_PathwayEditor = function (parent) {
                         var sourceNodeCnv = lookupNodes[sourceNodeId].cnv;
                         var sourceNodeRna = lookupNodes[sourceNodeId].rna;
                         var sourceNodeMut = lookupNodes[sourceNodeId].mut;
-                        if (typeof(lookupNodes[sourceNodeId].children) != "undefined") {
+                        if (typeof (lookupNodes[sourceNodeId].children) != "undefined") {
                             nodePath[n].push([]);
                             for (var k = 0; k < lookupNodes[sourceNodeId].children.length; k++) {
                                 var sourceNodeName = lookupNodes[sourceNodeId].children[k].name
@@ -1047,7 +1056,7 @@ var VQI_PathwayEditor = function (parent) {
                         var targetNodeRna = lookupNodes[targetNodeId].rna;
                         var targetNodeMut = lookupNodes[targetNodeId].mut;
 
-                        if (typeof(lookupNodes[sourceNodeId].children) != "undefined") {
+                        if (typeof (lookupNodes[sourceNodeId].children) != "undefined") {
                             nodePath[n].push([]);
                             for (var k = 0; k < lookupNodes[sourceNodeId].children.length; k++) {
                                 var sourceNodeName = lookupNodes[sourceNodeId].children[k].name
@@ -1059,7 +1068,7 @@ var VQI_PathwayEditor = function (parent) {
                         } else {
                             nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
                         }
-                        if (typeof(lookupNodes[targetNodeId].children) != "undefined") {
+                        if (typeof (lookupNodes[targetNodeId].children) != "undefined") {
                             nodePath[n].push([]);
                             for (var k = 0; k < lookupNodes[lookupNodes[targetNodeId].parent].children.length; k++) {
                                 var sourceNodeName = lookupNodes[targetNodeId].children[k].name
@@ -2177,7 +2186,7 @@ var VQI_PathwayEditor = function (parent) {
                 data_paths: JSON.stringify(nodes)
             }, function (tham_data) {
                 var result = [];
-				var score = JSON.parse(tham_data);
+                var score = JSON.parse(tham_data);
                 for (var n = 0; n < paths.length; n++) {
                     result.push({"path": n, "edges": paths[n], "nodes": nodes[n], "score": score[n]});
                 }
