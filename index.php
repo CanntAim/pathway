@@ -25,20 +25,20 @@
         <script>
             var objVQI_PathwayEditor = new VQI_PathwayEditor("parent");
             function load() {
-                objVQI_PathwayEditor.loadPathwayExternalNoGUI(302);
+                objVQI_PathwayEditor.loadPathwayExternalNoGUI(331);
             }
             function findYue() {
-                objVQI_PathwayEditor.findPathAndScoreExternalYueNoGUI("n0", "n22", function (result) {
+                objVQI_PathwayEditor.findPathAndScoreExternalYueNoGUI("n0", "n4", function (result) {
                     console.log(result)
                 });
             }
             function findTham() {
-                objVQI_PathwayEditor.findPathAndScoreExternalThamNoGUI("n0", "n22", function (result) {
+                objVQI_PathwayEditor.findPathAndScoreExternalThamNoGUI("n0", "n4", function (result) {
                     console.log(result)
                 });
             }
             function spray() {
-                var data = [["AKT1", 1, 2, 3], ["AKT1", 1, 2, 3]];
+                var data = [["n91", 1, 2, 3], ["n7", 1, 2, 3]];
                 objVQI_PathwayEditor.sprayColorExternalNoGUI(data);
             }
 			function sprayFromFile() {
@@ -57,7 +57,7 @@
 				reader.readAsText(file);
             }			
             function print() {
-                objVQI_PathwayEditor.printGraph();
+                objVQI_PathwayEditor.printGraphNoGUI();
             }
 			function save() {
                 objVQI_PathwayEditor.produceJSONExternalNoGUI();

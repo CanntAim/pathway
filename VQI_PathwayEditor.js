@@ -471,15 +471,20 @@ var VQI_PathwayEditor = function (parent) {
         function sprayColorNoGUI(lines, obj) {
             var lookup = {};
             for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
-                lookup[obj.elements.nodes[i].data.name] = obj.elements.nodes[i].data;
+				if(typeof(lookup[obj.elements.nodes[i].data.name]) != "undefined")
+					lookup[obj.elements.nodes[i].data.name].push(obj.elements.nodes[i].data);
+				else
+					lookup[obj.elements.nodes[i].data.name] = [obj.elements.nodes[i].data];
             }
 
-            for (var line = 1; line < lines.length; line++) {
+            for(var line = 1; line < lines.length; line++) {
                 var target = lines[line][0];
                 if (typeof (lookup[target]) != "undefined") {
-                    lookup[target].mut = lines[line][1];
-                    lookup[target].cnv = lines[line][2];
-                    lookup[target].rna = lines[line][3];
+					for(entry in lookup[target]){
+						entry.mut = lines[line][1];
+						entry.cnv = lines[line][2];
+						entry.rna = lines[line][3];
+					}
                 }
             }
 			console.log("done spraying!");
