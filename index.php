@@ -24,7 +24,7 @@
         <script>
             var objVQI_PathwayEditor = new VQI_PathwayEditor("parent");
             function load() {
-                objVQI_PathwayEditor.loadPathwayExternalNoGUI(302);
+                objVQI_PathwayEditor.loadPathwayExternalNoGUI(331);
             }
             function findYue() {
                 objVQI_PathwayEditor.findPathAndScoreExternalYueNoGUI("n0", "n22", function (result) {
@@ -33,7 +33,7 @@
             }
 
             function findTham() {
-                objVQI_PathwayEditor.findPathAndScoreExternalThamNoGUI("n0", "n22", function (result) {
+                objVQI_PathwayEditor.findPathAndScoreExternalThamNoGUI("n0", "n4", function (result) {
                     console.log(result)
                 });
             }

@@ -467,9 +467,11 @@ var VQI_PathwayEditor = function (parent) {
 
             for (var line = 1; line < lines.length; line++) {
                 var target = lines[line][0];
-                lookup[target].mut = lines[line][1];
-                lookup[target].cnv = lines[line][2];
-                lookup[target].rna = lines[line][3];
+				if(typeof(lookup[target]) != "undefined"){
+					lookup[target].mut = lines[line][1];
+					lookup[target].cnv = lines[line][2];
+					lookup[target].rna = lines[line][3];
+				}
             }
         }
 
@@ -1001,9 +1003,10 @@ var VQI_PathwayEditor = function (parent) {
             for (var i = 0, len = obj.elements.edges.length; i < len; i++) {
                 lookupEdges[obj.elements.edges[i].data.id] = obj.elements.edges[i].data;
             }
-            for (var i = 0, len = obj.elements.edges.length; i < len; i++) {
+            for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
                 if (obj.elements.nodes[i].data.parent != "") {
-                    if (typeof (lookupNodes[obj.elements.nodes[i].data.parent].children) != "undefined")
+                    if (typeof (lookupNodes[obj.elements.nodes[i].data.parent].children) != "undefined" &&
+					lookupNodes[obj.elements.nodes[i].data.parent].children.indexOf(obj.elements.nodes[i].data) == -1)
                         lookupNodes[obj.elements.nodes[i].data.parent].children.push(obj.elements.nodes[i].data);
                     else
                         lookupNodes[obj.elements.nodes[i].data.parent].children = [obj.elements.nodes[i].data];
@@ -1018,13 +1021,13 @@ var VQI_PathwayEditor = function (parent) {
                         var sourceNodeCnv = lookupNodes[sourceNodeId].cnv;
                         var sourceNodeRna = lookupNodes[sourceNodeId].rna;
                         var sourceNodeMut = lookupNodes[sourceNodeId].mut;
-                        if (lookupNodes[sourceNodeId].parent != "") {
+                        if (typeof(lookupNodes[sourceNodeId].children) != "undefined") {
                             nodePath[n].push([]);
-                            for (var k = 0; k < lookupNodes[lookupNodes[sourceNodeId].parent].children.length; k++) {
-                                var sourceNodeName = lookupNodes[lookupNodes[sourceNodeId].parent].children[k].name
-                                var sourceNodeCnv = lookupNodes[lookupNodes[sourceNodeId].parent].children[k].cnv
-                                var sourceNodeRna = lookupNodes[lookupNodes[sourceNodeId].parent].children[k].rna
-                                var sourceNodeMut = lookupNodes[lookupNodes[sourceNodeId].parent].children[k].mut
+                            for (var k = 0; k < lookupNodes[sourceNodeId].children.length; k++) {
+                                var sourceNodeName = lookupNodes[sourceNodeId].children[k].name
+                                var sourceNodeCnv = lookupNodes[sourceNodeId].children[k].cnv
+                                var sourceNodeRna = lookupNodes[sourceNodeId].children[k].rna
+                                var sourceNodeMut = lookupNodes[sourceNodeId].children[k].mut
                                 nodePath[n][j].push({"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut});
                             }
                         } else {
@@ -1044,25 +1047,25 @@ var VQI_PathwayEditor = function (parent) {
                         var targetNodeRna = lookupNodes[targetNodeId].rna;
                         var targetNodeMut = lookupNodes[targetNodeId].mut;
 
-                        if (lookupNodes[sourceNodeId].parent != "") {
+                        if (typeof(lookupNodes[sourceNodeId].children) != "undefined") {
                             nodePath[n].push([]);
-                            for (var k = 0; k < lookupNodes[lookupNodes[sourceNodeId].parent].children.length; k++) {
-                                var sourceNodeName = lookupNodes[lookupNodes[sourceNodeId].parent].children[k].name
-                                var sourceNodeCnv = lookupNodes[lookupNodes[sourceNodeId].parent].children[k].cnv
-                                var sourceNodeRna = lookupNodes[lookupNodes[sourceNodeId].parent].children[k].rna
-                                var sourceNodeMut = lookupNodes[lookupNodes[sourceNodeId].parent].children[k].mut
+                            for (var k = 0; k < lookupNodes[sourceNodeId].children.length; k++) {
+                                var sourceNodeName = lookupNodes[sourceNodeId].children[k].name
+                                var sourceNodeCnv = lookupNodes[sourceNodeId].children[k].cnv
+                                var sourceNodeRna = lookupNodes[sourceNodeId].children[k].rna
+                                var sourceNodeMut = lookupNodes[sourceNodeId].children[k].mut
                                 nodePath[n][j].push({"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut});
                             }
                         } else {
                             nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
                         }
-                        if (lookupNodes[targetNodeId].parent != "") {
+                        if (typeof(lookupNodes[targetNodeId].children) != "undefined") {
                             nodePath[n].push([]);
                             for (var k = 0; k < lookupNodes[lookupNodes[targetNodeId].parent].children.length; k++) {
-                                var sourceNodeName = lookupNodes[lookupNodes[targetNodeId].parent].children[k].name
-                                var sourceNodeCnv = lookupNodes[lookupNodes[targetNodeId].parent].children[k].cnv
-                                var sourceNodeRna = lookupNodes[lookupNodes[targetNodeId].parent].children[k].rna
-                                var sourceNodeMut = lookupNodes[lookupNodes[targetNodeId].parent].children[k].mut
+                                var sourceNodeName = lookupNodes[targetNodeId].children[k].name
+                                var sourceNodeCnv = lookupNodes[targetNodeId].children[k].cnv
+                                var sourceNodeRna = lookupNodes[targetNodeId].children[k].rna
+                                var sourceNodeMut = lookupNodes[targetNodeId].children[k].mut
                                 nodePath[n][j].push({"name": targetNodeName, "cnv": targetNodeCnv, "rna": targetNodeRna, "mut": targetNodeMut});
                             }
                         } else {
@@ -2161,7 +2164,6 @@ var VQI_PathwayEditor = function (parent) {
                     var score = getPathScore(paths[n], scoreJSON).toString();
                     result.push({"path": n, "edges": paths[n], "score": score});
                 }
-//                return result;
                 f(result);
             });
         }
@@ -2170,15 +2172,13 @@ var VQI_PathwayEditor = function (parent) {
             var paths = findPath(self.json, sid, did);
             var nodes = convertEdgePathtoNodePathNoGUI(paths, self.json);
             $.post(services['pathwayWeightedScorer'], {
-                data_json: JSON.stringify(nodes)
+                data_paths: JSON.stringify(nodes)
             }, function (tham_data) {
-                var result = []
-                var scoreJSON = JSON.parse(tham_data);
+                var result = [];
+				var score = JSON.parse(tham_data);
                 for (var n = 0; n < paths.length; n++) {
-                    var score = getPathScore(paths[n], scoreJSON).toString();
-                    result.push({"path": n, "nodes": nodes[n], "score": score});
+                    result.push({"path": n, "nodes": nodes[n], "score": score[n]});
                 }
-//                return result;
                 f(result);
             });
         }
