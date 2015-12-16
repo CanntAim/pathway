@@ -16,24 +16,23 @@
         <input type=button onclick="spray()" value="spray">
         <input type=button onclick="findYue()" value="find Yue">
         <input type=button onclick="findTham()" value="find Tham">
-        
         <input type=button onclick="print()" value="print">
+		<input id="file" type=file value="spray from file">
         <div id="parent"></div>
         <script src="VQI_Observable.js"></script>
         <script src="VQI_PathwayEditor.js"></script>
         <script>
             var objVQI_PathwayEditor = new VQI_PathwayEditor("parent");
             function load() {
-                objVQI_PathwayEditor.loadPathwayExternalNoGUI(331);
+                objVQI_PathwayEditor.loadPathwayExternalNoGUI(302);
             }
             function findYue() {
                 objVQI_PathwayEditor.findPathAndScoreExternalYueNoGUI("n0", "n22", function (result) {
                     console.log(result)
                 });
             }
-
             function findTham() {
-                objVQI_PathwayEditor.findPathAndScoreExternalThamNoGUI("n0", "n4", function (result) {
+                objVQI_PathwayEditor.findPathAndScoreExternalThamNoGUI("n0", "n22", function (result) {
                     console.log(result)
                 });
             }
@@ -41,9 +40,26 @@
                 var data = [["AKT1", 1, 2, 3], ["AKT1", 1, 2, 3]];
                 objVQI_PathwayEditor.sprayColorExternalNoGUI(data);
             }
+			function sprayFromFile() {
+				var data = [];
+				var lines = [];
+				var file = this.files[0];
+				var reader = new FileReader();
+				reader.onload = function(progressEvent) {
+				// By lines
+				var list = this.result.split('\n');
+					for(var line = 0; line < list.length; line++) {
+						lines[line] = list[line].split('\t');
+					}	
+					objVQI_PathwayEditor.sprayColorExternalNoGUI(lines);
+				}
+				reader.readAsText(file);
+            }			
             function print() {
                 objVQI_PathwayEditor.printGraph();
             }
+			
+			document.getElementById("file").addEventListener("change", sprayFromFile); 
         </script>
     </body>
 </html>

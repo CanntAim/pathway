@@ -1831,6 +1831,7 @@ var VQI_PathwayEditor = function (parent) {
                     cy.on('doubleTap', 'edge', function (event) {
                         target = event.cyTarget;
                         dialogEdge.dialog("open");
+						console.log(event.cyTarget._private.data.id)
                     });
 
                     cy.on('select', 'node', function (event) {
@@ -2155,6 +2156,7 @@ var VQI_PathwayEditor = function (parent) {
 
         self.findPathAndScoreExternalYueNoGUI = function (sid, did, f) {
             var paths = findPath(self.json, sid, did);
+			var nodes = convertEdgePathtoNodePathNoGUI(paths, self.json);
             $.post(services['pathwayScorer'], {
                 data_json: JSON.stringify(self.json)
             }, function (yue_data) {
@@ -2162,7 +2164,7 @@ var VQI_PathwayEditor = function (parent) {
                 var scoreJSON = JSON.parse(yue_data);
                 for (var n = 0; n < paths.length; n++) {
                     var score = getPathScore(paths[n], scoreJSON).toString();
-                    result.push({"path": n, "edges": paths[n], "score": score});
+                    result.push({"path": n, "edges": paths[n], "nodes": nodes[n], "score": score});
                 }
                 f(result);
             });
@@ -2177,7 +2179,7 @@ var VQI_PathwayEditor = function (parent) {
                 var result = [];
 				var score = JSON.parse(tham_data);
                 for (var n = 0; n < paths.length; n++) {
-                    result.push({"path": n, "nodes": nodes[n], "score": score[n]});
+                    result.push({"path": n, "edges": paths[n], "nodes": nodes[n], "score": score[n]});
                 }
                 f(result);
             });
