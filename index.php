@@ -17,6 +17,7 @@
         <input type=button onclick="findYue()" value="find Yue">
         <input type=button onclick="findTham()" value="find Tham">
         <input type=button onclick="print()" value="print">
+		<input type=button onclick="save()" value="save">
 		<input id="file" type=file value="spray from file">
         <div id="parent"></div>
         <script src="VQI_Observable.js"></script>
@@ -57,6 +58,9 @@
             }			
             function print() {
                 objVQI_PathwayEditor.printGraph();
+            }
+			function save() {
+                objVQI_PathwayEditor.produceJSONExternalNoGUI();
             }
 			
 			document.getElementById("file").addEventListener("change", sprayFromFile); 
