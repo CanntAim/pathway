@@ -2146,9 +2146,13 @@ var VQI_PathwayEditor = function (parent) {
 
         //external No GUI functions
 
-        self.printGraph = function () {
+        self.printGraphExternalNoGUI = function () {
             console.log(self.json);
         }
+		
+		self.produceJSONExternalNoGUI = function(){
+            download(states[states.length - 1], "data.txt", "text/plain");
+		}
 
         self.sprayColorExternalNoGUI = function (list) {
             sprayColorNoGUI(list, self.json);
