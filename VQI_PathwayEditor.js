@@ -482,6 +482,7 @@ var VQI_PathwayEditor = function (parent) {
                     lookup[target].rna = lines[line][3];
                 }
             }
+			console.log("done spraying!");
         }
 
         function sprayColor(lines) {
