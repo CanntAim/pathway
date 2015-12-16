@@ -481,9 +481,9 @@ var VQI_PathwayEditor = function (parent) {
                 var target = lines[line][0];
                 if (typeof (lookup[target]) != "undefined") {
 					for(entry in lookup[target]){
-						entry.mut = lines[line][1];
-						entry.cnv = lines[line][2];
-						entry.rna = lines[line][3];
+						lookup[target][entry].mut = lines[line][1];
+						lookup[target][entry].cnv = lines[line][2];
+						lookup[target][entry].rna = lines[line][3];
 					}
                 }
             }
