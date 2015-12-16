@@ -2152,7 +2152,7 @@ var VQI_PathwayEditor = function (parent) {
         }
 		
 		self.produceJSONExternalNoGUI = function(){
-            download(self.json, "data.txt", "text/plain");
+            download(JSON.stringify(self.json), "data.txt", "text/plain");
 		}
 
         self.sprayColorExternalNoGUI = function (list) {
