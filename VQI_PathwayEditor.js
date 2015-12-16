@@ -366,8 +366,8 @@ var VQI_PathwayEditor = function (parent) {
                 }
             }
         }
-		
-		function setElementsNoGUI(obj) {
+
+        function setElementsNoGUI(obj) {
             preAddProcessing(obj);
         }
 
@@ -458,18 +458,18 @@ var VQI_PathwayEditor = function (parent) {
             }
             sprayColor(lines);
         }
-		
-		function sprayColorNoGUI(lines,obj) {
-			var lookup = {};
-			for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
-				lookup[obj.elements.nodes[i].data.name] = obj.elements.nodes[i].data;
-			}
-			
+
+        function sprayColorNoGUI(lines, obj) {
+            var lookup = {};
+            for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
+                lookup[obj.elements.nodes[i].data.name] = obj.elements.nodes[i].data;
+            }
+
             for (var line = 1; line < lines.length; line++) {
                 var target = lines[line][0];
-				lookup[target].mut = lines[line][1];
-				lookup[target].cnv = lines[line][1];
-				lookup[target].rna = lines[line][1];
+                lookup[target].mut = lines[line][1];
+                lookup[target].cnv = lines[line][2];
+                lookup[target].rna = lines[line][3];
             }
         }
 
@@ -570,7 +570,7 @@ var VQI_PathwayEditor = function (parent) {
             }
         }
 
-		//re-write
+        //re-write
         function unbundleRecursive(node, parents, edges, nodes, rCounter) {
             rCounter++;
             if (rCounter == 1 && node.isParent()) {
@@ -716,7 +716,7 @@ var VQI_PathwayEditor = function (parent) {
             }
         }
 
-		//re-write
+        //re-write
         function unbundle(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var parents = [];
@@ -738,8 +738,8 @@ var VQI_PathwayEditor = function (parent) {
             postAddProcessing();
             saveState();
         }
-		
-		//re-write
+
+        //re-write
         function recursiveBundle(node, edges, nodes) {
             nodes.push({
                 group: "nodes",
@@ -786,7 +786,7 @@ var VQI_PathwayEditor = function (parent) {
             }
         }
 
-		//re-write
+        //re-write
         function bundle(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var type = document.getElementById(parent + "-type-bundle").value;
@@ -989,27 +989,27 @@ var VQI_PathwayEditor = function (parent) {
             }
             return parseFloat((sum / max).toFixed(5));
         }
-		
-		function convertEdgePathtoNodePathNoGUI(selectedPaths,obj) {
-			var nodePath = [];
-			var lookupNodes = {};
-			var lookupEdges = {};
-			
-			for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
-				lookupNodes[obj.elements.nodes[i].data.id] = obj.elements.nodes[i].data;
-			}		
-			for (var i = 0, len = obj.elements.edges.length; i < len; i++) {
-				lookupEdges[obj.elements.edges[i].data.id] = obj.elements.edges[i].data;
-			}
-			for (var i = 0, len = obj.elements.edges.length; i < len; i++) {
-				if(obj.elements.nodes[i].data.parent != ""){
-					if(typeof(lookupNodes[obj.elements.nodes[i].data.parent].children) != "undefined")
-						lookupNodes[obj.elements.nodes[i].data.parent].children.push(obj.elements.nodes[i].data);
-					else
-						lookupNodes[obj.elements.nodes[i].data.parent].children = [obj.elements.nodes[i].data];
-				}
-			}
-			for (var n = 0; n < selectedPaths.length; n++) {
+
+        function convertEdgePathtoNodePathNoGUI(selectedPaths, obj) {
+            var nodePath = [];
+            var lookupNodes = {};
+            var lookupEdges = {};
+
+            for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
+                lookupNodes[obj.elements.nodes[i].data.id] = obj.elements.nodes[i].data;
+            }
+            for (var i = 0, len = obj.elements.edges.length; i < len; i++) {
+                lookupEdges[obj.elements.edges[i].data.id] = obj.elements.edges[i].data;
+            }
+            for (var i = 0, len = obj.elements.edges.length; i < len; i++) {
+                if (obj.elements.nodes[i].data.parent != "") {
+                    if (typeof (lookupNodes[obj.elements.nodes[i].data.parent].children) != "undefined")
+                        lookupNodes[obj.elements.nodes[i].data.parent].children.push(obj.elements.nodes[i].data);
+                    else
+                        lookupNodes[obj.elements.nodes[i].data.parent].children = [obj.elements.nodes[i].data];
+                }
+            }
+            for (var n = 0; n < selectedPaths.length; n++) {
                 nodePath.push([])
                 for (var j = 0; j < selectedPaths[n].length; j++) {
                     if (j < selectedPaths[n].length - 1) {
@@ -1071,7 +1071,7 @@ var VQI_PathwayEditor = function (parent) {
                     }
                 }
             }
-			return nodePath;
+            return nodePath;
         }
 
         function convertEdgePathtoNodePath(selectedPaths) {
@@ -1756,8 +1756,8 @@ var VQI_PathwayEditor = function (parent) {
                     'border-width': 1
                 })
 
-                // collapse
-                .selector('.collapsed').css({
+                        // collapse
+                        .selector('.collapsed').css({
                     'opacity': 0.01
                 }),
                 layout: {
@@ -1816,8 +1816,8 @@ var VQI_PathwayEditor = function (parent) {
                         else
                             orderedSelectedNodes.shift();
                         orderedSelectedNodes.push(event.cyTarget);
-						console.log(event.cyTarget._private.data.id)
-						console.log(event.cyTarget._private.data.name)
+                        console.log(event.cyTarget._private.data.id)
+                        console.log(event.cyTarget._private.data.name)
                     });
 
                     cy.on('doubleTap', 'node', function (event) {
@@ -2130,55 +2130,57 @@ var VQI_PathwayEditor = function (parent) {
         self.setDataToSpray = function (data) {
             this.sprayData = data;
         };
-		
-		//external No GUI functions
-		
-		self.printGraph = function(){
-			console.log(self.json);
-		}
-		
-		self.sprayColorExternalNoGUI = function(list){
-			sprayColorNoGUI(list,self.json);
-		}
-		
-		self.loadPathwayExternalNoGUI = function (id) {
+
+        //external No GUI functions
+
+        self.printGraph = function () {
+            console.log(self.json);
+        }
+
+        self.sprayColorExternalNoGUI = function (list) {
+            sprayColorNoGUI(list, self.json);
+        }
+
+        self.loadPathwayExternalNoGUI = function (id) {
             $.post(services['pathwayFinder'], {
                 pid: id
             }, function (data) {
                 self.json = JSON.parse(data);
-				setElementsNoGUI(self.json);
+                setElementsNoGUI(self.json);
             });
         }
-		
-        self.findPathAndScoreExternalYueNoGUI = function (sid, did) {
+
+        self.findPathAndScoreExternalYueNoGUI = function (sid, did, f) {
             var paths = findPath(self.json, sid, did);
-			$.post(services['pathwayScorer'], {
+            $.post(services['pathwayScorer'], {
                 data_json: JSON.stringify(self.json)
             }, function (yue_data) {
-				var result = [] 
-				var scoreJSON = JSON.parse(yue_data);
-				for (var n = 0; n < paths.length; n++) {
+                var result = []
+                var scoreJSON = JSON.parse(yue_data);
+                for (var n = 0; n < paths.length; n++) {
                     var score = getPathScore(paths[n], scoreJSON).toString();
-					result.push({"path": n, "edges": paths[n], "score": score});
+                    result.push({"path": n, "edges": paths[n], "score": score});
                 }
-				return result;
-			});    
+//                return result;
+                f(result);
+            });
         }
-		
-		self.findPathAndScoreExternalThamNoGUI = function (sid, did) {
+
+        self.findPathAndScoreExternalThamNoGUI = function (sid, did, f) {
             var paths = findPath(self.json, sid, did);
-			var nodes = convertEdgePathtoNodePathNoGUI(paths,self.json);
-			$.post(services['pathwayScorer'], {
+            var nodes = convertEdgePathtoNodePathNoGUI(paths, self.json);
+            $.post(services['pathwayWeightedScorer'], {
                 data_json: JSON.stringify(nodes)
             }, function (tham_data) {
-				var result = [] 
-				var scoreJSON = JSON.parse(tham_data);
-				for (var n = 0; n < paths.length; n++) {
+                var result = []
+                var scoreJSON = JSON.parse(tham_data);
+                for (var n = 0; n < paths.length; n++) {
                     var score = getPathScore(paths[n], scoreJSON).toString();
-					result.push({"path": n, "nodes": nodes[n], "score": score});
+                    result.push({"path": n, "nodes": nodes[n], "score": score});
                 }
-				return result;
-			});
+//                return result;
+                f(result);
+            });
         }
     });
 };
