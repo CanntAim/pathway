@@ -1201,13 +1201,14 @@ var VQI_PathwayEditor = function (parent) {
 
                         if (n == 0) {
                             path.innerHTML = "<i><h3>paths</h3></i>";
-                            score.innerHTML = "<i><h3>scores</h3></i>";
-							consistency.innerHTML = "<i><h3>consistency</h3></i>";
+                            score.innerHTML = "<i><h3>R</h3></i>";
+							consistency.innerHTML = "<i><h3>consistent</h3></i>";
 							consLowP.innerHTML = "<i><h3>cons+low P</h3></i>";
-                            rfdr.innerHTML = "<i><h3>rfdr</h3></i>"
-							mfdr.innerHTML = "<i><h3>mfdr</h3></i>"
-							mrfdr.innerHTML = "<i><h3>mrfdr</h3></i>"
-							m.innerHTML = "<i><h3>m</h3></i>"
+							
+							rfdr.innerHTML = "<i><h3>FDR(R)</h3></i>"
+							mfdr.innerHTML = "<i><h3>FDR(M)</h3></i>"
+							mrfdr.innerHTML = "<i><h3>FDR(M+R)</h3></i>"
+							m.innerHTML = "<i><h3>M</h3></i>"
                         } else {
                             var btn = document.createElement("button");
                             var t = document.createTextNode((n - 1).toString());
