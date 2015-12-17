@@ -1207,7 +1207,7 @@ var VQI_PathwayEditor = function (parent) {
                             rfdr.innerHTML = "<i><h3>rfdr</h3></i>"
 							mfdr.innerHTML = "<i><h3>mfdr</h3></i>"
 							mrfdr.innerHTML = "<i><h3>mrfdr</h3></i>"
-							m.innerHTML = "<i><h3>mfdr</h3></i>"
+							m.innerHTML = "<i><h3>m</h3></i>"
                         } else {
                             var btn = document.createElement("button");
                             var t = document.createTextNode((n - 1).toString());
