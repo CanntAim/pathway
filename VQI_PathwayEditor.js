@@ -1190,14 +1190,20 @@ var VQI_PathwayEditor = function (parent) {
 
                         var path = row.insertCell(0);
                         var score = row.insertCell(1);
-                        var fdr = row.insertCell(2);
+                        var rfdr = row.insertCell(2);
+						var mfdr = row.insertCell(3);
+						var mrfdr = row.insertCell(4);
+						var m = row.insertCell(5);
 
                         // Add some text to the new cells:
 
                         if (n == 0) {
                             path.innerHTML = "<i><h3>paths</h3></i>";
                             score.innerHTML = "<i><h3>scores</h3></i>"
-                            fdr.innerHTML = "<i><h3>fdr</h3></i>"
+                            rfdr.innerHTML = "<i><h3>rfdr</h3></i>"
+							mfdr.innerHTML = "<i><h3>mfdr</h3></i>"
+							mrfdr.innerHTML = "<i><h3>mrfdr</h3></i>"
+							m.innerHTML = "<i><h3>mfdr</h3></i>"
                         } else {
                             var btn = document.createElement("button");
                             var t = document.createTextNode((n - 1).toString());
@@ -1219,9 +1225,13 @@ var VQI_PathwayEditor = function (parent) {
                                     cy.$('edge:selected').style("opacity", 1.0);
                                 }
                             });
+							var res = fdrJSON[n-1].split(" ");
                             path.appendChild(btn);
                             score.appendChild(document.createTextNode(getPathScore(selectedPaths[n - 1], scoreJSON).toString()));
-                            fdr.appendChild(document.createTextNode(fdrJSON[n - 1]));
+                            rfdr.appendChild(document.createTextNode(res[0]));
+							mfdr.appendChild(document.createTextNode(res[1]));
+							mrfdr.appendChild(document.createTextNode(res[2]));
+							m.appendChild(document.createTextNode(res[3]));
                         }
                     }
                     dialogTable.dialog("open");
