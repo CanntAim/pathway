@@ -49,7 +49,7 @@ var VQI_PathwayEditor = function (parent) {
     strVar += " <nav class=\"navbar navbar-default\">";
     strVar += " <div class=\"container-fluid\">";
     strVar += " <div class=\"navbar-header\">";
-    strVar += " 	<a class=\"navbar-brand\" href=\"#\">Pathway name</a>";
+    strVar += " 	<a id=\"" + parent + "-pathway-title\" class=\"navbar-brand\" href=\"#\">Pathway name</a>";
     strVar += " <\/div>";
     strVar += " <ul class=\"nav navbar-nav\">";
     strVar += " 	<li style=\"margin: 2px\">";
@@ -258,10 +258,13 @@ var VQI_PathwayEditor = function (parent) {
 
         function newPathway(event) {
             var name = document.getElementById(parent + "-new-pathway-name").value;
-            var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :{"shared_name":"","ID":"","BOARDWIDTH":"","BOARDHEIGHT":"","LICENSE":"CC BY 2.0","ORGANISM":"","NAME":"","INSTRUCTION":"","AUTHOR":"","VERSION":"","PATHWAY_TYPE":"original","SUID":205,"__Annotations":[],"selected":true},"elements" : {"nodes" :[],"edges" :[]}}'
+			var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :{"shared_name":"","ID":"","BOARDWIDTH":"","BOARDHEIGHT":"","LICENSE":"CC BY 2.0","ORGANISM":"","NAME":"","INSTRUCTION":"","AUTHOR":"","VERSION":"","PATHWAY_TYPE":"original","SUID":205,"__Annotations":[],"selected":true},"elements" : {"nodes" :[],"edges" :[]}}'
             var obj = JSON.parse(data);
+			var title = document.getElementById(parent + "-pathway-title");
+			title.innerHTML = name;
             removeHeroUnit();
             setElements(obj);
+			save(obj,name);
             dialogNewPathway.dialog("close");
         }
 
@@ -333,11 +336,11 @@ var VQI_PathwayEditor = function (parent) {
                         nodeCounter = number + 1;
                 }
 
-                if (types.indexOf(obj.elements.nodes[i].data.backgroundImage) == -1) {
+                if (typeof (obj.elements.nodes[i].data.backgroundImage) == "undefined") {
                     obj.elements.nodes[i].data.backgroundImage = "";
                 }
 
-                if (types.indexOf(obj.elements.nodes[i].data.zIndex) == -1) {
+                if (typeof (obj.elements.nodes[i].data.zIndex) == "undefined") {
                     obj.elements.nodes[i].data.zIndex = 0;
                 }
 
@@ -413,6 +416,8 @@ var VQI_PathwayEditor = function (parent) {
             }, function (data) {
                 removeHeroUnit();
                 var obj = JSON.parse(data);
+				var title = document.getElementById(parent + "-pathway-title");
+				title.innerHTML = obj.data.NAME;
                 setElements(obj);
             });
         }
@@ -421,11 +426,10 @@ var VQI_PathwayEditor = function (parent) {
             var id = event.target.value;
             loadPathway(id);
         }
-
-        function saveAsPathway(event) {
-            var obj = JSON.parse(states[states.length - 1]);
-            obj.data.NAME = document.getElementById(parent + "-pathway-name").value;
-            $.post(services['pathwaySaver'], {
+		
+		function save(obj,name){
+			obj.data.NAME = name;
+			$.post(services['pathwaySaver'], {
                 insertPathway: JSON.stringify(obj)
             }, function (data) {
                 if (data != "Success!") {
@@ -441,6 +445,12 @@ var VQI_PathwayEditor = function (parent) {
                     dialogPathwaySaveAs.dialog("close");
                 }
             });
+		}
+
+        function saveAsPathway(event) {
+            var obj = JSON.parse(states[states.length - 1]);
+            var name = document.getElementById(parent + "-pathway-name").value;
+            save(obj,name);
         }
 
         function savePathway(event) {
@@ -455,6 +465,8 @@ var VQI_PathwayEditor = function (parent) {
 
         function onPathwayReaderLoad(event) {
             var obj = JSON.parse(event.target.result);
+			var title = document.getElementById(parent + "-pathway-title");
+			title.innerHTML = obj.data.NAME;
             setElements(obj);
         }
 
