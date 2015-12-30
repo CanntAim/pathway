@@ -26,10 +26,9 @@ var VQI_PathwayEditor = function (parent) {
 
 
     // Globals
+	var types = ["bundleOne", "bundleTwo", "gene", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "triangle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
     var states = [];
-    var types = ["bundleOne", "bundleTwo", "gene", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "triangle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
     var stateRecycle = [];
-    var lastEvent = 0;
     var selectedForQueryNodes = [];
     var selectedForEditNodes = [];
     var selectedForEditEdges = [];
@@ -159,29 +158,39 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "    		<\/fieldset>";
     strVar += " 		<\/form>";
     strVar += "	<\/div>";
-    strVar += "	<div id=\"" + parent + "-dialog-form-edge\" title=\"Edit edge\">";
-    strVar += " 		<form role=\"form\">";
-    strVar += "    		<fieldset>";
+    strVar += "	<div id=\"" + parent + "-dialog-form-edge\" title=\"Edit edge(s)\">";
+    strVar += " 		<form>";
+    strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-direction\">change direction:<\/label>";
     strVar += "      			<input type=\"checkbox\" class=\"form-control\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
-    strVar += "      			<label for=\"" + parent + "-arrow-type-edge\">arrow type:<\/label>";
+    strVar += " 				<input id=\"" + parent + "-direction-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "      			<label for=\"" + parent + "-arrow-type-edge\">arrow type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-arrow-type-edge\" name=\"" + parent + "-arrow-type-edge\">";
     strVar += "  					<option selected=\"\">TBar<\/option>";
     strVar += "  					<option>Arrow<\/option>";
     strVar += "  					<option>Line<\/option>";
     strVar += "					<\/select>";
-    strVar += "      			<label for=\"" + parent + "-line-type-edge\">line type:<\/label>";
+    strVar += " 				<input id=\"" + parent + "-arrow-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "      			<label for=\"" + parent + "-line-type-edge\">line type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-line-type-edge\" name=\"" + parent + "-line-type-edge\">";
     strVar += "  					<option selected=\"\">Solid<\/option>";
     strVar += "  					<option>Dotted<\/option>";
     strVar += "  					<option>Dashed<\/option>";
     strVar += "					<\/select>";
-    strVar += "    				<label for=\"" + parent + "-edge-move-to-background\">Move to Background:<\/label>";
+	strVar += " 				<input id=\"" + parent + "-line-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "    				<label for=\"" + parent + "-edge-move-to-background\">Move to Background:<\/label>";
     strVar += "    				<input id=\"" + parent + "-edge-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
-    strVar += "    				<label for=\"" + parent + "-edge-move-to-foreground\">Move to Foreground:<\/label>";
+    strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "    				<label for=\"" + parent + "-edge-move-to-foreground\">Move to Foreground:<\/label>";
     strVar += "    				<input id=\"" + parent + "-edge-move-to-foreground\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
-    strVar += " 			<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
-    strVar += "    		<\/fieldset>";
+    strVar += "    			</div>";
     strVar += "  		<\/form>";
     strVar += "	<\/div>";
     strVar += "<div id=\"" + parent + "-intro-hero-unit\" class=\"container\"style=\"margin-top: 100px\">";
@@ -192,16 +201,25 @@ var VQI_PathwayEditor = function (parent) {
     strVar += " 		<a id=\"" + parent + "-link-github\" type=\"button\" class=\"btn btn-success\" href=\"https://github.uconn.edu/ivp08001/pathway\">Github Source<\/a>";
     strVar += "     </div>";
     strVar += " </div>";
-    strVar += "	<div id=\"" + parent + "-dialog-form-node\" title=\"Edit node\">";
-    strVar += " 		<form role=\"form\">";
-    strVar += "    		<fieldset>";
+    strVar += "	<div id=\"" + parent + "-dialog-form-node\" title=\"Edit node(s)\">";
+    strVar += " 		<form>";
+	strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-gene-name\">gene-name:<\/label>";
     strVar += "      			<input type=\"text\" name=\"" + parent + "-gene-name\" class=\"form-control\" id=\"" + parent + "-gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-    strVar += "      			<label for=\"" + parent + "-height\">height:<\/label>";
+    strVar += " 				<input id=\"" + parent + "-gene-name-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "      			<label for=\"" + parent + "-height\">height:<\/label>";
     strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "-height\" class=\"form-control\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-    strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
+    strVar += " 				<input id=\"" + parent + "-height-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
     strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" class=\"form-control\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-    strVar += "      			<label for=\"" + parent + "-type-node\">type:<\/label>";
+    strVar += " 				<input id=\"" + parent + "-width-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "      			<label for=\"" + parent + "-type-node\">type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" class=\"form-control\" name=\"" + parent + "-type-node\">";
     strVar += "  					<option id=\"" + parent + "-select-bundleOne\" selected=\"\">bundleOne<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-bundleTwo\">bundleTwo<\/option>";
@@ -226,23 +244,40 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "  					<option id=\"" + parent + "-select-rhomboid\">rhomboid<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-label\">label<\/option>";
     strVar += "					<\/select>";
+	strVar += " 				<input id=\"" + parent + "-type-node-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-rna\" class=\"form-control\" name=\"" + parent + "-rna\">";
-    strVar += "					<label for=\"" + parent + "-cnv\">CNV:<\/label>";
+    strVar += " 				<input id=\"" + parent + "-rna-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "					<label for=\"" + parent + "-cnv\">CNV:<\/label>";
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-cnv\" class=\"form-control\" name=\"" + parent + "-cnv\">";
-    strVar += "					<label for=\"" + parent + "-mut\">MUT:<\/label>";
+    strVar += " 				<input id=\"" + parent + "-cnv-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "					<label for=\"" + parent + "-mut\">MUT:<\/label>";
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" class=\"form-control\" name=\"" + parent + "-mut\">";
-    strVar += " 			    <input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
-    strVar += "    				<label for=\"" + parent + "-background-image\">Local Image File:<\/label>";
+    strVar += " 				<input id=\"" + parent + "-mut-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "    				<label for=\"" + parent + "-background-image\">Local Image File:<\/label>";
     strVar += "					<input id=\"" + parent + "-background-image\" value=\"Pick an Image File\" type=\"file\"><\/input>";
-    strVar += "    				<label for=\"" + parent + "-background-image-remove\">Remove Background image:<\/label>";
+    strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "    				<label for=\"" + parent + "-background-image-remove\">Remove Background image:<\/label>";
     strVar += "					<input id=\"" + parent + "-background-image-remove\" value=\"Remove\" type=\"button\" class=\"btn btn-link\"><\/input>";
-    strVar += "    				<label for=\"" + parent + "-node-move-to-background\">Move to Background:<\/label>";
+    strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "    				<label for=\"" + parent + "-node-move-to-background\">Move to Background:<\/label>";
     strVar += "    				<input id=\"" + parent + "-node-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
-    strVar += "    				<label for=\"" + parent + "-node-move-to-foreground\">Move to Foreground:<\/label>";
+    strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
+	strVar += "    				<label for=\"" + parent + "-node-move-to-foreground\">Move to Foreground:<\/label>";
     strVar += "    				<input id=\"" + parent + "-node-move-to-foreground\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
-    strVar += "				<\/fieldset>";
-    strVar += "  		<\/form>";
+    strVar += "    			</div>";
+	strVar += "  		<\/form>";
     strVar += "	<\/div>";
     strVar += "	<div id=\"" + parent + "-cy\" style=\"height: 100%;width: 100%;position: absolute; left: 0;\"><\/div>";
 
@@ -437,7 +472,6 @@ var VQI_PathwayEditor = function (parent) {
                     $.post(services['pathwaySaver'], {
                         updatePathway: JSON.stringify(obj)
                     }, function (data) {
-                        console.log(data)
                         dialogPathwaySaveAs.dialog("close");
                     });
                 } else {
@@ -458,7 +492,6 @@ var VQI_PathwayEditor = function (parent) {
             $.post(services['pathwaySaver'], {
                 updatePathway: JSON.stringify(obj)
             }, function (data) {
-                console.log(data);
                 dialogPathwaySaveAs.dialog("close");
             });
         }
@@ -499,7 +532,6 @@ var VQI_PathwayEditor = function (parent) {
 					}
                 }
             }
-			console.log("done spraying!");
         }
 
         function sprayColor(lines) {
@@ -520,6 +552,60 @@ var VQI_PathwayEditor = function (parent) {
                 selectedForEditNodes.remove();
             if (selectedForEditEdges.length > 0)
                 selectedForEditEdges.remove();
+            saveState();
+        }
+		
+		function addDuplicateNodes(event) {
+            var cy = $('#' + parent + '-cy').cytoscape('get');
+            var name = "n" + nodeCounter;
+            var node = [];
+
+			for(var i = 0; i < selectedForEditNodes.length; i++){
+				node.push({
+					group: "nodes",
+					data: {
+						LabelSize: selectedForEditNodes[i].data('LabelSize'),
+						Type: selectedForEditNodes[i].data('Type'),
+						Valign: selectedForEditNodes[i].data('Valign'),
+						Width: selectedForEditNodes[i].data('Width'),
+						Height: selectedForEditNodes[i].data('Height'),
+						id: "n" + nodeCounter,
+						name: selectedForEditNodes[i].data('name'),
+						selected: false,
+						backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
+						zIndex: selectedForEditNodes[i].data('zIndex')
+					},
+					renderedPosition: {
+						x: selectedForEditNodes[i].position('x')+100,
+						y: selectedForEditNodes[i].position('y')+100
+					}
+				})
+			}
+			
+			for(var i = 0; i < selectedForEditEdges.length; i++){
+				node.push({
+					group: "nodes",
+					data: {
+						LabelSize: selectedForEditNodes[i].data('LabelSize'),
+						Type: selectedForEditNodes[i].data('Type'),
+						Valign: selectedForEditNodes[i].data('Valign'),
+						Width: selectedForEditNodes[i].data('Width'),
+						Height: selectedForEditNodes[i].data('Height'),
+						id: "n" + nodeCounter,
+						name: selectedForEditNodes[i].data('name'),
+						selected: false,
+						backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
+						zIndex: selectedForEditNodes[i].data('zIndex')
+					},
+					renderedPosition: {
+						x: selectedForEditNodes[i].position('x')+100,
+						y: selectedForEditNodes[i].position('y')+100
+					}
+				})
+			}
+            nodeCounter++;
+            cy.add(node);
+            postAddProcessing();
             saveState();
         }
 
@@ -1301,35 +1387,43 @@ var VQI_PathwayEditor = function (parent) {
             }
             return copy;
         }
+		
+		function editEdgeArrowType(){
+			var arrowType = document.getElementById(parent + "-arrow-type-edge").value;
+			selectedForEditEdges.data('StartArrow', arrowType);
+			selectedForEditEdges.data('EndArrow', arrowType);
+			saveState();
+		}
+		
+		function editEdgeLineType(){
+			var lineType = document.getElementById(parent + "-line-type-edge").value;
+			selectedForEditEdges.data('Type', lineType);
+			saveState();
+		}
 
-        function editEdge() {
+        function editEdgeDirection() {
             var cy = $('#' + parent + '-cy').cytoscape('get');
-            var direction = document.getElementById(parent + "-direction").value;
-            var arrowType = document.getElementById(parent + "-arrow-type-edge").value;
-            var lineType = document.getElementById(parent + "-line-type-edge").value;
-            target.data('StartArrow', arrowType);
-            target.data('EndArrow', arrowType);
-            target.data('Type', lineType);
             if (document.getElementById(parent + '-direction').checked) {
-                var edge = [];
-
-                edge.push({
-                    group: "edges",
-                    data: {
-                        id: target.data('id'),
-                        Type: target.data('Type'),
-                        LineThickness: target.data('LineThickness'),
-                        EndArrow: target.data('EndArrow'),
-                        Coords: target.data('Coords'),
-                        ZOrder: target.data('ZOrder'),
-                        source: target.data('target'),
-                        target: target.data('source'),
-                        StartArrow: target.data('StartArrow'),
-                        selected: target.data('Selected')
-                    }
-                })
-                target.remove();
-                cy.add(edge);
+                var edges = [];
+				for(var i = 0; i < selectedForEditEdges.length; i++){
+					edges.push({
+						group: "edges",
+						data: {
+							id: selectedForEditEdges[i].data('id'),
+							Type: selectedForEditEdges[i].data('Type'),
+							LineThickness: selectedForEditEdges[i].data('LineThickness'),
+							EndArrow: selectedForEditEdges[i].data('EndArrow'),
+							Coords: selectedForEditEdges[i].data('Coords'),
+							ZOrder: selectedForEditEdges[i].data('ZOrder'),
+							source: selectedForEditEdges[i].data('target'),
+							target: selectedForEditEdges[i].data('source'),
+							StartArrow: selectedForEditEdges[i].data('StartArrow'),
+							selected: selectedForEditEdges[i].data('Selected')
+						}
+					})
+				}
+                selectedForEditEdges.remove();
+                cy.add(edges)
                 postAddProcessing();
             }
             dialogEdge.dialog("close");
@@ -1337,21 +1431,25 @@ var VQI_PathwayEditor = function (parent) {
         }
 
         function moveElementtoBackground(event) {
-            target.style("z-index", 0);
-            target.data("zIndex", 0);
+            selectedForEditNodes.style("z-index", 0);
+            selectedForEditNodes.data("zIndex", 0);
+			selectedForEditEdges.style("z-index", 0);
+            selectedForEditEdges.data("zIndex", 0);
             saveState();
         }
 
         function moveElementtoForeground(event) {
             highestZOrder++;
-            target.style("z-index", highestZOrder);
-            target.data("zIndex", highestZOrder);
+            selectedForEditNodes.style("z-index", highestZOrder);
+            selectedForEditNodes.data("zIndex", highestZOrder);
+			selectedForEditEdges.style("z-index", highestZOrder);
+            selectedForEditEdges.data("zIndex", highestZOrder);
             saveState();
         }
 
         function removeBackgroundImageOnNode(event) {
-            target.removeStyle("background-image");
-            target.data("backgroundImage", "");
+            selectedForEditNodes.removeStyle("background-image");
+            selectedForEditNodes.data("backgroundImage", "");
             saveState();
         }
 
@@ -1364,38 +1462,53 @@ var VQI_PathwayEditor = function (parent) {
 
         function onBackgroundImageReaderLoad() {
             var img = event.target.result;
-            target.data('Type', "image");
-            target.data("backgroundImage", img);
-            target.style("background-image", img);
+            selectedForEditNodes.data('Type', "image");
+            selectedForEditNodes.data("backgroundImage", img);
+            selectedForEditNodes.style("background-image", img);
             saveState();
         }
+		
+		function editNodeWidth() {
+			var width = document.getElementById(parent + "-width").value;
+			selectedForEditNodes.data('Width', width);
+			saveState();
+		}
 
-        function editNode() {
-            var name = document.getElementById(parent + "-gene-name").value;
-            var width = document.getElementById(parent + "-width").value;
-            var height = document.getElementById(parent + "-height").value;
-            var type = document.getElementById(parent + "-type-node").value;
-            target.data('name', name);
-            target.data('Width', width);
-            target.data('Height', height);
-            target.data('Type', type);
-
-            var node_name = target.data("name");
-            selectedForQueryNodes.push(node_name);
+		function editNodeHeight() {
+			var height = document.getElementById(parent + "-height").value;
+			selectedForEditNodes.data('Height', height);
+			saveState();
+		}
+		
+		function editNodeType(){
+			var type = document.getElementById(parent + "-type-node").value;
+			selectedForEditNodes.data('Type', type);
+			saveState();
+		}
+		
+		function editNodeName(){
+			var name = document.getElementById(parent + "-gene-name").value;
+			selectedForEditNodes.data('name', name);
+			saveState();
+		}
+		
+		function editNodeMUT(){
+			var mut = document.getElementById(parent + "-mut").value;
+			selectedForEditNodes.data('mut', mut);
+            dialogNode.dialog("close");
+            saveState();
+		}
+		
+		function editNodeCNV(){
+			var cnv = document.getElementById(parent + "-cnv").value;
+			selectedForEditNodes.data('cnv', cnv);
+            dialogNode.dialog("close");
+            saveState();
+		}
+		
+        function editNodeRNA() {
             var rna = document.getElementById(parent + "-rna").value;
-            var cnv = document.getElementById(parent + "-cnv").value;
-            var mut = document.getElementById(parent + "-mut").value;
             target.data('rna', rna);
-            target.data('cnv', cnv);
-            target.data('mut', mut);
-
-            coloredNodes.push({
-                "gene_name": node_name,
-                "rna": rna,
-                "cnv": cnv,
-                "mut": mut
-            });
-            $('#' + parent + '-variable').val($('#' + parent + '-variable').val() + coloredNodes);
             dialogNode.dialog("close");
             saveState();
         }
@@ -1471,9 +1584,8 @@ var VQI_PathwayEditor = function (parent) {
         function visualPathway(obj) {
             $('#' + parent + '-cy').cytoscape({
                 style: cytoscape.stylesheet()
-
-                        // node elements default css (unselected state)
-                        .selector('node').css({
+                // node elements default css (unselected state)
+                .selector('node').css({
                     'content': 'data(name)',
                     'padding-left': 2,
                     'padding-right': 2,
@@ -1732,8 +1844,8 @@ var VQI_PathwayEditor = function (parent) {
                     'border-width': 1
                 })
 
-                        // edge elements default css (unselected)
-                        .selector('edge').css({
+                // edge elements default css (unselected)
+                .selector('edge').css({
                     'line-color': 'black',
                     'line-style': 'solid',
                     'opacity': 0.75,
@@ -1760,8 +1872,8 @@ var VQI_PathwayEditor = function (parent) {
                 })
 
 
-                        // node & edge elements (selected state)
-                        .selector('edge:selected').css({
+                // node & edge elements (selected state)
+                .selector('edge:selected').css({
                     'background-color': 'green',
                     'line-color': 'green',
                     'target-arrow-color': 'green',
@@ -1774,8 +1886,8 @@ var VQI_PathwayEditor = function (parent) {
                     'text-opacity': 1.0
                 })
 
-                        // query purpose
-                        .selector('.green_bg').css({
+                // query purpose
+                .selector('.green_bg').css({
                     'background-color': 'lightgreen',
                     'color': 'black'
                 }).selector('.red_bg').css({
@@ -1863,19 +1975,25 @@ var VQI_PathwayEditor = function (parent) {
                         else
                             orderedSelectedNodes.shift();
                         orderedSelectedNodes.push(event.cyTarget);
-                        console.log(event.cyTarget._private.data.id)
-                        console.log(event.cyTarget._private.data.name)
                     });
-
-                    cy.on('doubleTap', 'node', function (event) {
-                        target = event.cyTarget;
-                        dialogNode.dialog("open");
+					
+					cy.on('cxttap','node',function (event){
+						target = event.cyTarget;
+						target.select();
+						selectedForEditNodes = cy.$('node:selected');
+						dialogNode.dialog("open");
+					});
+					cy.on('cxttap','edge',function (event){
+						target = event.cyTarget;
+						target.select();
+						selectedForEditEdges = cy.$('edge:selected');
+						dialogEdge.dialog("open");
+					});
+                    
+					cy.on('doubleTap', 'node', function (event) {
                     });
 
                     cy.on('doubleTap', 'edge', function (event) {
-                        target = event.cyTarget;
-                        dialogEdge.dialog("open");
-						console.log(event.cyTarget._private.data.id)
                     });
 
                     cy.on('select', 'node', function (event) {
@@ -2055,7 +2173,6 @@ var VQI_PathwayEditor = function (parent) {
             height: 300,
             width: 350,
             buttons: {
-                "submit": editNode,
                 Cancel: function () {
                     dialogNode.dialog("close");
                 }
@@ -2069,7 +2186,6 @@ var VQI_PathwayEditor = function (parent) {
             height: 300,
             width: 350,
             buttons: {
-                "submit": editEdge,
                 Cancel: function () {
                     dialogEdge.dialog("close");
                 }
@@ -2077,7 +2193,7 @@ var VQI_PathwayEditor = function (parent) {
             close: function () {
             }
         });
-
+		
         dialogPathfind = $("#" + parent + "-dialog-form-find-path").dialog({
             open: function (event) {
                 document.getElementById(parent + "-sid").value = orderedSelectedNodes[0]._private.data['name'];
@@ -2139,16 +2255,32 @@ var VQI_PathwayEditor = function (parent) {
         });
 
         refreshPathwayList();
-        document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
+		
+		//load data local
         document.getElementById(parent + '-file-pathway').addEventListener('change', onChangePathwayFile);
         document.getElementById(parent + '-file-coloring').addEventListener('change', onChangeColoringFile);
-        document.getElementById(parent + '-background-image').addEventListener('change', onChangeBackgroundImageOnNode);
+        
+		//edit node(s)
+		document.getElementById(parent + '-background-image').addEventListener('change', onChangeBackgroundImageOnNode);
         document.getElementById(parent + '-background-image-remove').addEventListener('click', removeBackgroundImageOnNode);
         document.getElementById(parent + '-node-move-to-background').addEventListener('click', moveElementtoBackground);
         document.getElementById(parent + '-node-move-to-foreground').addEventListener('click', moveElementtoForeground);
-        document.getElementById(parent + '-edge-move-to-background').addEventListener('click', moveElementtoBackground);
+		document.getElementById(parent + '-gene-name-apply').addEventListener('click', editNodeName);
+        document.getElementById(parent + '-height-apply').addEventListener('click', editNodeHeight);
+		document.getElementById(parent + '-width-apply').addEventListener('click', editNodeWidth);
+		document.getElementById(parent + '-type-node-apply').addEventListener('click', editNodeType);
+		document.getElementById(parent + '-rna-apply').addEventListener('click', editNodeRNA);
+		document.getElementById(parent + '-cnv-apply').addEventListener('click', editNodeCNV);
+		document.getElementById(parent + '-mut-apply').addEventListener('click', editNodeMUT);
+		
+		//edit edge(s)
+		document.getElementById(parent + '-edge-move-to-background').addEventListener('click', moveElementtoBackground);
         document.getElementById(parent + '-edge-move-to-foreground').addEventListener('click', moveElementtoForeground);
-        document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
+		document.getElementById(parent + '-direction-apply').addEventListener('click', editEdgeDirection);
+		document.getElementById(parent + '-arrow-type-edge-apply').addEventListener('click', editEdgeArrowType);
+        document.getElementById(parent + '-line-type-edge-apply').addEventListener('click', editEdgeLineType);
+		
+		document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
         document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
         document.getElementById(parent + '-find-object').addEventListener('click', findObject);
         document.getElementById(parent + '-pathway-selector').addEventListener('change', onSelect);
