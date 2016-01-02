@@ -9,7 +9,7 @@
         <script src="dependencies/jquery-ui-1.11.4/jquery-ui.js"></script>
         <script src="dependencies/d3/d3.min.js"></script>
         <script src="dependencies/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
-        <script src="dependencies/cytoscape.js-2.4.9/dist/cytoscape.js"></script>
+        <script src="dependencies/cytoscape.js-2.5.4/cytoscape.js"></script>
     </head>
     <body>
         <input type=button onclick="load()" value="load">

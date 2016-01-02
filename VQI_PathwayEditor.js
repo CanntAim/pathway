@@ -184,6 +184,18 @@ var VQI_PathwayEditor = function (parent) {
 	strVar += " 				<input id=\"" + parent + "-line-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
 	strVar += "    			<div class =\"form-group\">";
+    strVar += "      			<label for=\"" + parent + "-segment-distances\">Segment Distances:(e.g. -20 20 -20)<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-segment-distances\" class=\"form-control\" name=\"" + parent + "-segment-distances\">";
+	strVar += "      			<label for=\"" + parent + "-segment-weights\">Segment Weights:(e.g. 0.25 0.5 0.75)<\/label>";
+	strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-segment-weights\" class=\"form-control\" name=\"" + parent + "-segment-weights\">";
+    strVar += "      			<label for=\"" + parent + "-segment-enable-disable\">Enable Segmented<\/label>";
+	strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-segmented-enable-disable\" name=\"" + parent + "-segmented-enable-disable\">";
+    strVar += "  					<option selected=\"\">enable<\/option>";
+	strVar += "  					<option\>disable<\/option>";
+    strVar += "					<\/select>";
+	strVar += " 				<input id=\"" + parent + "-apply-curve-changes\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group\">";
 	strVar += "    				<label for=\"" + parent + "-edge-move-to-background\">Move to Background:<\/label>";
     strVar += "    				<input id=\"" + parent + "-edge-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
@@ -354,13 +366,25 @@ var VQI_PathwayEditor = function (parent) {
                     cy.$("node")[i].style("backgroundImage", cy.$("node")[i].data("backgroundImage"));
                     cy.$("node")[i].data("Type", "image");
                 }
-            }
-
-            for (var i = 0; i < cy.$("node").length; i++) {
-                if (typeof (cy.$("node")[i].data("zIndex")) != "undefined") {
+				
+				if (typeof (cy.$("node")[i].data("zIndex")) != "undefined") {
                     cy.$("node")[i].style("zIndex", cy.$("node")[i].data("zIndex"));
                 }
             }
+			
+			for (var i = 0;i < cy.$("edge").length; i++){
+				if (typeof (cy.$("edge")[i].data("curveStyle")) != "undefined") {
+                    cy.$("edge")[i].style("curve-style", cy.$("edge")[i].data("curveStyle"));
+                }
+				
+				if (typeof (cy.$("edge")[i].data("segmentDistances")) != "undefined") {
+                    cy.$("edge")[i].style("segment-distances", cy.$("edge")[i].data("segmentDistances"));
+                }
+				
+				if (typeof (cy.$("edge")[i].data("segmentWeights")) != "undefined") {
+                    cy.$("edge")[i].style("segment-weights", cy.$("edge")[i].data("segmentWeights"));
+                }
+			}
         }
 
         function preAddProcessing(obj) {
@@ -752,6 +776,9 @@ var VQI_PathwayEditor = function (parent) {
                                 source: node.children()[x].connectedEdges()[j].data('source'),
                                 target: node.children()[x].connectedEdges()[j].data('target'),
                                 StartArrow: node.children()[x].connectedEdges()[j].data('StartArrow'),
+								curveStyle: node.children()[x].connectedEdges()[j].data('curveStyle'),
+								segmentDistances: node.children()[x].connectedEdges()[j].data('segmentDistances'),
+								segmentWeights: node.children()[x].connectedEdges()[j].data('segmentWeights'),
                                 selected: node.children()[x].connectedEdges()[j].data('selected')
                             }
                         })
@@ -822,6 +849,9 @@ var VQI_PathwayEditor = function (parent) {
                                 source: node.children()[x].connectedEdges()[j].data('source'),
                                 target: node.children()[x].connectedEdges()[j].data('target'),
                                 StartArrow: node.children()[x].connectedEdges()[j].data('StartArrow'),
+								curveStyle: node.children()[x].connectedEdges()[j].data('curveStyle'),
+								segmentDistances: node.children()[x].connectedEdges()[j].data('segmentDistances'),
+								segmentWeights: node.children()[x].connectedEdges()[j].data('segmentWeights'),
                                 selected: node.children()[x].connectedEdges()[j].data('selected')
                             }
                         })
@@ -892,6 +922,9 @@ var VQI_PathwayEditor = function (parent) {
                         source: node.connectedEdges()[j].data('source'),
                         target: node.connectedEdges()[j].data('target'),
                         StartArrow: node.connectedEdges()[j].data('StartArrow'),
+						curveStyle: node.connectedEdges()[j].data('curveStyle'),
+						segmentDistances: node.connectedEdges()[j].data('segmentDistances'),
+						segmentWeights: node.connectedEdges()[j].data('segmentWeights'),
                         selected: node.connectedEdges()[j].data('selected')
                     }
                 })
@@ -968,6 +1001,9 @@ var VQI_PathwayEditor = function (parent) {
                                 source: selectedForEditNodes[i].connectedEdges()[j].data('source'),
                                 target: selectedForEditNodes[i].connectedEdges()[j].data('target'),
                                 StartArrow: selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
+								curveStyle: selectedForEditNodes[i].connectedEdges()[j].data('curveStyle'),
+								segmentDistances: selectedForEditNodes[i].connectedEdges()[j].data('segmentDistances'),
+								segmentWeights: selectedForEditNodes[i].connectedEdges()[j].data('segmentWeights'),
                                 selected: selectedForEditNodes[i].connectedEdges()[j].data('selected')
                             }
                         })
@@ -1429,6 +1465,31 @@ var VQI_PathwayEditor = function (parent) {
             dialogEdge.dialog("close");
             saveState();
         }
+		
+		function toggleEdgeStyle(){
+			if(document.getElementById(parent + '-segmented-enable-disable').value == "enable")
+				edgeEnableSegmentedStyle();
+			else
+				edgeDisableSegmentedStyle();
+		}
+		
+		function edgeEnableSegmentedStyle(){
+			var segmentDistances = document.getElementById(parent + "-segment-distances").value;
+			var segmentWeights = document.getElementById(parent + "-segment-weights").value;
+			selectedForEditEdges.style('curve-style','segments');
+			selectedForEditEdges.style('segment-distances',segmentDistances);
+			selectedForEditEdges.style('segment-weights',segmentWeights);
+			selectedForEditEdges.data('curveStyle','segments');
+			selectedForEditEdges.data('segmentDistances',segmentDistances);
+			selectedForEditEdges.data('segmentWeights',segmentWeights);
+			saveState();
+		}
+		
+		function edgeDisableSegmentedStyle(){
+			selectedForEditEdges.style('curve-style','bezier');
+			selectedForEditEdges.data('curveStyle','bezier');
+			saveState();
+		}
 
         function moveElementtoBackground(event) {
             selectedForEditNodes.style("z-index", 0);
@@ -1846,7 +1907,7 @@ var VQI_PathwayEditor = function (parent) {
 
                 // edge elements default css (unselected)
                 .selector('edge').css({
-                    'line-color': 'black',
+		            'line-color': 'black',
                     'line-style': 'solid',
                     'opacity': 0.75,
                     'text-opacity': 0.75,
@@ -2279,6 +2340,7 @@ var VQI_PathwayEditor = function (parent) {
 		document.getElementById(parent + '-direction-apply').addEventListener('click', editEdgeDirection);
 		document.getElementById(parent + '-arrow-type-edge-apply').addEventListener('click', editEdgeArrowType);
         document.getElementById(parent + '-line-type-edge-apply').addEventListener('click', editEdgeLineType);
+		document.getElementById(parent + '-apply-curve-changes').addEventListener('click', toggleEdgeStyle);
 		
 		document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
         document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
