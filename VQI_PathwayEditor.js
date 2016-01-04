@@ -77,6 +77,7 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "					<li><input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-collapse\" value=\"Collapse\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-expand\" value=\"Expand\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-duplicate-nodes\" value=\"Duplicate Nodes\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "				<\/ul>";
     strVar += "			</div>";
     strVar += " 	<\/li>";
@@ -581,8 +582,11 @@ var VQI_PathwayEditor = function (parent) {
 		
 		function addDuplicateNodes(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
-            var name = "n" + nodeCounter;
             var node = [];
+			var edge = [];
+			
+			var lookupDuplicatedNodes = [];
+			var lookupDuplicatedEdges = [];
 
 			for(var i = 0; i < selectedForEditNodes.length; i++){
 				node.push({
@@ -593,42 +597,50 @@ var VQI_PathwayEditor = function (parent) {
 						Valign: selectedForEditNodes[i].data('Valign'),
 						Width: selectedForEditNodes[i].data('Width'),
 						Height: selectedForEditNodes[i].data('Height'),
-						id: "n" + nodeCounter,
+						id: "dup" + selectedForEditNodes[i].data('id'),
 						name: selectedForEditNodes[i].data('name'),
 						selected: false,
 						backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
 						zIndex: selectedForEditNodes[i].data('zIndex')
 					},
 					renderedPosition: {
-						x: selectedForEditNodes[i].position('x')+100,
-						y: selectedForEditNodes[i].position('y')+100
+						x: selectedForEditNodes[i].position('x')+500,
+						y: selectedForEditNodes[i].position('y')
 					}
 				})
+				lookupDuplicatedNodes.push("dup" + selectedForEditNodes[i].data('id'));
+			}
+			for(var i = 0; i < selectedForEditNodes.length; i++){
+				for (var j = 0; j < selectedForEditNodes[i].connectedEdges().length; j++) {
+					if(lookupDuplicatedNodes.indexOf("dup"+selectedForEditNodes[i].connectedEdges()[j].data('source')) != -1 &&
+					lookupDuplicatedNodes.indexOf("dup"+selectedForEditNodes[i].connectedEdges()[j].data('target')) != -1 &&
+					lookupDuplicatedEdges.indexOf("dup"+selectedForEditNodes[i].connectedEdges()[j].data('id')) == -1
+					){
+						edge.push({
+							group: "edges",
+							data: {
+								id: "dup" + selectedForEditNodes[i].connectedEdges()[j].data('id'),
+								Type: selectedForEditNodes[i].connectedEdges()[j].data('Type'),
+								LineThickness: selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
+								EndArrow: selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
+								Coords: selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
+								ZOrder: selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
+								source: "dup" + selectedForEditNodes[i].connectedEdges()[j].data('source'),
+								target: "dup" + selectedForEditNodes[i].connectedEdges()[j].data('target'),
+								StartArrow: selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
+								curveStyle: selectedForEditNodes[i].connectedEdges()[j].data('curveStyle'),
+								segmentDistances: selectedForEditNodes[i].connectedEdges()[j].data('segmentDistances'),
+								segmentWeights: selectedForEditNodes[i].connectedEdges()[j].data('segmentWeights'),
+								selected: selectedForEditNodes[i].connectedEdges()[j].data('selected')
+							}
+						})
+						lookupDuplicatedEdges.push("dup"+selectedForEditNodes[i].connectedEdges()[j].data('id'));
+					}
+				}
 			}
 			
-			for(var i = 0; i < selectedForEditEdges.length; i++){
-				node.push({
-					group: "nodes",
-					data: {
-						LabelSize: selectedForEditNodes[i].data('LabelSize'),
-						Type: selectedForEditNodes[i].data('Type'),
-						Valign: selectedForEditNodes[i].data('Valign'),
-						Width: selectedForEditNodes[i].data('Width'),
-						Height: selectedForEditNodes[i].data('Height'),
-						id: "n" + nodeCounter,
-						name: selectedForEditNodes[i].data('name'),
-						selected: false,
-						backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
-						zIndex: selectedForEditNodes[i].data('zIndex')
-					},
-					renderedPosition: {
-						x: selectedForEditNodes[i].position('x')+100,
-						y: selectedForEditNodes[i].position('y')+100
-					}
-				})
-			}
-            nodeCounter++;
             cy.add(node);
+			cy.add(edge);
             postAddProcessing();
             saveState();
         }
@@ -2005,6 +2017,7 @@ var VQI_PathwayEditor = function (parent) {
                     $('#' + parent + '-produce-JSON').removeClass('disabled');
                     $('#' + parent + '-undo').removeClass('disabled');
                     $('#' + parent + '-redo').removeClass('disabled');
+					$('#' + parent + '-duplicate-nodes').removeClass('disabled');
 
                     // Add processed nodes
                     cy.add(obj.elements);
@@ -2358,6 +2371,7 @@ var VQI_PathwayEditor = function (parent) {
         document.getElementById(parent + '-produce-JSON').addEventListener('click', produceJSON);
         document.getElementById(parent + '-undo').addEventListener('click', undo);
         document.getElementById(parent + '-redo').addEventListener('click', redo);
+		document.getElementById(parent + '-duplicate-nodes').addEventListener('click', addDuplicateNodes);
 
         //external GUI functions
 
