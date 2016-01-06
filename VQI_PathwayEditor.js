@@ -318,31 +318,38 @@ var VQI_PathwayEditor = function (parent) {
             dialogNewPathway.dialog("close");
         }
 		
+		function focus(name){
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			cy.elements("node[name = \"" + name + "\"]").select();
+			cy.$('node').style("opacity", 0.2);
+			cy.$('edge').style("opacity", 0.2);
+			cy.$('node:selected').style("opacity", 1.0);
+			cy.$('edge:selected').style("opacity", 1.0);
+		}
+		
+		function unFocus(){
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			cy.$('node').unselect();
+			cy.$('node').removeStyle("opacity");
+			cy.$('edge').removeStyle("opacity");
+			cy.$('node:selected').removeStyle("opacity");
+			cy.$('edge:selected').removeStyle("opacity");
+		}
+		
 		function search(event){
 			var cy = $('#' + parent + '-cy').cytoscape('get');
 			var name = document.getElementById(parent + "-search-node-name").value;
+			unFocus();
 			if(name != ""){
-				cy.elements("node[name = \"" + name + "\"]").select();
-				cy.$('node').style("opacity", 0.2);
-				cy.$('edge').style("opacity", 0.2);
-				cy.$('node:selected').style("opacity", 1.0);
-				cy.$('edge:selected').style("opacity", 1.0);
+				focus(name);
 			} else {
-				cy.$('node').unselect();
-				cy.$('node').removeStyle("opacity");
-				cy.$('edge').removeStyle("opacity");
-				cy.$('node:selected').removeStyle("opacity");
-				cy.$('edge:selected').removeStyle("opacity");
+				unFocus();
 			}
 		}
 		
 		function exitSearch(event){
 			var cy = $('#' + parent + '-cy').cytoscape('get');
-			cy.$('node').unselect();
-            cy.$('node').removeStyle("opacity");
-            cy.$('edge').removeStyle("opacity");
-            cy.$('node:selected').removeStyle("opacity");
-            cy.$('edge:selected').removeStyle("opacity");
+			unFocus();
 		}
 
         function onChangePathwayFile(event) {
