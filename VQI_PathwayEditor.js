@@ -599,9 +599,15 @@ var VQI_PathwayEditor = function (parent) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             for (var line = 1; line < lines.length; line++) {
                 var target = cy.elements("node[name = \"" + lines[line][0] + "\"]");
-                var mut = lines[line][1];
-                var cnv = lines[line][2];
-                var rna = lines[line][3];
+				var mut = 0;
+				var cnv = 0;
+				var rna = 0;
+				if(lines[line][1] != "")
+					mut = lines[line][1];
+				if(lines[line][2] != "")
+					cnv = lines[line][2];
+                if(lines[line][3] != "")
+					rna = lines[line][3];
                 target.data('rna', rna);
                 target.data('cnv', cnv);
                 target.data('mut', mut);
