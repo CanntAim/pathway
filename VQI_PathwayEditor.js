@@ -587,9 +587,18 @@ var VQI_PathwayEditor = function (parent) {
                 var target = lines[line][0];
                 if (typeof (lookup[target]) != "undefined") {
 					for(entry in lookup[target]){
-						lookup[target][entry].mut = lines[line][1];
-						lookup[target][entry].cnv = lines[line][2];
-						lookup[target][entry].rna = lines[line][3];
+						var mut = "0";
+						var cnv = "0";
+						var rna = "0";
+						if(lines[line][1] != "")
+							mut = lines[line][1];
+						if(lines[line][2] != "")
+							cnv = lines[line][2];
+						if(lines[line][3] != "")
+							rna = lines[line][3];			
+						lookup[target][entry].mut = mut;
+						lookup[target][entry].cnv = cnv;
+						lookup[target][entry].rna = rna;
 					}
                 }
             }
@@ -599,9 +608,9 @@ var VQI_PathwayEditor = function (parent) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             for (var line = 1; line < lines.length; line++) {
                 var target = cy.elements("node[name = \"" + lines[line][0] + "\"]");
-				var mut = 0;
-				var cnv = 0;
-				var rna = 0;
+				var mut = "0";
+				var cnv = "0";
+				var rna = "0";
 				if(lines[line][1] != "")
 					mut = lines[line][1];
 				if(lines[line][2] != "")
