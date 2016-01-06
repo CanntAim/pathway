@@ -1,7 +1,5 @@
 var VQI_PathwayEditor = function (parent) {
 
-    var self = this;
-
     //Web services
 //	var serverURL = "http://cardinal3.engr.uconn.edu/pathwayVisual/";
     var services = {};
@@ -26,6 +24,7 @@ var VQI_PathwayEditor = function (parent) {
 
 
     // Globals
+	var self = this;
 	var types = ["bundleOne", "bundleTwo", "gene", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "triangle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
     var states = [];
     var stateRecycle = [];
@@ -105,6 +104,9 @@ var VQI_PathwayEditor = function (parent) {
     strVar += " 	<\/li>";
     strVar += " 	<li style=\"margin: 2px\">";
     strVar += "			<input id=\"" + parent + "-redo\" value=\"Redo\" type=\"button\" class=\"btn btn-primary disabled\"><\/input>";
+    strVar += " 	<\/li>";
+	strVar += " 	<li style=\"margin: 2px\">";
+    strVar += "      	<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-search-node-name\" placeholder=\"Search\" class=\"form-control\" name=\"" + parent + "-search-node-name\">";
     strVar += " 	<\/li>";
     strVar += " <\/ul>";
     strVar += " <\/div>";
@@ -315,6 +317,33 @@ var VQI_PathwayEditor = function (parent) {
 			save(obj,name);
             dialogNewPathway.dialog("close");
         }
+		
+		function search(event){
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			var name = document.getElementById(parent + "-search-node-name").value;
+			if(name != ""){
+				cy.elements("node[name = \"" + name + "\"]").select();
+				cy.$('node').style("opacity", 0.2);
+				cy.$('edge').style("opacity", 0.2);
+				cy.$('node:selected').style("opacity", 1.0);
+				cy.$('edge:selected').style("opacity", 1.0);
+			} else {
+				cy.$('node').unselect();
+				cy.$('node').removeStyle("opacity");
+				cy.$('edge').removeStyle("opacity");
+				cy.$('node:selected').removeStyle("opacity");
+				cy.$('edge:selected').removeStyle("opacity");
+			}
+		}
+		
+		function exitSearch(event){
+			var cy = $('#' + parent + '-cy').cytoscape('get');
+			cy.$('node').unselect();
+            cy.$('node').removeStyle("opacity");
+            cy.$('edge').removeStyle("opacity");
+            cy.$('node:selected').removeStyle("opacity");
+            cy.$('edge:selected').removeStyle("opacity");
+		}
 
         function onChangePathwayFile(event) {
             var reader = new FileReader();
@@ -2372,6 +2401,10 @@ var VQI_PathwayEditor = function (parent) {
         document.getElementById(parent + '-undo').addEventListener('click', undo);
         document.getElementById(parent + '-redo').addEventListener('click', redo);
 		document.getElementById(parent + '-duplicate-nodes').addEventListener('click', addDuplicateNodes);
+		
+		//search
+		document.getElementById(parent + '-search-node-name').addEventListener('keyup', search);
+		document.getElementById(parent + '-search-node-name').addEventListener('focusout', exitSearch);
 
         //external GUI functions
 
