@@ -320,7 +320,7 @@ var VQI_PathwayEditor = function (parent) {
 		
 		function focus(name){
 			var cy = $('#' + parent + '-cy').cytoscape('get');
-			cy.elements("node[name = \"" + name + "\"]").select();
+			cy.elements("node[name *= \"" + name + "\"]").select();
 			cy.$('node').style("opacity", 0.2);
 			cy.$('edge').style("opacity", 0.2);
 			cy.$('node:selected').style("opacity", 1.0);
