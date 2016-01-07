@@ -568,7 +568,7 @@ var VQI_PathwayEditor = function (parent) {
             var list = this.result.split('\n');
             var lines = [];
 
-            for (var line = 1; line < list.length; line++) {
+            for (var line = 0; line < list.length; line++) {
                 lines[line] = list[line].split('\t');
             }
             sprayColor(lines);
@@ -582,23 +582,44 @@ var VQI_PathwayEditor = function (parent) {
 				else
 					lookup[obj.elements.nodes[i].data.name] = [obj.elements.nodes[i].data];
             }
+			
+			var header = {};
+			for(var i = 0; i < lines[0].length; i++){
+				if(lines[0][i].toLowerCase() == "gene")
+					header["gene"] = i;
+				else if(lines[0][i].toLowerCase() == "mut")
+					header["mut"] = i;
+				else if(lines[0][i].toLowerCase() == "cnv")
+					header["cnv"] = i;
+				else if(lines[0][i].toLowerCase() == "rna")
+					header["rna"] = i;
+			}
 
             for(var line = 1; line < lines.length; line++) {
-                var target = lines[line][0];
+                var target = lines[line][header["gene"]];
                 if (typeof (lookup[target]) != "undefined") {
 					for(entry in lookup[target]){
-						var mut = "0";
-						var cnv = "0";
-						var rna = "0";
-						if(lines[line][1] != "")
-							mut = lines[line][1];
-						if(lines[line][2] != "")
-							cnv = lines[line][2];
-						if(lines[line][3] != "")
-							rna = lines[line][3];			
-						lookup[target][entry].mut = mut;
-						lookup[target][entry].cnv = cnv;
-						lookup[target][entry].rna = rna;
+						if(typeof(header["mut"]) != "undefined"){
+							mut = lines[line][header["mut"]];
+							if(!isNaN(mut)) 
+								lookup[target][entry].mut = mut;
+							else
+								lookup[target][entry].mut = "0";
+						}
+						if(typeof(header["cnv"]) != "undefined"){
+							cnv = lines[line][header["cnv"]];
+							if(!isNaN(cnv)) 
+								lookup[target][entry].cnv = cnv;
+							else
+								lookup[target][entry].cnv = "0";
+						}
+						if(typeof(header["rna"]) != "undefined"){
+							rna = lines[line][header["rna"]];			
+							if(!isNaN(rna)) 
+								lookup[target][entry].rna = rna;
+							else
+								lookup[target][entry].rna = "0";
+						}
 					}
                 }
             }
@@ -606,20 +627,41 @@ var VQI_PathwayEditor = function (parent) {
 
         function sprayColor(lines) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
-            for (var line = 1; line < lines.length; line++) {
-                var target = cy.elements("node[name = \"" + lines[line][0] + "\"]");
-				var mut = "0";
-				var cnv = "0";
-				var rna = "0";
-				if(lines[line][1] != "")
-					mut = lines[line][1];
-				if(lines[line][2] != "")
-					cnv = lines[line][2];
-                if(lines[line][3] != "")
-					rna = lines[line][3];
-                target.data('rna', rna);
-                target.data('cnv', cnv);
-                target.data('mut', mut);
+			var header = {};
+			for(var i = 0; i < lines[0].length; i++){
+				if(lines[0][i].toLowerCase() == "gene")
+					header["gene"] = i;
+				else if(lines[0][i].toLowerCase() == "mut")
+					header["mut"] = i;
+				else if(lines[0][i].toLowerCase() == "cnv")
+					header["cnv"] = i;
+				else if(lines[0][i].toLowerCase() == "rna")
+					header["rna"] = i;
+			}
+			
+			for (var line = 1; line < lines.length; line++) {
+                var target = cy.elements("node[name = \"" + lines[line][header["gene"]] + "\"]");
+				if(typeof(header["mut"]) != "undefined"){
+					mut = lines[line][header["mut"]];
+					if(!isNaN(mut)) 
+						target.data('mut', mut);
+					else
+						target.data('mut', '0');
+				}
+				if(typeof(header["cnv"]) != "undefined"){
+					cnv = lines[line][header["cnv"]];
+					if(!isNaN(cnv)) 
+						target.data('cnv', cnv);
+					else
+						target.data('cnv', '0');
+				}
+                if(typeof(header["rna"]) != "undefined"){
+					rna = lines[line][header["rna"]];
+					if(!isNaN(rna))
+						target.data('rna', rna);
+					else
+						target.data('rna', '0');
+				}
             }
         }
 
