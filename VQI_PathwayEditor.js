@@ -4,6 +4,9 @@ var VQI_PathwayEditor = function (parent) {
 //	var serverURL = "http://cardinal3.engr.uconn.edu/pathwayVisual/";
     var services = {};
 
+	/*Local Services*/
+	services["pathwayFinderUrl"] = "score_json.txt";
+	
     /* Yue's Local Server*/
     services['pathwayFinder'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
     services['pathwaySaver'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/updateDB_json.php';
@@ -17,7 +20,7 @@ var VQI_PathwayEditor = function (parent) {
 
     /* BIBCI Server */
 //    services['pathwayFinder'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/ajaxJSON.php';
-//    services['pathwaySaver'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/updateDB_json.php';
+//   services['pathwaySaver'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/updateDB_json.php';
 //    services['pathwayScorer'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual/ScoreSystem/getScore.php';
 //    services['pathwayWeightedScorer'] = 'http://bibci.engr.uconn.edu/thh13003/pathway2/pathwayweightedscorer.php';
 //    services['objectFinder'] = 'http://bibci.engr.uconn.edu/thh13003/pathway2/qsys_json.php';
@@ -1159,7 +1162,7 @@ var VQI_PathwayEditor = function (parent) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var sid = orderedSelectedNodes[0]._private.data['id'];
             var vid = orderedSelectedNodes[1]._private.data['id'];
-            $.post('score_json.txt', {
+            $.post(services['pathwayFinderUrl'], {
                 data_json: JSON.stringify(JSON.parse(states[states.length - 1]))
             }, function (yue_data) {
 				console.log(yue_data);

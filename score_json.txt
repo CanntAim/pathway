@@ -10,4 +10,18 @@
         "mFDR": 0.00143,
         "lowp": 1,
         "consistent_lowp": 0
-    }]
+    },
+{
+        "edges": ["e0", "e2", "e8", "e9", "e11", "e15", "e78", "e87"],
+        "rscore": 0.47222,
+        "genes": ["BMP", "IGF"],
+        "source": "n0",
+        "destination": "n22",
+        "person": "X1728790",
+        "pathway": 342,
+        "mscore": 0,
+        "mFDR": 0.00143,
+        "lowp": 1,
+        "consistent_lowp": 0
+    }
+]
