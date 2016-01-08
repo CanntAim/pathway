@@ -585,14 +585,8 @@ var VQI_PathwayEditor = function (parent) {
 
             var header = {};
             for (var i = 0; i < lines[0].length; i++) {
-                if (lines[0][i].toLowerCase() == "gene")
-                    header["gene"] = i;
-                else if (lines[0][i].toLowerCase() == "mut")
-                    header["mut"] = i;
-                else if (lines[0][i].toLowerCase() == "cnv")
-                    header["cnv"] = i;
-                else if (lines[0][i].toLowerCase() == "rna")
-                    header["rna"] = i;
+                var value = lines[0][i].toLowerCase().trim();
+                header[value] = i;
             }
 
             for (var line = 1; line < lines.length; line++) {
@@ -1161,323 +1155,73 @@ var VQI_PathwayEditor = function (parent) {
 
         }
 
-        function findPath(Json, sid, vid) {
-            var nodes = Json['elements']['nodes'];
-            nodes = nodes.filter(function (item) {
-                if (item['data']['NODE_TYPE'] !== 'GROUP') {
-                    return true;
-                }
-            });
-
-            var edges = Json['elements']['edges'];
-            var result = [];
-            //array of arrays containing the graphids for edges in the path
-            var path = [];
-            var nodeTrack = [];
-
-            function mapLocation(x, y) {
-                var deta = 1;
-
-                for (var j = 0; j < nodes.length; j++) {
-                    var x0 = nodes[j]['position']['x'];
-                    var y0 = nodes[j]['position']['y'];
-                    var w = nodes[j]['data']['Width'];
-                    var h = nodes[j]['data']['Height'];
-
-                    if (x > x0 - w / 2 - deta & x < x0 + w / 2 + deta & y > y0 - h / 2 - deta & y < y0 + h / 2 + deta) {
-                        return nodes[j]['data']['SUID'];
-                    }
-                }
-            }
-
-            function findEdgeBySource(gid) {
-                if (gid == undefined | gid == '0') {
-                    return;
-                }
-
-                var end = true;
-                for (var i = 0; i < edges.length; i++) {
-                    var eid = edges[i]['data']['id'];
-                    var s = (!('source' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][0]['x'], edges[i]['data']['Coords'][0]['y']) : edges[i]['data']['source']);
-
-                    if (s == gid) {
-                        var cl = edges[i]['data']['Coords'].length;
-                        var t = (!('target' in edges[i]['data']) ? mapLocation(edges[i]['data']['Coords'][cl - 1]['x'], edges[i]['data']['Coords'][cl - 1]['y']) : edges[i]['data']['target']);
-
-                        if (t == vid) {
-                            var p = path.slice();
-                            p.push(eid);
-                            result.push(p);
-                            continue;
-
-                        } else if (nodeTrack.indexOf(eid) == -1 & t !== undefined & t !== '0') {
-                            path.push(eid);
-                            nodeTrack.push(eid);
-                            findEdgeBySource(t);
-                        } else {
-                            continue;
-                        }
-                    }
-                }
-                if (end == true) {
-                    path.pop();
-                    nodeTrack.pop();
-                }
-                return true;
-            }
-            findEdgeBySource(sid);
-            return result;
-
-        }
-
-        function getPathScore(edgeArray, scoreJSON) {
-            var sum = 0;
-            var max = 0;
-            for (var i = 0; i < edgeArray.length; i++) {
-                sum = sum + (i + 1) * scoreJSON[edgeArray[i]] / edgeArray.length;
-                max = max + (i + 1) / edgeArray.length;
-            }
-            return parseFloat((sum / max).toFixed(5));
-        }
-
-        function convertEdgePathtoNodePathNoGUI(selectedPaths, obj) {
-            var nodePath = [];
-            var lookupNodes = {};
-            var lookupEdges = {};
-
-            for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
-                lookupNodes[obj.elements.nodes[i].data.id] = obj.elements.nodes[i].data;
-            }
-            for (var i = 0, len = obj.elements.edges.length; i < len; i++) {
-                lookupEdges[obj.elements.edges[i].data.id] = obj.elements.edges[i].data;
-            }
-            for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
-                if (obj.elements.nodes[i].data.parent != "") {
-                    if (typeof (lookupNodes[obj.elements.nodes[i].data.parent].children) != "undefined" &&
-                            lookupNodes[obj.elements.nodes[i].data.parent].children.indexOf(obj.elements.nodes[i].data) == -1)
-                        lookupNodes[obj.elements.nodes[i].data.parent].children.push(obj.elements.nodes[i].data);
-                    else
-                        lookupNodes[obj.elements.nodes[i].data.parent].children = [obj.elements.nodes[i].data];
-                }
-            }
-            for (var n = 0; n < selectedPaths.length; n++) {
-                nodePath.push([])
-                for (var j = 0; j < selectedPaths[n].length; j++) {
-                    if (j < selectedPaths[n].length - 1) {
-                        var sourceNodeId = lookupEdges[selectedPaths[n][j]].source;
-                        var sourceNodeName = lookupNodes[sourceNodeId].name;
-                        var sourceNodeCnv = lookupNodes[sourceNodeId].cnv;
-                        var sourceNodeRna = lookupNodes[sourceNodeId].rna;
-                        var sourceNodeMut = lookupNodes[sourceNodeId].mut;
-                        if (typeof (lookupNodes[sourceNodeId].children) != "undefined") {
-                            nodePath[n].push([]);
-                            for (var k = 0; k < lookupNodes[sourceNodeId].children.length; k++) {
-                                var sourceNodeName = lookupNodes[sourceNodeId].children[k].name
-                                var sourceNodeCnv = lookupNodes[sourceNodeId].children[k].cnv
-                                var sourceNodeRna = lookupNodes[sourceNodeId].children[k].rna
-                                var sourceNodeMut = lookupNodes[sourceNodeId].children[k].mut
-                                nodePath[n][j].push({"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut});
-                            }
-                        } else {
-                            nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
-                        }
-                    } else {
-                        var sourceNodeId = lookupEdges[selectedPaths[n][j]].source;
-                        var targetNodeId = lookupEdges[selectedPaths[n][j]].target;
-
-                        var sourceNodeName = lookupNodes[sourceNodeId].name;
-                        var sourceNodeCnv = lookupNodes[sourceNodeId].cnv;
-                        var sourceNodeRna = lookupNodes[sourceNodeId].rna;
-                        var sourceNodeMut = lookupNodes[sourceNodeId].mut;
-
-                        var targetNodeName = lookupNodes[targetNodeId].name;
-                        var targetNodeCnv = lookupNodes[targetNodeId].cnv;
-                        var targetNodeRna = lookupNodes[targetNodeId].rna;
-                        var targetNodeMut = lookupNodes[targetNodeId].mut;
-
-                        if (typeof (lookupNodes[sourceNodeId].children) != "undefined") {
-                            nodePath[n].push([]);
-                            for (var k = 0; k < lookupNodes[sourceNodeId].children.length; k++) {
-                                var sourceNodeName = lookupNodes[sourceNodeId].children[k].name
-                                var sourceNodeCnv = lookupNodes[sourceNodeId].children[k].cnv
-                                var sourceNodeRna = lookupNodes[sourceNodeId].children[k].rna
-                                var sourceNodeMut = lookupNodes[sourceNodeId].children[k].mut
-                                nodePath[n][j].push({"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut});
-                            }
-                        } else {
-                            nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
-                        }
-                        if (typeof (lookupNodes[targetNodeId].children) != "undefined") {
-                            nodePath[n].push([]);
-                            for (var k = 0; k < lookupNodes[lookupNodes[targetNodeId].parent].children.length; k++) {
-                                var sourceNodeName = lookupNodes[targetNodeId].children[k].name
-                                var sourceNodeCnv = lookupNodes[targetNodeId].children[k].cnv
-                                var sourceNodeRna = lookupNodes[targetNodeId].children[k].rna
-                                var sourceNodeMut = lookupNodes[targetNodeId].children[k].mut
-                                nodePath[n][j].push({"name": targetNodeName, "cnv": targetNodeCnv, "rna": targetNodeRna, "mut": targetNodeMut});
-                            }
-                        } else {
-                            nodePath[n].push([{"name": targetNodeName, "cnv": targetNodeCnv, "rna": targetNodeRna, "mut": targetNodeMut}]);
-                        }
-                    }
-                }
-            }
-            return nodePath;
-        }
-
-        function convertEdgePathtoNodePath(selectedPaths) {
-            var cy = $('#' + parent + '-cy').cytoscape('get');
-            var nodePath = [];
-            for (var n = 0; n < selectedPaths.length; n++) {
-                nodePath.push([])
-                for (var j = 0; j < selectedPaths[n].length; j++) {
-                    if (j < selectedPaths[n].length - 1) {
-                        var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
-                        var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
-                        var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('cnv');
-                        var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
-                        var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
-                        if (cy.elements("node[id = \"" + sourceNodeId + "\"]").isParent()) {
-                            nodePath[n].push([]);
-                            for (var k = 0; k < cy.elements("node[id = \"" + sourceNodeId + "\"]").children().length; k++) {
-                                var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.name
-                                var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.cnv
-                                var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.rna
-                                var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.mut
-                                nodePath[n][j].push({"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut});
-                            }
-                        } else {
-                            nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
-
-                        }
-                    } else {
-                        var sourceNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('source');
-                        var targetNodeId = cy.elements("edge[id = \"" + selectedPaths[n][j] + "\"]").data('target');
-
-                        var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('name');
-                        var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('cnv');
-                        var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('rna');
-                        var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").data('mut');
-
-                        var targetNodeName = cy.elements("node[id = \"" + targetNodeId + "\"]").data('name');
-                        var targetNodeCnv = cy.elements("node[id = \"" + targetNodeId + "\"]").data('cnv');
-                        var targetNodeRna = cy.elements("node[id = \"" + targetNodeId + "\"]").data('rna');
-                        var targetNodeMut = cy.elements("node[id = \"" + targetNodeId + "\"]").data('mut');
-
-                        if (cy.elements("node[id = \"" + sourceNodeId + "\"]").isParent()) {
-                            nodePath[n].push([]);
-                            for (var k = 0; k < cy.elements("node[id = \"" + sourceNodeId + "\"]").children().length; k++) {
-                                var sourceNodeName = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.name
-                                var sourceNodeCnv = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.cnv
-                                var sourceNodeRna = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.rna
-                                var sourceNodeMut = cy.elements("node[id = \"" + sourceNodeId + "\"]").children()[k]._private.data.mut
-                                nodePath[n][j].push({"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut});
-                            }
-                        } else {
-                            nodePath[n].push([{"name": sourceNodeName, "cnv": sourceNodeCnv, "rna": sourceNodeRna, "mut": sourceNodeMut}]);
-                        }
-                        if (cy.elements("node[id = \"" + targetNodeId + "\"]").isParent()) {
-                            nodePath[n].push([]);
-                            for (var k = 0; k < cy.elements("node[id = \"" + targetNodeId + "\"]").children().length; k++) {
-                                var targetNodeName = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.name
-                                var targetNodeCnv = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.cnv
-                                var targetNodeRna = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.rna
-                                var targetNodeMut = cy.elements("node[id = \"" + targetNodeId + "\"]").children()[k]._private.data.mut
-                                nodePath[n][j].push({"name": targetNodeName, "cnv": targetNodeCnv, "rna": targetNodeRna, "mut": targetNodeMut});
-                            }
-                        } else {
-                            nodePath[n].push([{"name": targetNodeName, "cnv": targetNodeCnv, "rna": targetNodeRna, "mut": targetNodeMut}]);
-                        }
-                    }
-                }
-            }
-            return nodePath;
-        }
-
         function wrapperFindPath() {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var sid = orderedSelectedNodes[0]._private.data['id'];
             var vid = orderedSelectedNodes[1]._private.data['id'];
-            $.post(services['pathwayScorer'], {
+            $.post('score_json.txt', {
                 data_json: JSON.stringify(JSON.parse(states[states.length - 1]))
             }, function (yue_data) {
-                var selectedPaths = findPath(JSON.parse(states[states.length - 1]), sid, vid);
-                var nodePaths = convertEdgePathtoNodePath(selectedPaths);
-                $.post(services['pathwayWeightedScorer'], {
-                    data_paths: JSON.stringify(nodePaths)
-                }, function (tham_data) {
-                    var scoreJSON = JSON.parse(yue_data);
-                    var fdrJSON = JSON.parse(tham_data);
-                    var table = document.getElementById(parent + "-inner-table");
-                    var length = document.getElementById(parent + "-inner-table").rows.length;
+				console.log(yue_data);
+                var result = JSON.parse(yue_data);
+                var table = document.getElementById(parent + "-inner-table");
+                var length = document.getElementById(parent + "-inner-table").rows.length;
 
-                    if (typeof (selectedPaths) == "undefined") {
-                        dialogPathfind.dialog("close");
+                for (var n = 0; n < length; n++) {
+                    table.deleteRow(0);
+                }
+                
+				for (var n = 0; n <= result.length; n++) {
+                    var row = table.insertRow();
+
+                    var path = row.insertCell(0);
+                    var rScore = row.insertCell(1);
+                    var mScore = row.insertCell(2);
+                    var mFdr = row.insertCell(3)
+                    var lowP = row.insertCell(4);
+                    var consistentLowP = row.insertCell(5);
+
+                    // Add some text to the new cells:
+
+                    if (n == 0) {
+                        path.innerHTML = "<i><h3>paths</h3></i>";
+                        rScore.innerHTML = "<i><h3>R-Score</h3></i>";
+                        mScore.innerHTML = "<i><h3>M-Score</h3></i>";
+                        mFdr.innerHTML = "<i><h3>M-FDR</h3></i>";
+                        lowP.innerHTML = "<i><h3>LowP</h3></i>"
+                        consistentLowP.innerHTML = "<i><h3>Consistent Low P</h3></i>"
+                    } else {
+                        var btn = document.createElement("button");
+                        var t = document.createTextNode((n - 1).toString());
+                        btn.className = "btn btn-link";
+                        btn.appendChild(t);
+                        btn.addEventListener('click', function (event) {
+                            var k = parseInt(event.currentTarget.innerHTML);
+                            cy.$('node').unselect();
+                            cy.$('edge').unselect();
+                            for (var j = 0; j < result[k].edges.length; j++) {
+                                cy.elements("edge[id = \"" + result[k].edges[j] + "\"]").select();
+                                var sourceNode = cy.elements("edge[id = \"" + result[k].edges[j] + "\"]").data('source');
+                                var targetNode = cy.elements("edge[id = \"" + result[k].edges[j] + "\"]").data('target');
+                                cy.elements("node[id = \"" + targetNode + "\"]").select();
+                                cy.elements("node[id = \"" + sourceNode + "\"]").select();
+                                cy.$('node').style("opacity", 0.2);
+                                cy.$('edge').style("opacity", 0.2);
+                                cy.$('node:selected').style("opacity", 1.0);
+                                cy.$('edge:selected').style("opacity", 1.0);
+                            }
+                        });
+                        path.appendChild(btn);
+                        rScore.appendChild(document.createTextNode(result[n-1].rscore));
+                        mScore.appendChild(document.createTextNode(result[n-1].mscore));
+						mFdr.appendChild(document.createTextNode(result[n-1].mFDR));
+                        lowP.appendChild(document.createTextNode(result[n-1].lowp));
+                        consistentLowP.appendChild(document.createTextNode(result[n-1].consistent_lowp));
                     }
-
-                    for (var n = 0; n < length; n++) {
-                        table.deleteRow(0);
-                    }
-                    for (var n = 0; n <= selectedPaths.length; n++) {
-                        var row = table.insertRow();
-
-                        var path = row.insertCell(0);
-                        var score = row.insertCell(1);
-                        var consistency = row.insertCell(2);
-                        var consLowP = row.insertCell(3)
-                        var rfdr = row.insertCell(4);
-                        var mfdr = row.insertCell(5);
-                        var mrfdr = row.insertCell(6);
-                        var m = row.insertCell(7);
-
-                        // Add some text to the new cells:
-
-                        if (n == 0) {
-                            path.innerHTML = "<i><h3>paths</h3></i>";
-                            score.innerHTML = "<i><h3>R</h3></i>";
-                            consistency.innerHTML = "<i><h3>consistent</h3></i>";
-                            consLowP.innerHTML = "<i><h3>cons+low P</h3></i>";
-
-                            rfdr.innerHTML = "<i><h3>FDR(R)</h3></i>"
-                            mfdr.innerHTML = "<i><h3>FDR(M)</h3></i>"
-                            mrfdr.innerHTML = "<i><h3>FDR(M+R)</h3></i>"
-                            m.innerHTML = "<i><h3>M</h3></i>"
-                        } else {
-                            var btn = document.createElement("button");
-                            var t = document.createTextNode((n - 1).toString());
-                            btn.className = "btn btn-link";
-                            btn.appendChild(t);
-                            btn.addEventListener('click', function (event) {
-                                var k = parseInt(event.currentTarget.innerHTML);
-                                cy.$('node').unselect();
-                                cy.$('edge').unselect();
-                                for (var j = 0; j < selectedPaths[k].length; j++) {
-                                    cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").select();
-                                    var sourceNode = cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('source');
-                                    var targetNode = cy.elements("edge[id = \"" + selectedPaths[k][j] + "\"]").data('target');
-                                    cy.elements("node[id = \"" + targetNode + "\"]").select();
-                                    cy.elements("node[id = \"" + sourceNode + "\"]").select();
-                                    cy.$('node').style("opacity", 0.2);
-                                    cy.$('edge').style("opacity", 0.2);
-                                    cy.$('node:selected').style("opacity", 1.0);
-                                    cy.$('edge:selected').style("opacity", 1.0);
-                                }
-                            });
-                            var res = fdrJSON[n - 1].split(" ");
-                            path.appendChild(btn);
-                            score.appendChild(document.createTextNode(getPathScore(selectedPaths[n - 1], scoreJSON).toString()));
-                            consistency.appendChild(document.createTextNode(res[0]));
-                            consLowP.appendChild(document.createTextNode(res[1]));
-                            rfdr.appendChild(document.createTextNode(res[2]));
-                            mfdr.appendChild(document.createTextNode(res[3]));
-                            mrfdr.appendChild(document.createTextNode(res[4]));
-                            m.appendChild(document.createTextNode(res[5]));
-                        }
-                    }
-                    dialogTable.dialog("open");
-                    dialogPathfind.dialog("close");
-                });
-            })
+                }
+                dialogTable.dialog("open");
+                dialogPathfind.dialog("close");
+            });
         }
 
         function saveState() {
