@@ -80,7 +80,9 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "					<li><input id=\"" + parent + "-collapse\" value=\"Collapse\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-expand\" value=\"Expand\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-duplicate-nodes\" value=\"Duplicate Nodes\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
-    strVar += "				<\/ul>";
+    strVar += " 				<li role=\"separator\" class=\"divider\"></li>";
+	strVar += "					<li><input id=\"" + parent + "-config-pathway\" value=\"Configure\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "				<\/ul>";
     strVar += "			</div>";
     strVar += " 	<\/li>";
     strVar += " 	<li style=\"margin: 2px\">";
@@ -144,24 +146,25 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "	<\/div>";
     strVar += " <div id=\"" + parent + "-dialog-bundle\" title=\"Bundle\">";
     strVar += " 		<form role=\"form\">";
-    strVar += "    		<fieldset>";
+    strVar += "    			<fieldset>";
     strVar += "      			<label for=\"" + parent + "-type-bundle\">type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-bundle\" name=\"" + parent + "-type-bundle\">";
     strVar += "  					<option selected=\"\">bundleOne<\/option>";
     strVar += "  					<option>bundleTwo<\/option>";
-    strVar += "				<\/select>";
-    strVar += "    		<\/fieldset>";
+    strVar += "					<\/select>";
+    strVar += "    			<\/fieldset>";
     strVar += " 		<\/form>";
     strVar += "	<\/div>";
     strVar += " <div id=\"" + parent + "-dialog-form-find-path\" title=\"Find path\">";
     strVar += " 		<form role=\"form\">";
-    strVar += "    		<fieldset>";
+    strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-sid\">sid:<\/label>";
     strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-sid\" id=\"" + parent + "-sid\"><br>";
     strVar += "      			<label for=\"" + parent + "-vid\">vid:<\/label>";
     strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-vid\" id=\"" + parent + "-vid\"><br>";
-    strVar += " 				<input type=\"submit\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
-    strVar += "    		<\/fieldset>";
+    strVar += " 				<input id=\"" + parent + "-find-paths-all\" value=\"Find\" type=\"button\" class=\"btn btn-link\"><\/input>";
+	strVar += " 				<input id=\"" + parent + "-find-paths-one\" value=\"Find All\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			</div>";
     strVar += " 		<\/form>";
     strVar += "	<\/div>";
     strVar += "	<div id=\"" + parent + "-dialog-form-edge\" title=\"Edit edge(s)\">";
@@ -1158,14 +1161,11 @@ var VQI_PathwayEditor = function (parent) {
 
         }
 
-        function wrapperFindPath() {
+        function findPath(sid,vid) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
-            var sid = orderedSelectedNodes[0]._private.data['id'];
-            var vid = orderedSelectedNodes[1]._private.data['id'];
             $.post(services['pathwayFinderUrl'], {
                 data_json: JSON.stringify(JSON.parse(states[states.length - 1]))
             }, function (yue_data) {
-				console.log(yue_data);
                 var result = JSON.parse(yue_data);
                 var table = document.getElementById(parent + "-inner-table");
                 var length = document.getElementById(parent + "-inner-table").rows.length;
@@ -1226,6 +1226,16 @@ var VQI_PathwayEditor = function (parent) {
                 dialogPathfind.dialog("close");
             });
         }
+		
+		function findPathsAll(){
+			findPath(null,null);
+		}
+		
+		function findPathOne(){
+			var sid = orderedSelectedNodes[0]._private.data['id'];
+            var vid = orderedSelectedNodes[1]._private.data['id'];
+			findPath(sid,vid);
+		}
 
         function saveState() {
             var cy = $('#' + parent + '-cy').cytoscape('get');
@@ -1852,6 +1862,7 @@ var VQI_PathwayEditor = function (parent) {
                     $('#' + parent + '-undo').removeClass('disabled');
                     $('#' + parent + '-redo').removeClass('disabled');
                     $('#' + parent + '-duplicate-nodes').removeClass('disabled');
+					$('#' + parent + '-config-pathway').removeClass('disabled');
 
                     // Add processed nodes
                     cy.add(obj.elements);
@@ -2111,7 +2122,6 @@ var VQI_PathwayEditor = function (parent) {
             height: 300,
             width: 350,
             buttons: {
-                "submit": wrapperFindPath,
                 Cancel: function () {
                     dialogPathfind.dialog("close");
                 }
@@ -2206,6 +2216,8 @@ var VQI_PathwayEditor = function (parent) {
         document.getElementById(parent + '-undo').addEventListener('click', undo);
         document.getElementById(parent + '-redo').addEventListener('click', redo);
         document.getElementById(parent + '-duplicate-nodes').addEventListener('click', addDuplicateNodes);
+		document.getElementById(parent + '-find-paths-all').addEventListener('click', findPathsAll);
+		document.getElementById(parent + '-find-paths-one').addEventListener('click', findPathOne);
 
         //search
         document.getElementById(parent + '-search-node-name').addEventListener('keyup', search);
