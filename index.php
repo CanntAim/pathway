@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="dependencies/jquery-ui-1.11.4/jquery-ui.css"/>
         <link rel="stylesheet" href="dependencies/bootstrap-3.3.5-dist/css/bootstrap.min.css">
         <script src="dependencies/download.js"></script>
+		<script src="dependencies/sorttable.js"></script>
         <script src="dependencies/jquery-1.11.3.min.js"></script>
         <script src="dependencies/jquery-ui-1.11.4/jquery-ui.js"></script>
         <script src="dependencies/d3/d3.min.js"></script>
