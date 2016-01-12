@@ -1483,7 +1483,6 @@ var VQI_PathwayEditor = function (parent) {
         function editNodeMUT() {
             var mut = document.getElementById(parent + "-mut").value;
             selectedForEditNodes.data('mut', mut);
-            dialogNode.dialog("close");
             saveState();
         }
 
@@ -2065,7 +2064,8 @@ var VQI_PathwayEditor = function (parent) {
                     });
 
                     saveState();
-                    sprayColor(self.sprayData);
+                    if(typeof(self.sprayColor) != "undefined")
+                        sprayColor(self.sprayData);
                 },
                 // initial viewport state:
                 zoom: 1,
