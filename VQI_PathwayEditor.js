@@ -2064,7 +2064,7 @@ var VQI_PathwayEditor = function (parent) {
                     });
 
                     saveState();
-                    if(typeof(self.sprayColor) != "undefined")
+                    if(typeof(self.sprayData) != "undefined")
                         sprayColor(self.sprayData);
                 },
                 // initial viewport state:
