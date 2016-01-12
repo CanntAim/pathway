@@ -29,7 +29,9 @@ var VQI_PathwayEditor = function (parent) {
     // Globals
     var self = this;
     var types = ["bundleOne", "bundleTwo", "gene", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
-    var states = [];
+    var personId = "";
+	var pathName = "";
+	var states = [];
     var stateRecycle = [];
     var selectedForQueryNodes = [];
     var selectedForEditNodes = [];
@@ -90,6 +92,7 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "  			<button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\">Process<span class=\"caret\"><\/span><\/button>";
     strVar += "				<ul class=\"dropdown-menu\">";
     strVar += "					<li><input id=\"" + parent + "-findpath\" value=\"Find Pathway\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-find-paths-all-drop\" value=\"Find All Pathways\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-find-object\" value=\"Find Object\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "				<\/ul>";
     strVar += "			</div>";
@@ -117,15 +120,15 @@ var VQI_PathwayEditor = function (parent) {
     strVar += " <\/div>";
     strVar += " <\/nav>";
     strVar += " <div id=\"" + parent + "-dialog-table\" title=\"Result\">";
-    strVar += "	<table id=\"" + parent + "-inner-table\" class=\"table table-hover\">";
-    strVar += "		<tr>";
-    strVar += "         <td>name<\/td>";
-    strVar += "			<td>percentage<\/td>";
-    strVar += "			<td>rna distance<\/td>";
-    strVar += "			<td>cnv distance<\/td>";
-    strVar += "			<td>mut distance<\/td>";
-	strVar += "		<\/tr>";
-    strVar += "	<\/table>";
+    strVar += "		<table id=\"" + parent + "-inner-table\" class=\"table table-hover table-condensed\">";
+    strVar += "			<tr>";
+    strVar += "         	<td>name<\/td>";
+    strVar += "				<td>percentage<\/td>";
+    strVar += "				<td>rna distance<\/td>";
+    strVar += "				<td>cnv distance<\/td>";
+    strVar += "				<td>mut distance<\/td>";
+	strVar += "			<\/tr>";
+    strVar += "		<\/table>";
     strVar += "	<\/div>";
     strVar += " <div id=\"" + parent + "-dialog-form-save-as-pathway\" title=\"SaveAs\">";
     strVar += " 		<form role=\"form\">";
@@ -143,6 +146,15 @@ var VQI_PathwayEditor = function (parent) {
     strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-new-pathway-name\" id=\"" + parent + "-new-pathway-name\"><br>";
     strVar += " 				<input type=\"submit\" class=\"btn btn-default\" tabindex=\"-1\" style=\"position:absolute; top:-1000px\"><\/input>";
     strVar += "    		<\/fieldset>";
+    strVar += " 		<\/form>";
+    strVar += "	<\/div>";
+	strVar += " <div id=\"" + parent + "-dialog-form-configure-pathway\" title=\"Configure Pathway\">";
+    strVar += " 		<form role=\"form\">";
+    strVar += "    			<div class =\"form-group\">";
+    strVar += "      			<label for=\"" + parent + "-configure-person-id\">person-id:<\/label>";
+    strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-configure-person-id\" id=\"" + parent + "-configure-person-id\"><br>";
+	strVar += " 				<input id=\"" + parent + "-apply-configure-person-id\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			</div>";
     strVar += " 		<\/form>";
     strVar += "	<\/div>";
     strVar += " <div id=\"" + parent + "-dialog-bundle\" title=\"Bundle\">";
@@ -306,7 +318,6 @@ var VQI_PathwayEditor = function (parent) {
     strVar += "	<div id=\"" + parent + "-cy\" style=\"height: 100%;width: 100%;position: absolute; left: 0;\"><\/div>";
 
     document.getElementById(parent).innerHTML = strVar;
-	sorttable.makeSortable(document.getElementById(parent + '-inner-table'));
 
     $(function () {// on dom ready
 
@@ -321,7 +332,8 @@ var VQI_PathwayEditor = function (parent) {
             var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :{"shared_name":"","ID":"","BOARDWIDTH":"","BOARDHEIGHT":"","LICENSE":"CC BY 2.0","ORGANISM":"","NAME":"","INSTRUCTION":"","AUTHOR":"","VERSION":"","PATHWAY_TYPE":"original","SUID":205,"__Annotations":[],"selected":true},"elements" : {"nodes" :[],"edges" :[]}}'
             var obj = JSON.parse(data);
             var title = document.getElementById(parent + "-pathway-title");
-            title.innerHTML = name;
+			pathName = name;
+            title.innerHTML = pathName+"<small>"+personId+"</small>";
             removeHeroUnit();
             setElements(obj);
             save(obj, name);
@@ -400,6 +412,10 @@ var VQI_PathwayEditor = function (parent) {
         function onChangeColoringFile(event) {
             var reader = new FileReader();
             reader.onload = onColoringReaderLoad;
+//			personId = event.target.files[0].name.substring(0,event.target.files[0].name.indexOf("."))
+			personId = event.target.files[0].name;
+			var title = document.getElementById(parent + "-pathway-title");
+            title.innerHTML = pathName+"<small>"+personId+"</small>";
             reader.readAsText(event.target.files[0]);
             saveState();
         }
@@ -523,7 +539,8 @@ var VQI_PathwayEditor = function (parent) {
                 removeHeroUnit();
                 var obj = JSON.parse(data);
                 var title = document.getElementById(parent + "-pathway-title");
-                title.innerHTML = obj.data.NAME;
+                pathName= obj.data.NAME;
+				title.innerHTML = pathName+"<small>"+personId+"</small>";
                 setElements(obj);
             });
         }
@@ -570,7 +587,8 @@ var VQI_PathwayEditor = function (parent) {
         function onPathwayReaderLoad(event) {
             var obj = JSON.parse(event.target.result);
             var title = document.getElementById(parent + "-pathway-title");
-            title.innerHTML = obj.data.NAME;
+			pathName = obj.data.NAME;
+            title.innerHTML = pathName+"<small>"+personId+"</small>";
             setElements(obj);
         }
 
@@ -1171,7 +1189,7 @@ var VQI_PathwayEditor = function (parent) {
 				s: sid,
 				d: vid,
 				json: JSON.stringify(JSON.parse(states[states.length - 1])),
-				p: "X1728790"
+				p: personId
             }, function (yue_data) {
                 var result = JSON.parse(yue_data);
                 var table = document.getElementById(parent + "-inner-table");
@@ -1180,6 +1198,7 @@ var VQI_PathwayEditor = function (parent) {
                 for (var n = 0; n < length; n++) {
                     table.deleteRow(0);
                 }
+				table.deleteTHead();
                 
 				for (var n = 0; n <= result.length; n++) {
                     var row = table.insertRow();
@@ -1194,12 +1213,12 @@ var VQI_PathwayEditor = function (parent) {
                     // Add some text to the new cells:
 
                     if (n == 0) {
-                        path.innerHTML = "<i><h3>paths</h3></i>";
-                        rScore.innerHTML = "<i><h3>R-Score</h3></i>";
-                        mScore.innerHTML = "<i><h3>M-Score</h3></i>";
-                        mFdr.innerHTML = "<i><h3>M-FDR</h3></i>";
-                        lowP.innerHTML = "<i><h3>LowP</h3></i>"
-                        consistentLowP.innerHTML = "<i><h3>Consistent Low P</h3></i>"
+                        path.innerHTML = "<i><h5><small>paths</small></h5></i>";
+                        rScore.innerHTML = "<i><h5><small>R-Score</small></h5></i>";
+                        mScore.innerHTML = "<i><h5><small>M-Score</small></h5></i>";
+                        mFdr.innerHTML = "<i><h5><small>M-FDR</small></h5></i>";
+                        lowP.innerHTML = "<i><h5><small>LowP</small></h5></i>"
+                        consistentLowP.innerHTML = "<i><h5><small>Consistent Low P</small></h5></i>"
                     } else {
                         var btn = document.createElement("button");
                         var t = document.createTextNode((n - 1).toString());
@@ -1220,13 +1239,14 @@ var VQI_PathwayEditor = function (parent) {
                             }
                         });
                         path.appendChild(btn);
-                        rScore.appendChild(document.createTextNode(result[n-1].rscore));
-                        mScore.appendChild(document.createTextNode(result[n-1].mscore));
-						mFdr.appendChild(document.createTextNode(result[n-1].mFDR));
-                        lowP.appendChild(document.createTextNode(result[n-1].lowp));
-                        consistentLowP.appendChild(document.createTextNode(result[n-1].consistent_lowp));
+                        rScore.innerHTML="<h5><small>"+result[n-1].rscore+"</small></h5>";
+                        mScore.innerHTML="<h5><small>"+result[n-1].mscore+"</small></h5>";
+						mFdr.innerHTML="<h5><small>"+result[n-1].mFDR+"</small></h5>";
+                        lowP.innerHTML="<h5><small>"+result[n-1].lowp+"</small></h5>";
+                        consistentLowP.innerHTML="<h5><small>"+result[n-1].consistent_lowp+"</small></h5>";
                     }
                 }
+				sorttable.makeSortable(table);
                 dialogTable.dialog("open");
                 dialogPathfind.dialog("close");
             });
@@ -1470,15 +1490,24 @@ var VQI_PathwayEditor = function (parent) {
         function editNodeCNV() {
             var cnv = document.getElementById(parent + "-cnv").value;
             selectedForEditNodes.data('cnv', cnv);
-            dialogNode.dialog("close");
             saveState();
         }
 
         function editNodeRNA() {
             var rna = document.getElementById(parent + "-rna").value;
             selectedForEditNodes.data('cnv', rna);
-            dialogNode.dialog("close");
             saveState();
+        }
+		
+		function editPersonId() {
+			id = document.getElementById(parent + "-configure-person-id").value;
+			setPersonId(id);
+        }
+		
+		function setPersonId(id) {
+			personId = id;
+			var title = document.getElementById(parent + "-pathway-title")
+			title.innerHTML = pathName+"<small>"+personId+"</small>";
         }
 
         function dialogNewPathwayOpen(event) {
@@ -1495,6 +1524,10 @@ var VQI_PathwayEditor = function (parent) {
 
         function dialogPathwaySaveAsOpen(event) {
             dialogPathwaySaveAs.dialog("open");
+        }
+		
+		function dialogPathwayConfigureOpen(event) {
+            dialogPathwayConfigure.dialog("open");
         }
 
         function findObject(event) {
@@ -1935,6 +1968,7 @@ var VQI_PathwayEditor = function (parent) {
                     $('#' + parent + '-redo').removeClass('disabled');
                     $('#' + parent + '-duplicate-nodes').removeClass('disabled');
 					$('#' + parent + '-config-pathway').removeClass('disabled');
+					$('#' + parent + '-find-paths-all-drop').removeClass('disabled');
 
                     // Add processed nodes
                     cy.add(obj.elements);
@@ -2247,6 +2281,22 @@ var VQI_PathwayEditor = function (parent) {
             close: function () {
             }
         });
+		
+		dialogPathwayConfigure = $("#" + parent + "-dialog-form-configure-pathway").dialog({
+			open: function (event) {
+                document.getElementById(parent + "-configure-person-id").value = personId;
+            },
+            autoOpen: false,
+            height: 300,
+            width: 350,
+            buttons: {
+                Cancel: function () {
+                    dialogPathwayConfigure.dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
 
         refreshPathwayList();
 
@@ -2274,6 +2324,9 @@ var VQI_PathwayEditor = function (parent) {
         document.getElementById(parent + '-arrow-type-edge-apply').addEventListener('click', editEdgeArrowType);
         document.getElementById(parent + '-line-type-edge-apply').addEventListener('click', editEdgeLineType);
         document.getElementById(parent + '-apply-curve-changes').addEventListener('click', toggleEdgeStyle);
+		
+		//edit pathway settings
+		document.getElementById(parent + '-apply-configure-person-id').addEventListener('click', editPersonId);
 
         document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
         document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
@@ -2293,7 +2346,9 @@ var VQI_PathwayEditor = function (parent) {
         document.getElementById(parent + '-redo').addEventListener('click', redo);
         document.getElementById(parent + '-duplicate-nodes').addEventListener('click', addDuplicateNodes);
 		document.getElementById(parent + '-find-paths-all').addEventListener('click', findPathsAll);
+		document.getElementById(parent + '-find-paths-all-drop').addEventListener('click', findPathsAll);
 		document.getElementById(parent + '-find-paths-one').addEventListener('click', findPathOne);
+		document.getElementById(parent + '-config-pathway').addEventListener('click', dialogPathwayConfigureOpen);
 
         //search
         document.getElementById(parent + '-search-node-name').addEventListener('keyup', search);
@@ -2311,6 +2366,10 @@ var VQI_PathwayEditor = function (parent) {
 
         self.setDataToSpray = function (data) {
             this.sprayData = data;
+        };
+		
+		self.setPersonId = function (data) {
+            setPersonId(data);
         };
 
         //external No GUI functions

@@ -17,6 +17,7 @@
         <input type=button onclick="spray()" value="spray">
         <input type=button onclick="findYue()" value="find Yue">
         <input type=button onclick="findTham()" value="find Tham">
+		<input type=button onclick="setPersonId()" value="set Person id">
         <input type=button onclick="print()" value="print">
 		<input type=button onclick="save()" value="save">
 		<input id="file" type=file value="spray from file">
@@ -27,6 +28,10 @@
             var objVQI_PathwayEditor = new VQI_PathwayEditor("parent");
             function load() {
                 objVQI_PathwayEditor.loadPathwayExternalNoGUI(334);
+            }
+			function setPersonId() {
+                var data = "Hello!";
+                objVQI_PathwayEditor.setPersonId(data);
             }
             function findYue() {
                 objVQI_PathwayEditor.findPathAndScoreExternalYueNoGUI("n0", "n22", function (result) {

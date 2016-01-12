@@ -7,7 +7,7 @@
         "person": "X1728790",
         "pathway": 342,
         "mscore": 0,
-        "mFDR": 0.00143,
+        "mFDR": 0.00356,
         "lowp": 1,
         "consistent_lowp": 0
     },
