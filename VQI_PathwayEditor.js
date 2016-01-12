@@ -333,7 +333,7 @@ var VQI_PathwayEditor = function (parent) {
             var obj = JSON.parse(data);
             var title = document.getElementById(parent + "-pathway-title");
 			pathName = name;
-            title.innerHTML = pathName+"<small>"+personId+"</small>";
+            title.innerHTML = pathName+" <small>"+personId+"</small>";
             removeHeroUnit();
             setElements(obj);
             save(obj, name);
@@ -415,7 +415,7 @@ var VQI_PathwayEditor = function (parent) {
 //			personId = event.target.files[0].name.substring(0,event.target.files[0].name.indexOf("."))
 			personId = event.target.files[0].name;
 			var title = document.getElementById(parent + "-pathway-title");
-            title.innerHTML = pathName+"<small>"+personId+"</small>";
+            title.innerHTML = pathName+" <small>"+personId+"</small>";
             reader.readAsText(event.target.files[0]);
             saveState();
         }
@@ -540,7 +540,7 @@ var VQI_PathwayEditor = function (parent) {
                 var obj = JSON.parse(data);
                 var title = document.getElementById(parent + "-pathway-title");
                 pathName= obj.data.NAME;
-				title.innerHTML = pathName+"<small>"+personId+"</small>";
+				title.innerHTML = pathName+" <small>"+personId+"</small>";
                 setElements(obj);
             });
         }
@@ -588,7 +588,7 @@ var VQI_PathwayEditor = function (parent) {
             var obj = JSON.parse(event.target.result);
             var title = document.getElementById(parent + "-pathway-title");
 			pathName = obj.data.NAME;
-            title.innerHTML = pathName+"<small>"+personId+"</small>";
+            title.innerHTML = pathName+" <small>"+personId+"</small>";
             setElements(obj);
         }
 
@@ -1205,17 +1205,27 @@ var VQI_PathwayEditor = function (parent) {
 
                     var path = row.insertCell(0);
                     var rScore = row.insertCell(1);
-                    var mScore = row.insertCell(2);
-                    var mFdr = row.insertCell(3)
-                    var lowP = row.insertCell(4);
-                    var consistentLowP = row.insertCell(5);
+					var genes = row.insertCell(2)
+					var source = row.insertCell(3);
+					var destination = row.insertCell(4);
+					var person = row.insertCell(5);
+					var consistent = row.insertCell(6);
+                    var mScore = row.insertCell(7);
+                    var mFdr = row.insertCell(8)
+                    var lowP = row.insertCell(9);
+                    var consistentLowP = row.insertCell(10);
 
                     // Add some text to the new cells:
 
                     if (n == 0) {
                         path.innerHTML = "<i><h5><small>paths</small></h5></i>";
                         rScore.innerHTML = "<i><h5><small>R-Score</small></h5></i>";
-                        mScore.innerHTML = "<i><h5><small>M-Score</small></h5></i>";
+                        genes.innerHTML = "<i><h5><small>Genes</small></h5></i>";
+						source.innerHTML = "<i><h5><small>Source</small></h5></i>";
+						destination.innerHTML = "<i><h5><small>Destination</small></h5></i>";
+						person.innerHTML = "<i><h5><small>Person</small></h5></i>";
+						consistent.innerHTML = "<i><h5><small>Consistent</small></h5></i>";
+						mScore.innerHTML = "<i><h5><small>M-Score</small></h5></i>";
                         mFdr.innerHTML = "<i><h5><small>M-FDR</small></h5></i>";
                         lowP.innerHTML = "<i><h5><small>LowP</small></h5></i>"
                         consistentLowP.innerHTML = "<i><h5><small>Consistent Low P</small></h5></i>"
@@ -1240,7 +1250,12 @@ var VQI_PathwayEditor = function (parent) {
                         });
                         path.appendChild(btn);
                         rScore.innerHTML="<h5><small>"+result[n-1].rscore+"</small></h5>";
-                        mScore.innerHTML="<h5><small>"+result[n-1].mscore+"</small></h5>";
+                        genes.innerHTML="<h5><small>"+Object.keys(result[n-1].genes)+"</small></h5>";
+						source.innerHTML="<h5><small>"+result[n-1].source+"</small></h5>";
+						destination.innerHTML="<h5><small>"+result[n-1].destination+"</small></h5>";
+						person.innerHTML="<h5><small>"+result[n-1].person+"</small></h5>";
+						consistent.innerHTML="<h5><small>"+result[n-1].consistent+"</small></h5>";
+						mScore.innerHTML="<h5><small>"+result[n-1].mscore+"</small></h5>";
 						mFdr.innerHTML="<h5><small>"+result[n-1].mFDR+"</small></h5>";
                         lowP.innerHTML="<h5><small>"+result[n-1].lowp+"</small></h5>";
                         consistentLowP.innerHTML="<h5><small>"+result[n-1].consistent_lowp+"</small></h5>";
@@ -1506,7 +1521,7 @@ var VQI_PathwayEditor = function (parent) {
 		function setPersonId(id) {
 			personId = id;
 			var title = document.getElementById(parent + "-pathway-title")
-			title.innerHTML = pathName+"<small>"+personId+"</small>";
+			title.innerHTML = pathName+" <small>"+personId+"</small>";
         }
 
         function dialogNewPathwayOpen(event) {
