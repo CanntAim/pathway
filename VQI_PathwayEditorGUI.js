@@ -4,27 +4,17 @@ var VQI_PathwayEditorGUI = function (parent) {
 //	var serverURL = "http://cardinal3.engr.uconn.edu/pathwayVisual/";
     var services = {};
 
-	/*Local Services*/
 	services["pathwayFinderUrl"] = "http://bibci.engr.uconn.edu/puj07001/pathway_services/find_path_and_score/find_path_and_score.php";
-	
-    /* Yue's Local Server*/
     services['pathwayFinder'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
     services['pathwaySaver'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/updateDB_json.php';
     services['pathwayScorer'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/ScoreSystem/getScore.php';
-    /* Yue's local server URLs end here */
-
-    /* Tham's local server */
     services['pathwayWeightedScorer'] = 'http://137.99.11.122/pathway2/pathwayweightedscorer.php';
     services['objectFinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
-    /* Tham's local server URL end here */
-
-    /* BIBCI Server */
-//    services['pathwayFinder'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/ajaxJSON.php';
-//   services['pathwaySaver'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/updateDB_json.php';
-//    services['pathwayScorer'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual/ScoreSystem/getScore.php';
-//    services['pathwayWeightedScorer'] = 'http://bibci.engr.uconn.edu/thh13003/pathway2/pathwayweightedscorer.php';
-//    services['objectFinder'] = 'http://bibci.engr.uconn.edu/thh13003/pathway2/qsys_json.php';
-
+//  services['pathwayFinder'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/ajaxJSON.php';
+//  services['pathwaySaver'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/updateDB_json.php';
+//  services['pathwayScorer'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual/ScoreSystem/getScore.php';
+//  services['pathwayWeightedScorer'] = 'http://bibci.engr.uconn.edu/thh13003/pathway2/pathwayweightedscorer.php';
+//  services['objectFinder'] = 'http://bibci.engr.uconn.edu/thh13003/pathway2/qsys_json.php';
 
     // Globals
     var self = this;
@@ -41,6 +31,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     var coloredNodes = [];
     var edgeCounter = 0;
     var nodeCounter = 0;
+	var dupCounter = 0;
     var loadCounts = 0;
     var target = 0;
     var header = "";
@@ -80,6 +71,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "					<li><input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-collapse\" value=\"Collapse\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+	strVar += "					<li><input id=\"" + parent + "-collapse-informative\" value=\"Collapse Informative\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-expand\" value=\"Expand\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-duplicate-nodes\" value=\"Duplicate Nodes\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += " 				<li role=\"separator\" class=\"divider\"></li>";
@@ -380,6 +372,36 @@ var VQI_PathwayEditorGUI = function (parent) {
             reader.readAsText(event.target.files[0]);
             removeHeroUnit();
         }
+		
+		function collapseBundleInformative(event) {
+            var cy = $('#' + parent + '-cy').cytoscape('get');
+            for (var i = 0; i < selectedForEditNodes.size(); i++) {
+                if (selectedForEditNodes[i].isParent()) {
+					var staticOldPosX = selectedForEditNodes[i].position('x');
+					var staticOldPosY = selectedForEditNodes[i].position('y');
+					selectedForEditNodes[i].descendants().data('Type','circle')
+					selectedForEditNodes[i].descendants().data('Width',10);
+					selectedForEditNodes[i].descendants().data('Height',10);
+					var xGap=0;
+					var yGap=0;
+					for(var j = 0; selectedForEditNodes[i].children().length > j; j++){
+						if(j%5 == 0){
+							xGap=0
+							yGap+=10
+						}else{
+							xGap+=10
+						}
+						var newPositionX = staticOldPosX + xGap;
+						var newPositionY = staticOldPosY + yGap;
+						selectedForEditNodes[i].children()[j].position({
+							x: newPositionX,
+							y: newPositionY
+						});
+					}
+                }
+            }
+            saveState();
+		}
 
         function collapseBundle(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
@@ -486,10 +508,6 @@ var VQI_PathwayEditorGUI = function (parent) {
                     obj.elements.nodes[i].data.Height = 20;
                     obj.elements.nodes[i].data.Width = 50;
                 }
-//                else if (obj.elements.nodes[i].data.Type == "ellipse") {
-//                    obj.elements.nodes[i].data.Height = 20;
-//                    obj.elements.nodes[i].data.Width = 50;
-//                }
             }
 
             for (var i = 0; i < obj.elements.edges.length; i++) {
@@ -501,17 +519,13 @@ var VQI_PathwayEditorGUI = function (parent) {
             }
         }
 
-        function setElementsNoGUI(obj) {
-            preAddProcessing(obj);
-        }
-
         function setElements(obj) {
             if (loadCounts == 0) {
                 header = obj.data;
                 visualPathway(obj);
             } else {
 
-                // Pre-Add process
+                // Pre-Add process (but we do this specific step only here!!!)
                 var cy = $('#' + parent + '-cy').cytoscape('get');
                 for (var i = 0; i < obj.elements.nodes.length; i++) {
                     obj.elements.nodes[i].position.x = obj.elements.nodes[i].position.x + 1000 * loadCounts;
@@ -519,12 +533,10 @@ var VQI_PathwayEditorGUI = function (parent) {
 
                 preAddProcessing(obj);
 
-                // Add nodes
                 cy.add(obj.elements);
                 cy.center();
                 cy.fit();
 
-                //Post-Add Process
                 postAddProcessing();
 
             }
@@ -602,51 +614,6 @@ var VQI_PathwayEditorGUI = function (parent) {
             sprayColor(lines);
         }
 
-        function sprayColorNoGUI(lines, obj) {
-            var lookup = {};
-            for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
-                if (typeof (lookup[obj.elements.nodes[i].data.name]) != "undefined")
-                    lookup[obj.elements.nodes[i].data.name].push(obj.elements.nodes[i].data);
-                else
-                    lookup[obj.elements.nodes[i].data.name] = [obj.elements.nodes[i].data];
-            }
-
-            var header = {};
-            for (var i = 0; i < lines[0].length; i++) {
-                var value = lines[0][i].toLowerCase().trim();
-                header[value] = i;
-            }
-
-            for (var line = 1; line < lines.length; line++) {
-                var target = lines[line][header["gene"]];
-                if (typeof (lookup[target]) != "undefined") {
-                    for (entry in lookup[target]) {
-                        if (typeof (header["mut"]) != "undefined") {
-                            mut = lines[line][header["mut"]];
-                            if (!isNaN(mut))
-                                lookup[target][entry].mut = mut;
-                            else
-                                lookup[target][entry].mut = "0";
-                        }
-                        if (typeof (header["cnv"]) != "undefined") {
-                            cnv = lines[line][header["cnv"]];
-                            if (!isNaN(cnv))
-                                lookup[target][entry].cnv = cnv;
-                            else
-                                lookup[target][entry].cnv = "0";
-                        }
-                        if (typeof (header["rna"]) != "undefined") {
-                            rna = lines[line][header["rna"]];
-                            if (!isNaN(rna))
-                                lookup[target][entry].rna = rna;
-                            else
-                                lookup[target][entry].rna = "0";
-                        }
-                    }
-                }
-            }
-        }
-
         function sprayColor(lines) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var header = {};
@@ -706,36 +673,37 @@ var VQI_PathwayEditorGUI = function (parent) {
                         Valign: selectedForEditNodes[i].data('Valign'),
                         Width: selectedForEditNodes[i].data('Width'),
                         Height: selectedForEditNodes[i].data('Height'),
-                        id: "dup" + selectedForEditNodes[i].data('id'),
+                        id: "dup" + dupCounter.toString()+ selectedForEditNodes[i].data('id'),
                         name: selectedForEditNodes[i].data('name'),
                         selected: false,
                         backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
-                        zIndex: selectedForEditNodes[i].data('zIndex')
+                        zIndex: selectedForEditNodes[i].data('zIndex'),
+						parent: "dup" + dupCounter.toString() + selectedForEditNodes[i].data('parent')
                     },
-                    renderedPosition: {
-                        x: selectedForEditNodes[i].position('x') + 500,
-                        y: selectedForEditNodes[i].position('y')
+                    position: {
+                        x: selectedForEditNodes[i].position('x') + 100,
+                        y: selectedForEditNodes[i].position('y') + 100
                     }
                 })
-                lookupDuplicatedNodes.push("dup" + selectedForEditNodes[i].data('id'));
+                lookupDuplicatedNodes.push("dup" + dupCounter.toString() + selectedForEditNodes[i].data('id'));
             }
             for (var i = 0; i < selectedForEditNodes.length; i++) {
                 for (var j = 0; j < selectedForEditNodes[i].connectedEdges().length; j++) {
-                    if (lookupDuplicatedNodes.indexOf("dup" + selectedForEditNodes[i].connectedEdges()[j].data('source')) != -1 &&
-                            lookupDuplicatedNodes.indexOf("dup" + selectedForEditNodes[i].connectedEdges()[j].data('target')) != -1 &&
-                            lookupDuplicatedEdges.indexOf("dup" + selectedForEditNodes[i].connectedEdges()[j].data('id')) == -1
+                    if (lookupDuplicatedNodes.indexOf("dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('source')) != -1 &&
+                            lookupDuplicatedNodes.indexOf("dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('target')) != -1 &&
+                            lookupDuplicatedEdges.indexOf("dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('id')) == -1
                             ) {
                         edge.push({
                             group: "edges",
                             data: {
-                                id: "dup" + selectedForEditNodes[i].connectedEdges()[j].data('id'),
+                                id: "dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('id'),
                                 Type: selectedForEditNodes[i].connectedEdges()[j].data('Type'),
                                 LineThickness: selectedForEditNodes[i].connectedEdges()[j].data('LineThickness'),
                                 EndArrow: selectedForEditNodes[i].connectedEdges()[j].data('EndArrow'),
                                 Coords: selectedForEditNodes[i].connectedEdges()[j].data('Coords'),
                                 ZOrder: selectedForEditNodes[i].connectedEdges()[j].data('ZOrder'),
-                                source: "dup" + selectedForEditNodes[i].connectedEdges()[j].data('source'),
-                                target: "dup" + selectedForEditNodes[i].connectedEdges()[j].data('target'),
+                                source: "dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('source'),
+                                target: "dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('target'),
                                 StartArrow: selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
                                 curveStyle: selectedForEditNodes[i].connectedEdges()[j].data('curveStyle'),
                                 segmentDistances: selectedForEditNodes[i].connectedEdges()[j].data('segmentDistances'),
@@ -743,11 +711,11 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 selected: selectedForEditNodes[i].connectedEdges()[j].data('selected')
                             }
                         })
-                        lookupDuplicatedEdges.push("dup" + selectedForEditNodes[i].connectedEdges()[j].data('id'));
+                        lookupDuplicatedEdges.push("dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('id'));
                     }
                 }
             }
-
+			dupCounter++;
             cy.add(node);
             cy.add(edge);
             postAddProcessing();
@@ -830,7 +798,6 @@ var VQI_PathwayEditorGUI = function (parent) {
             }
         }
 
-        //re-write
         function unbundleRecursive(node, parents, edges, nodes, rCounter) {
             rCounter++;
             if (rCounter == 1 && node.isParent()) {
@@ -981,32 +948,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                 }
             }
         }
-
-        //re-write
-        function unbundle(event) {
-            var cy = $('#' + parent + '-cy').cytoscape('get');
-            var parents = [];
-            var nodes = [];
-            var edges = [];
-            var rCounter = 0;
-
-            for (var i = 0; i < selectedForEditNodes.size(); i++) {
-                unbundleRecursive(selectedForEditNodes[i], parents, edges, nodes, rCounter);
-            }
-
-            // Remove parents (in the instance that they haven't been removed!)
-            for (var i = 0; i < parents.length; i++) {
-                parents[i].remove();
-            }
-
-            // Add new nodes
-            cy.add(nodes.concat(edges));
-            postAddProcessing();
-            saveState();
-        }
-
-        //re-write
-        function recursiveBundle(node, edges, nodes) {
+		
+		function recursiveBundle(node, edges, nodes) {
             nodes.push({
                 group: "nodes",
                 data: {
@@ -1055,7 +998,28 @@ var VQI_PathwayEditorGUI = function (parent) {
             }
         }
 
-        //re-write
+        function unbundle(event) {
+            var cy = $('#' + parent + '-cy').cytoscape('get');
+            var parents = [];
+            var nodes = [];
+            var edges = [];
+            var rCounter = 0;
+
+            for (var i = 0; i < selectedForEditNodes.size(); i++) {
+                unbundleRecursive(selectedForEditNodes[i], parents, edges, nodes, rCounter);
+            }
+
+            // Remove parents (in the instance that they haven't been removed!)
+            for (var i = 0; i < parents.length; i++) {
+                parents[i].remove();
+            }
+
+            // Add new nodes
+            cy.add(nodes.concat(edges));
+            postAddProcessing();
+            saveState();
+        }
+
         function bundle(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var type = document.getElementById(parent + "-type-bundle").value;
@@ -1135,20 +1099,16 @@ var VQI_PathwayEditorGUI = function (parent) {
                 }
             }
 
-            // Remove old nodes
             selectedForEditNodes.remove();
 
-            // Add new nodes
             cy.add(nodes.concat(edges));
             postAddProcessing();
 
             if (!cy.elements("node[id = \"n" + nodeCounter + "\"]").isParent())
                 cy.elements("node[id = \"n" + nodeCounter + "\"]").remove();
 
-            // increment nodeCounter to insure unique id
             nodeCounter++;
 
-            // Remove dialog box
             dialogBundle.dialog("close");
             saveState();
         }
@@ -1523,7 +1483,7 @@ var VQI_PathwayEditorGUI = function (parent) {
 			var title = document.getElementById(parent + "-pathway-title")
 			title.innerHTML = pathName+" <small>"+personId+"</small>";
         }
-
+		
         function dialogNewPathwayOpen(event) {
             dialogNewPathway.dialog("open");
         }
@@ -1963,7 +1923,6 @@ var VQI_PathwayEditorGUI = function (parent) {
 
                     preAddProcessing(obj);
 
-                    //un-disable options
                     $('#' + parent + '-select-bundleOne').removeClass('disabled');
                     $('#' + parent + '-add-node').removeClass('disabled');
                     $('#' + parent + '-add-edge').removeClass('disabled');
@@ -1984,15 +1943,13 @@ var VQI_PathwayEditorGUI = function (parent) {
 					$('#' + parent + '-config-pathway').removeClass('disabled');
 					$('#' + parent + '-find-paths-all-drop').removeClass('disabled');
 
-                    // Add processed nodes
                     cy.add(obj.elements);
                     cy.center();
                     cy.fit();
 
-                    // Post-Add Process
                     postAddProcessing();
 
-                    // add custom event
+                    // add custom events
                     var tappedBefore = null;
                     cy.on('tap', function (event) {
                         var tappedNow = event.cyTarget;
@@ -2102,6 +2059,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                 autolock: false,
                 autoungrabify: false,
                 autounselectify: false,
+				
                 // rendering options:
                 headless: false,
                 styleEnabled: true,
@@ -2254,6 +2212,22 @@ var VQI_PathwayEditorGUI = function (parent) {
             close: function () {
             }
         });
+		
+		dialogPathwayConfigure = $("#" + parent + "-dialog-form-configure-pathway").dialog({
+			open: function (event) {
+                document.getElementById(parent + "-configure-person-id").value = personId;
+            },
+            autoOpen: false,
+            height: 300,
+            width: 350,
+            buttons: {
+                Cancel: function () {
+                    dialogPathwayConfigure.dialog("close");
+                }
+            },
+            close: function () {
+            }
+        });
 
         dialogPathwaySaveAs = $("#" + parent + "-dialog-form-save-as-pathway").dialog({
             autoOpen: false,
@@ -2291,22 +2265,6 @@ var VQI_PathwayEditorGUI = function (parent) {
                 "submit": bundle,
                 Cancel: function () {
                     dialogBundle.dialog("close");
-                }
-            },
-            close: function () {
-            }
-        });
-		
-		dialogPathwayConfigure = $("#" + parent + "-dialog-form-configure-pathway").dialog({
-			open: function (event) {
-                document.getElementById(parent + "-configure-person-id").value = personId;
-            },
-            autoOpen: false,
-            height: 300,
-            width: 350,
-            buttons: {
-                Cancel: function () {
-                    dialogPathwayConfigure.dialog("close");
                 }
             },
             close: function () {
@@ -2352,6 +2310,7 @@ var VQI_PathwayEditorGUI = function (parent) {
         document.getElementById(parent + '-delete-elements').addEventListener('click', removeElements);
         document.getElementById(parent + '-add-node').addEventListener('click', addNode);
         document.getElementById(parent + '-add-edge').addEventListener('click', addEdge);
+		document.getElementById(parent + '-collapse-informative').addEventListener('click', collapseBundleInformative);
         document.getElementById(parent + '-expand').addEventListener('click', expandBundle);
         document.getElementById(parent + '-collapse').addEventListener('click', collapseBundle);
         document.getElementById(parent + '-bundle').addEventListener('click', dialogBundleOpen);
@@ -2386,59 +2345,5 @@ var VQI_PathwayEditorGUI = function (parent) {
 		self.setPersonId = function (data) {
             setPersonId(data);
         };
-
-        //external No GUI functions
-
-        self.printGraphExternalNoGUI = function () {
-            console.log(self.json);
-        }
-
-        self.produceJSONExternalNoGUI = function () {
-            download(JSON.stringify(self.json), "data.txt", "text/plain");
-        }
-
-        self.sprayColorExternalNoGUI = function (list) {
-            sprayColorNoGUI(list, self.json);
-        }
-
-        self.loadPathwayExternalNoGUI = function (id) {
-            $.post(services['pathwayFinder'], {
-                pid: id
-            }, function (data) {
-                self.json = JSON.parse(data);
-                setElementsNoGUI(self.json);
-            });
-        }
-
-        self.findPathAndScoreExternalYueNoGUI = function (sid, did, f) {
-            var paths = findPath(self.json, sid, did);
-            var nodes = convertEdgePathtoNodePathNoGUI(paths, self.json);
-            $.post(services['pathwayScorer'], {
-                data_json: JSON.stringify(self.json)
-            }, function (yue_data) {
-                var result = []
-                var scoreJSON = JSON.parse(yue_data);
-                for (var n = 0; n < paths.length; n++) {
-                    var score = getPathScore(paths[n], scoreJSON).toString();
-                    result.push({"path": n, "edges": paths[n], "nodes": nodes[n], "score": score});
-                }
-                f(result);
-            });
-        }
-
-        self.findPathAndScoreExternalThamNoGUI = function (sid, did, f) {
-            var paths = findPath(self.json, sid, did);
-            var nodes = convertEdgePathtoNodePathNoGUI(paths, self.json);
-            $.post(services['pathwayWeightedScorer'], {
-                data_paths: JSON.stringify(nodes)
-            }, function (tham_data) {
-                var result = [];
-                var score = JSON.parse(tham_data);
-                for (var n = 0; n < paths.length; n++) {
-                    result.push({"path": n, "edges": paths[n], "nodes": nodes[n], "score": score[n]});
-                }
-                f(result);
-            });
-        }
     });
 };
