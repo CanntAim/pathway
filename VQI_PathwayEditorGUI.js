@@ -383,7 +383,7 @@ var VQI_PathwayEditorGUI = function (parent) {
 					selectedForEditNodes[i].descendants().unselectify();
 					var xGap=0;
 					var yGap=0;
-					for(var j = 0; selectedForEditNodes[i].children().length > j; j++){
+					for(var j = 0; selectedForEditNodes[i].descendants().length > j; j++){
 						if(j%5 == 0){
 							xGap=0
 							yGap+=10
@@ -392,7 +392,9 @@ var VQI_PathwayEditorGUI = function (parent) {
 						}
 						var newPositionX = staticOldPosX + xGap;
 						var newPositionY = staticOldPosY + yGap;
-						selectedForEditNodes[i].children()[j].position({
+						selectedForEditNodes[i].descendants()[j].data('oldPositionX',selectedForEditNodes[i].descendants()[j].position('x'));
+						selectedForEditNodes[i].descendants()[j].data('oldPositionY',selectedForEditNodes[i].descendants()[j].position('y'));
+						selectedForEditNodes[i].descendants()[j].position({
 							x: newPositionX,
 							y: newPositionY
 						});
@@ -408,6 +410,10 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (selectedForEditNodes[i].isParent() && selectedForEditNodes[i].descendants()[0].hasClass('collapsed_informative')) {
 					selectedForEditNodes[i].descendants().removeClass('collapsed_informative');
 					selectedForEditNodes[i].descendants().selectify();
+					for(var j = 0; selectedForEditNodes[i].descendants().length > j; j++){
+						selectedForEditNodes[i].descendants()[j].position('x',selectedForEditNodes[i].descendants()[j].data('oldPositionX'));
+						selectedForEditNodes[i].descendants()[j].position('y',selectedForEditNodes[i].descendants()[j].data('oldPositionY'));
+					}
                 }
             }
             saveState();
@@ -419,7 +425,11 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (selectedForEditNodes[i].isParent() && !selectedForEditNodes[i].descendants()[0].hasClass('collapsed')) {
                     selectedForEditNodes[i].descendants().addClass('collapsed');
 					selectedForEditNodes[i].descendants().unselectify();
-                    selectedForEditNodes[i].descendants().positions({
+					for(var j = 0; selectedForEditNodes[i].descendants().length > j; j++){
+						selectedForEditNodes[i].descendants()[j].data('oldPositionX',selectedForEditNodes[i].descendants()[j].position('x'));
+						selectedForEditNodes[i].descendants()[j].data('oldPositionY',selectedForEditNodes[i].descendants()[j].position('y'));
+                    }
+					selectedForEditNodes[i].descendants().positions({
                         x: selectedForEditNodes[i].position('x') + selectedForEditNodes[i].width() / 2,
                         y: selectedForEditNodes[i].position('y') + selectedForEditNodes[i].height() / 2
                     });
@@ -434,6 +444,10 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (selectedForEditNodes[i].isParent() && selectedForEditNodes[i].descendants()[0].hasClass('collapsed')) {
                     selectedForEditNodes[i].descendants().removeClass('collapsed');
 					selectedForEditNodes[i].descendants().selectify();
+					for(var j = 0; selectedForEditNodes[i].descendants().length > j; j++){
+						selectedForEditNodes[i].descendants()[j].position('x',selectedForEditNodes[i].descendants()[j].data('oldPositionX'));
+						selectedForEditNodes[i].descendants()[j].position('y',selectedForEditNodes[i].descendants()[j].data('oldPositionY'));
+					}
                 }
             }
             saveState();
@@ -495,7 +509,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (typeof (obj.elements.nodes[i].data.zIndex) == "undefined") {
                     obj.elements.nodes[i].data.zIndex = 0;
                 }
-
+				
                 if (types.indexOf(obj.elements.nodes[i].data.Type) == -1) {
                     obj.elements.nodes[i].data.Type = "label";
                 }
@@ -1925,11 +1939,10 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'height': .01
                 }).selector('.collapsed_informative').css({
                     'shape': 'circle',
-                    'width': 10,
-                    'height': 10,
+                    'width': 7,
+                    'height': 7,
                     'color': 'black',
                     'text-valign': 'center',
-                    'background-color': 'white',
                     'border-color': 'black',
                     'border-style': 'solid',
                     'border-width': 1
