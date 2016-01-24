@@ -18,7 +18,7 @@ var VQI_PathwayEditorGUI = function (parent) {
 
     // Globals
     var self = this;
-    var types = ["bundleOne", "bundleTwo", "gene", "geneProduct", "protein", "rna", "microRNA", "kinase", "ligand", "receptor", "biologicalProcess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
+    var types = ["bundleone", "bundletwo", "gene", "geneproduct", "protein", "rna", "microrna", "kinase", "ligand", "receptor", "biologicalprocess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
     var personId = "";
 	var pathName = "";
 	var states = [];
@@ -155,8 +155,8 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "    			<fieldset>";
     strVar += "      			<label for=\"" + parent + "-type-bundle\">type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-bundle\" name=\"" + parent + "-type-bundle\">";
-    strVar += "  					<option selected=\"\">bundleOne<\/option>";
-    strVar += "  					<option>bundleTwo<\/option>";
+    strVar += "  					<option selected=\"\">bundleone<\/option>";
+    strVar += "  					<option>bundletwo<\/option>";
     strVar += "					<\/select>";
     strVar += "    			<\/fieldset>";
     strVar += " 		<\/form>";
@@ -248,17 +248,17 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-type-node\">type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" class=\"form-control\" name=\"" + parent + "-type-node\">";
-    strVar += "  					<option id=\"" + parent + "-select-bundleOne\" selected=\"\">bundleOne<\/option>";
-    strVar += "  					<option id=\"" + parent + "-select-bundleTwo\">bundleTwo<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-bundleOne\" selected=\"\">bundleone<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-bundleTwo\">bundletwo<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-gene\">gene<\/option>";
-    strVar += "  					<option id=\"" + parent + "-select-geneProduct\">geneProduct<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-geneProduct\">geneproduct<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-protein\">protein<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-rna\">rna<\/option>";
-    strVar += "  					<option id=\"" + parent + "-select-mircoRNA\">microRNA<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-mircoRNA\">microrna<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-kinase\">kinase<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-ligand\">ligand<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-receptor\">receptor<\/option>";
-    strVar += "  					<option id=\"" + parent + "-select-biologicalProcess\">biologicalProcess<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-biologicalprocess\">biologicalProcess<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-triangle\">triangle<\/option>";
 	strVar += "  					<option id=\"" + parent + "-select-rectangle\">rectangle<\/option>";
 	strVar += "  					<option id=\"" + parent + "-select-circle\">circle<\/option>";
@@ -510,9 +510,11 @@ var VQI_PathwayEditorGUI = function (parent) {
                     obj.elements.nodes[i].data.zIndex = 0;
                 }
 				
-                if (types.indexOf(obj.elements.nodes[i].data.Type) == -1) {
+                if (types.indexOf(obj.elements.nodes[i].data.Type.toLowerCase()) == -1) {
                     obj.elements.nodes[i].data.Type = "label";
-                }
+                } else {
+					obj.elements.nodes[i].data.Type = obj.elements.nodes[i].data.Type.toLowerCase();
+				}
 
                 if (typeof (obj.elements.nodes[i].data.rna) == "undefined") {
                     obj.elements.nodes[i].data.rna = 0;
@@ -525,10 +527,13 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (typeof (obj.elements.nodes[i].data.mut) == "undefined") {
                     obj.elements.nodes[i].data.mut = 0;
                 }
-
-                if (obj.elements.nodes[i].data.Type == "gene") {
-                    obj.elements.nodes[i].data.Height = 20;
-                    obj.elements.nodes[i].data.Width = 50;
+				
+				if (typeof (obj.elements.nodes[i].data.oldPositionX) == "undefined") {
+                    obj.elements.nodes[i].data.oldPositionX = 0;
+                }
+				
+				if (typeof (obj.elements.nodes[i].data.oldPositionY) == "undefined") {
+                    obj.elements.nodes[i].data.oldPositionY = 0;
                 }
             }
 
@@ -738,8 +743,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                 }
             }
 			dupCounter++;
-            cy.add(node);
-            cy.add(edge);
+            cy.add(node.concat(edge));
             postAddProcessing();
             saveState();
         }
@@ -1590,7 +1594,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'background-image-opacity': .75,
                     'opacity': 0.75,
                     'text-opacity': 0.75
-                }).selector('node[Type="bundleOne"]').css({
+                }).selector('node[Type="bundleone"]').css({
                     'shape': 'roundrectangle',
                     'background-color': 'lightgray',
                     'color': 'black',
@@ -1598,7 +1602,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-color': 'black',
                     'border-style': 'solid',
                     'border-width': 1
-                }).selector('node[Type="bundleTwo"]').css({
+                }).selector('node[Type="bundletwo"]').css({
                     'shape': 'roundrectangle',
                     'background-color': 'gray',
                     'color': 'black',
@@ -1616,7 +1620,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-color': 'black',
                     'border-style': 'solid',
                     'border-width': 1
-                }).selector('node[Type="geneProduct"]').css({
+                }).selector('node[Type="geneproduct"]').css({
                     'shape': 'circle',
                     'radius': 5,
                     'color': 'black',
@@ -1644,7 +1648,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-color': 'black',
                     'border-style': 'dotted',
                     'border-width': 1
-                }).selector('node[Type="microRNA"]').css({
+                }).selector('node[Type="microrna"]').css({
                     'shape': 'circle',
                     'radius': 5,
                     'color': 'black',
@@ -1683,7 +1687,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-color': 'black',
                     'border-style': 'double',
                     'border-width': 1
-                }).selector('node[Type="biologicalProcess"]').css({
+                }).selector('node[Type="biologicalprocess"]').css({
                     'shape': 'roundrectangle',
                     'width': 'data(Width)',
                     'height': 'data(Height)',
@@ -1939,8 +1943,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'height': .01
                 }).selector('.collapsed_informative').css({
                     'shape': 'circle',
-                    'width': 7,
-                    'height': 7,
+                    'width': 6,
+                    'height': 6,
                     'color': 'black',
                     'text-valign': 'center',
                     'border-color': 'black',

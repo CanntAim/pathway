@@ -13,12 +13,13 @@
         <script src="dependencies/cytoscape.js-2.5.4/cytoscape.js"></script>
     </head>
     <body>
-        <input type=button onclick="load()" value="load">
+<!--    <input type=button onclick="load()" value="load">
         <input type=button onclick="spray()" value="spray">
 		<input type=button onclick="setPersonId()" value="set Person id">
         <input type=button onclick="print()" value="print">
 		<input type=button onclick="save()" value="save">
 		<input id="file" type=file value="spray from file">
+-->
         <div id="parent"></div>
         <script src="VQI_Observable.js"></script>
         <script src="VQI_PathwayEditorGUI.js"></script>
@@ -62,7 +63,7 @@
                 objVQI_PathwayEditorNoGUI.produceJSONExternalNoGUI();
             }
 			
-			document.getElementById("file").addEventListener("change", sprayFromFile); 
+//			document.getElementById("file").addEventListener("change", sprayFromFile); 
         </script>
     </body>
 </html>
