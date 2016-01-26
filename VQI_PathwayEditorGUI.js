@@ -475,13 +475,17 @@ var VQI_PathwayEditorGUI = function (parent) {
                 }
 
                 if (typeof (cy.$("node")[i].data("zIndex")) != "undefined") {
-                    cy.$("node")[i].style("zIndex", cy.$("node")[i].data("zIndex"));
+                    cy.$("node")[i].style("z-index", cy.$("node")[i].data("zIndex"));
                 }
             }
 
             for (var i = 0; i < cy.$("edge").length; i++) {
                 if (typeof (cy.$("edge")[i].data("curveStyle")) != "undefined") {
                     cy.$("edge")[i].style("curve-style", cy.$("edge")[i].data("curveStyle"));
+                }
+				
+				if (typeof (cy.$("edge")[i].data("zOrder")) != "undefined") {
+                    cy.$("edge")[i].style("z-index", cy.$("edge")[i].data("zOrder"));
                 }
 
                 if (typeof (cy.$("edge")[i].data("segmentDistances")) != "undefined") {
@@ -1377,7 +1381,7 @@ var VQI_PathwayEditorGUI = function (parent) {
             selectedForEditNodes.style("z-index", 0);
             selectedForEditNodes.data("zIndex", 0);
             selectedForEditEdges.style("z-index", 0);
-            selectedForEditEdges.data("zIndex", 0);
+            selectedForEditEdges.data("zOrder", 0);
             saveState();
         }
 
@@ -1386,7 +1390,7 @@ var VQI_PathwayEditorGUI = function (parent) {
             selectedForEditNodes.style("z-index", highestZOrder);
             selectedForEditNodes.data("zIndex", highestZOrder);
             selectedForEditEdges.style("z-index", highestZOrder);
-            selectedForEditEdges.data("zIndex", highestZOrder);
+            selectedForEditEdges.data("zOrder", highestZOrder);
             saveState();
         }
 
