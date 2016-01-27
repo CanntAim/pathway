@@ -18,7 +18,9 @@ var VQI_PathwayEditorGUI = function (parent) {
 
     // Globals
     var self = this;
-    var types = ["bundleone", "bundletwo", "gene", "geneproduct", "protein", "rna", "microrna", "kinase", "ligand", "receptor", "biologicalprocess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
+    var nodeTypes = ["bundleone", "bundletwo", "gene", "geneproduct", "protein", "rna", "microrna", "kinase", "ligand", "receptor", "biologicalprocess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
+	var edgeLineTypes = ["line", "dashed","dotted"];
+	var arrowLineTypes = ["solid", "tbar", "solid"];
     var personId = "";
 	var pathName = "";
 	var states = [];
@@ -514,7 +516,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     obj.elements.nodes[i].data.zIndex = 0;
                 }
 				
-                if (types.indexOf(obj.elements.nodes[i].data.Type.toLowerCase()) == -1) {
+                if (nodeTypes.indexOf(obj.elements.nodes[i].data.Type.toLowerCase()) == -1) {
                     obj.elements.nodes[i].data.Type = "label";
                 } else {
 					obj.elements.nodes[i].data.Type = obj.elements.nodes[i].data.Type.toLowerCase();
@@ -532,12 +534,20 @@ var VQI_PathwayEditorGUI = function (parent) {
                     obj.elements.nodes[i].data.mut = 0;
                 }
 				
-				if (typeof (obj.elements.nodes[i].data.oldPositionX) == "undefined") {
+				if (typeof (obj.elements.nodes[i].data.oldPositionX) == "undefined" || !isNaN(obj.elements.nodes[i].data.oldPositionX)) {
                     obj.elements.nodes[i].data.oldPositionX = 0;
                 }
 				
-				if (typeof (obj.elements.nodes[i].data.oldPositionY) == "undefined") {
+				if (typeof (obj.elements.nodes[i].data.oldPositionY) == "undefined" || !isNaN(obj.elements.nodes[i].data.oldPositionY)) {
                     obj.elements.nodes[i].data.oldPositionY = 0;
+                }
+				
+				if (typeof (obj.elements.nodes[i].data.Width) == "undefined" || !isNaN(obj.elements.nodes[i].data.Width)) {
+                    obj.elements.nodes[i].data.Width = 50;
+                }
+				
+				if (typeof (obj.elements.nodes[i].data.Height) == "undefined" || !isNaN(obj.elements.nodes[i].data.Height)) {
+                    obj.elements.nodes[i].data.Height = 30;
                 }
             }
 
@@ -547,6 +557,18 @@ var VQI_PathwayEditorGUI = function (parent) {
                     if (number > edgeCounter)
                         edgeCounter = number + 1;
                 }
+				
+				if (edgeLineTypes.indexOf(obj.elements.edges[i].data.Type.toLowerCase()) == -1) {
+                    obj.elements.edges[i].data.Type = "solid";
+                } else {
+					obj.elements.edges[i].data.Type = obj.elements.edges[i].data.Type.toLowerCase();
+				}
+				
+				if (arrowLineTypes.indexOf(obj.elements.edges[i].data.EndArrow.toLowerCase()) == -1) {
+                    obj.elements.edges[i].data.Type = "line";
+                } else {
+					obj.elements.edges[i].data.Type = obj.elements.edges[i].data.EndArrow.toLowerCase();
+				}
             }
         }
 
@@ -1589,8 +1611,8 @@ var VQI_PathwayEditorGUI = function (parent) {
         function visualPathway(obj) {
             $('#' + parent + '-cy').cytoscape({
                 style: cytoscape.stylesheet()
-                        // node elements default css (unselected state)
-                        .selector('node').css({
+                // node elements default css (unselected state)
+                .selector('node').css({
                     'content': 'data(name)',
                     'padding-left': 2,
                     'padding-right': 2,
@@ -1876,23 +1898,23 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'opacity': 0.75,
                     'text-opacity': 0.75,
                     'width': 1
-                }).selector('edge[EndArrow="Line"]').css({
+                }).selector('edge[EndArrow="line"]').css({
                     'target-arrow-shape': 'line',
                     'target-arrow-color': 'black',
                     'target-arrow-fill': 'filled'
-                }).selector('edge[EndArrow="Arrow"]').css({
+                }).selector('edge[EndArrow="arrow"]').css({
                     'target-arrow-shape': 'triangle',
                     'target-arrow-color': 'black',
                     'target-arrow-fill': 'filled'
-                }).selector('edge[EndArrow="TBar"]').css({
+                }).selector('edge[EndArrow="tbar"]').css({
                     'target-arrow-shape': 'tee',
                     'target-arrow-color': 'black',
                     'target-arrow-fill': 'filled'
-                }).selector('edge[Type="Solid"]').css({
+                }).selector('edge[Type="solid"]').css({
                     'line-style': 'solid'
-                }).selector('edge[Type="Dashed"]').css({
+                }).selector('edge[Type="dashed"]').css({
                     'line-style': 'dashed'
-                }).selector('edge[Type="Dotted"]').css({
+                }).selector('edge[Type="dotted"]').css({
                     'line-style': 'dotted'
                 })
 
