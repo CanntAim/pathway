@@ -20,7 +20,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     var self = this;
     var nodeTypes = ["bundleone", "bundletwo", "gene", "geneproduct", "protein", "rna", "microrna", "kinase", "ligand", "receptor", "biologicalprocess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
 	var edgeLineTypes = ["line", "dashed","dotted"];
-	var arrowLineTypes = ["solid", "tbar", "solid"];
+	var arrowLineTypes = ["solid", "tbar", "arrow"];
     var personId = "";
 	var pathName = "";
 	var states = [];
@@ -119,9 +119,9 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "			<tr>";
     strVar += "         	<td>name<\/td>";
     strVar += "				<td>percentage<\/td>";
-    strVar += "				<td>rna distance<\/td>";
-    strVar += "				<td>cnv distance<\/td>";
-    strVar += "				<td>mut distance<\/td>";
+    strVar += "				<td>Rna distance<\/td>";
+    strVar += "				<td>Cnv distance<\/td>";
+    strVar += "				<td>Mut distance<\/td>";
 	strVar += "			<\/tr>";
     strVar += "		<\/table>";
     strVar += "	<\/div>";
@@ -256,11 +256,11 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "  					<option id=\"" + parent + "-select-geneProduct\">geneproduct<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-protein\">protein<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-rna\">rna<\/option>";
-    strVar += "  					<option id=\"" + parent + "-select-mircoRNA\">microrna<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-mircoRna\">microrna<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-kinase\">kinase<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-ligand\">ligand<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-receptor\">receptor<\/option>";
-    strVar += "  					<option id=\"" + parent + "-select-biologicalprocess\">biologicalProcess<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-biologicalProcess\">biologicalprocess<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-triangle\">triangle<\/option>";
 	strVar += "  					<option id=\"" + parent + "-select-rectangle\">rectangle<\/option>";
 	strVar += "  					<option id=\"" + parent + "-select-circle\">circle<\/option>";
@@ -278,19 +278,19 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += " 				<input id=\"" + parent + "-type-node-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
     strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-rna\">RNA:<\/label>";
-    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-rna\" class=\"form-control\" name=\"" + parent + "-rna\">";
-    strVar += " 				<input id=\"" + parent + "-rna-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "      			<label for=\"" + parent + "-Rna\">Rna:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-Rna\" class=\"form-control\" name=\"" + parent + "-Rna\">";
+    strVar += " 				<input id=\"" + parent + "-Rna-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
     strVar += "    			<div class =\"form-group\">";
-    strVar += "					<label for=\"" + parent + "-cnv\">CNV:<\/label>";
-    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-cnv\" class=\"form-control\" name=\"" + parent + "-cnv\">";
-    strVar += " 				<input id=\"" + parent + "-cnv-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "					<label for=\"" + parent + "-Cnv\">Cnv:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-Cnv\" class=\"form-control\" name=\"" + parent + "-Cnv\">";
+    strVar += " 				<input id=\"" + parent + "-Cnv-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
     strVar += "    			<div class =\"form-group\">";
-    strVar += "					<label for=\"" + parent + "-mut\">MUT:<\/label>";
-    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" class=\"form-control\" name=\"" + parent + "-mut\">";
-    strVar += " 				<input id=\"" + parent + "-mut-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "					<label for=\"" + parent + "-Mut\">Mut:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-Mut\" class=\"form-control\" name=\"" + parent + "-Mut\">";
+    strVar += " 				<input id=\"" + parent + "-Mut-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
     strVar += "    			<div class =\"form-group\">";
     strVar += "    				<label for=\"" + parent + "-background-image\">Local Image File:<\/label>";
@@ -471,31 +471,35 @@ var VQI_PathwayEditorGUI = function (parent) {
 
             //Post-Add Process
             for (var i = 0; i < cy.$("node").length; i++) {
-                if (typeof (cy.$("node")[i].data("backgroundImage")) != "undefined" && cy.$("node")[i].data("backgroundImage") != "") {
-                    cy.$("node")[i].style("backgroundImage", cy.$("node")[i].data("backgroundImage"));
+                if (typeof (cy.$("node")[i].data("BackgroundImage")) != "undefined" && cy.$("node")[i].data("BackgroundImage") != "") {
+                    cy.$("node")[i].style("BackgroundImage", cy.$("node")[i].data("BackgroundImage"));
                     cy.$("node")[i].data("Type", "image");
                 }
 
-                if (typeof (cy.$("node")[i].data("zIndex")) != "undefined") {
-                    cy.$("node")[i].style("z-index", cy.$("node")[i].data("zIndex"));
+                if (typeof (cy.$("node")[i].data("ZIndex")) != "undefined") {
+                    cy.$("node")[i].style("z-index", cy.$("node")[i].data("ZIndex"));
+                }
+				
+				if (cy.$("node")[i].isParent() && (cy.$("node")[i].data("Type") != "bundleone" || cy.$("node")[i].data("Type") != "bundletwo")) {
+                    cy.$("node")[i].data("Type", "bundleone");
                 }
             }
 
             for (var i = 0; i < cy.$("edge").length; i++) {
-                if (typeof (cy.$("edge")[i].data("curveStyle")) != "undefined") {
-                    cy.$("edge")[i].style("curve-style", cy.$("edge")[i].data("curveStyle"));
+                if (typeof (cy.$("edge")[i].data("CurveStyle")) != "undefined") {
+                    cy.$("edge")[i].style("curve-style", cy.$("edge")[i].data("CurveStyle"));
                 }
 				
 				if (typeof (cy.$("edge")[i].data("zOrder")) != "undefined") {
                     cy.$("edge")[i].style("z-index", cy.$("edge")[i].data("zOrder"));
                 }
 
-                if (typeof (cy.$("edge")[i].data("segmentDistances")) != "undefined") {
-                    cy.$("edge")[i].style("segment-distances", cy.$("edge")[i].data("segmentDistances"));
+                if (typeof (cy.$("edge")[i].data("SegmentDistances")) != "undefined") {
+                    cy.$("edge")[i].style("segment-distances", cy.$("edge")[i].data("SegmentDistances"));
                 }
 
-                if (typeof (cy.$("edge")[i].data("segmentWeights")) != "undefined") {
-                    cy.$("edge")[i].style("segment-weights", cy.$("edge")[i].data("segmentWeights"));
+                if (typeof (cy.$("edge")[i].data("SegmentWeights")) != "undefined") {
+                    cy.$("edge")[i].style("segment-weights", cy.$("edge")[i].data("SegmentWeights"));
                 }
             }
         }
@@ -508,45 +512,45 @@ var VQI_PathwayEditorGUI = function (parent) {
                         nodeCounter = number + 1;
                 }
 
-                if (typeof (obj.elements.nodes[i].data.backgroundImage) == "undefined") {
-                    obj.elements.nodes[i].data.backgroundImage = "";
+                if (typeof (obj.elements.nodes[i].data.BackgroundImage) == "undefined") {
+                    obj.elements.nodes[i].data.BackgroundImage = "";
                 }
 
-                if (typeof (obj.elements.nodes[i].data.zIndex) == "undefined") {
-                    obj.elements.nodes[i].data.zIndex = 0;
+                if (typeof (obj.elements.nodes[i].data.ZIndex) == "undefined") {
+                    obj.elements.nodes[i].data.ZIndex = 0;
                 }
 				
-                if (nodeTypes.indexOf(obj.elements.nodes[i].data.Type.toLowerCase()) == -1) {
+                if (typeof (obj.elements.nodes[i].data.Type) == "undefined" || nodeTypes.indexOf(obj.elements.nodes[i].data.Type.toLowerCase()) == -1) {
                     obj.elements.nodes[i].data.Type = "label";
                 } else {
 					obj.elements.nodes[i].data.Type = obj.elements.nodes[i].data.Type.toLowerCase();
 				}
 
-                if (typeof (obj.elements.nodes[i].data.rna) == "undefined") {
-                    obj.elements.nodes[i].data.rna = 0;
+                if (typeof (obj.elements.nodes[i].data.Rna) == "undefined" || isNaN(obj.elements.nodes[i].data.Rna)) {
+                    obj.elements.nodes[i].data.Rna = 0;
                 }
 
-                if (typeof (obj.elements.nodes[i].data.cnv) == "undefined") {
-                    obj.elements.nodes[i].data.cnv = 0;
+                if (typeof (obj.elements.nodes[i].data.Cnv) == "undefined" || isNaN(obj.elements.nodes[i].data.Cnv)) {
+                    obj.elements.nodes[i].data.Cnv = 0;
                 }
 
-                if (typeof (obj.elements.nodes[i].data.mut) == "undefined") {
-                    obj.elements.nodes[i].data.mut = 0;
+                if (typeof (obj.elements.nodes[i].data.Mut) == "undefined" || isNaN(obj.elements.nodes[i].data.Mut)) {
+                    obj.elements.nodes[i].data.Mut = 0;
                 }
 				
-				if (typeof (obj.elements.nodes[i].data.oldPositionX) == "undefined" || !isNaN(obj.elements.nodes[i].data.oldPositionX)) {
+				if (typeof (obj.elements.nodes[i].data.oldPositionX) == "undefined" || isNaN(obj.elements.nodes[i].data.oldPositionX)) {
                     obj.elements.nodes[i].data.oldPositionX = 0;
                 }
 				
-				if (typeof (obj.elements.nodes[i].data.oldPositionY) == "undefined" || !isNaN(obj.elements.nodes[i].data.oldPositionY)) {
+				if (typeof (obj.elements.nodes[i].data.oldPositionY) == "undefined" || isNaN(obj.elements.nodes[i].data.oldPositionY)) {
                     obj.elements.nodes[i].data.oldPositionY = 0;
                 }
 				
-				if (typeof (obj.elements.nodes[i].data.Width) == "undefined" || !isNaN(obj.elements.nodes[i].data.Width)) {
+				if (typeof (obj.elements.nodes[i].data.Width) == "undefined" || isNaN(obj.elements.nodes[i].data.Width)) {
                     obj.elements.nodes[i].data.Width = 50;
                 }
 				
-				if (typeof (obj.elements.nodes[i].data.Height) == "undefined" || !isNaN(obj.elements.nodes[i].data.Height)) {
+				if (typeof (obj.elements.nodes[i].data.Height) == "undefined" || isNaN(obj.elements.nodes[i].data.Height)) {
                     obj.elements.nodes[i].data.Height = 30;
                 }
             }
@@ -558,16 +562,16 @@ var VQI_PathwayEditorGUI = function (parent) {
                         edgeCounter = number + 1;
                 }
 				
-				if (edgeLineTypes.indexOf(obj.elements.edges[i].data.Type.toLowerCase()) == -1) {
+				if (typeof (obj.elements.edges[i].data.Type) == "undefined" || edgeLineTypes.indexOf(obj.elements.edges[i].data.Type.toLowerCase()) == -1) {
                     obj.elements.edges[i].data.Type = "solid";
                 } else {
 					obj.elements.edges[i].data.Type = obj.elements.edges[i].data.Type.toLowerCase();
 				}
 				
-				if (arrowLineTypes.indexOf(obj.elements.edges[i].data.EndArrow.toLowerCase()) == -1) {
-                    obj.elements.edges[i].data.Type = "line";
+				if (typeof (obj.elements.edges[i].data.EndArrow) == "undefined" || arrowLineTypes.indexOf(obj.elements.edges[i].data.EndArrow.toLowerCase()) == -1) {
+                    obj.elements.edges[i].data.EndArrow = "line";
                 } else {
-					obj.elements.edges[i].data.Type = obj.elements.edges[i].data.EndArrow.toLowerCase();
+					obj.elements.edges[i].data.EndArrow = obj.elements.edges[i].data.EndArrow.toLowerCase();
 				}
             }
         }
@@ -677,26 +681,26 @@ var VQI_PathwayEditorGUI = function (parent) {
 
             for (var line = 1; line < lines.length; line++) {
                 var target = cy.elements("node[name = \"" + lines[line][header["gene"]] + "\"]");
-                if (typeof (header["mut"]) != "undefined") {
-                    mut = lines[line][header["mut"]];
-                    if (!isNaN(mut))
-                        target.data('mut', mut);
+                if (typeof (header["Mut"]) != "undefined") {
+                    Mut = lines[line][header["Mut"]];
+                    if (!isNaN(Mut))
+                        target.data('Mut', Mut);
                     else
-                        target.data('mut', '0');
+                        target.data('Mut', '0');
                 }
-                if (typeof (header["cnv"]) != "undefined") {
-                    cnv = lines[line][header["cnv"]];
-                    if (!isNaN(cnv))
-                        target.data('cnv', cnv);
+                if (typeof (header["Cnv"]) != "undefined") {
+                    Cnv = lines[line][header["Cnv"]];
+                    if (!isNaN(Cnv))
+                        target.data('Cnv', Cnv);
                     else
-                        target.data('cnv', '0');
+                        target.data('Cnv', '0');
                 }
-                if (typeof (header["rna"]) != "undefined") {
-                    rna = lines[line][header["rna"]];
-                    if (!isNaN(rna))
-                        target.data('rna', rna);
+                if (typeof (header["Rna"]) != "undefined") {
+                    Rna = lines[line][header["Rna"]];
+                    if (!isNaN(Rna))
+                        target.data('Rna', Rna);
                     else
-                        target.data('rna', '0');
+                        target.data('Rna', '0');
                 }
             }
         }
@@ -729,8 +733,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                         id: "dup" + dupCounter.toString()+ selectedForEditNodes[i].data('id'),
                         name: selectedForEditNodes[i].data('name'),
                         selected: false,
-                        backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
-                        zIndex: selectedForEditNodes[i].data('zIndex'),
+                        BackgroundImage: selectedForEditNodes[i].data('BackgroundImage'),
+                        ZIndex: selectedForEditNodes[i].data('ZIndex'),
 						parent: "dup" + dupCounter.toString() + selectedForEditNodes[i].data('parent')
                     },
                     position: {
@@ -758,9 +762,9 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 source: "dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('source'),
                                 target: "dup" + dupCounter.toString() + selectedForEditNodes[i].connectedEdges()[j].data('target'),
                                 StartArrow: selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
-                                curveStyle: selectedForEditNodes[i].connectedEdges()[j].data('curveStyle'),
-                                segmentDistances: selectedForEditNodes[i].connectedEdges()[j].data('segmentDistances'),
-                                segmentWeights: selectedForEditNodes[i].connectedEdges()[j].data('segmentWeights'),
+                                CurveStyle: selectedForEditNodes[i].connectedEdges()[j].data('CurveStyle'),
+                                SegmentDistances: selectedForEditNodes[i].connectedEdges()[j].data('SegmentDistances'),
+                                SegmentWeights: selectedForEditNodes[i].connectedEdges()[j].data('SegmentWeights'),
                                 selected: selectedForEditNodes[i].connectedEdges()[j].data('selected')
                             }
                         })
@@ -798,8 +802,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     id: "n" + nodeCounter,
                     name: name,
                     selected: false,
-                    backgroundImage: "",
-                    zIndex: 0
+                    BackgroundImage: "",
+                    ZIndex: 0
                 },
                 renderedPosition: {
                     x: left,
@@ -867,12 +871,12 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 id: node.children()[x].data('id'),
                                 name: node.children()[x].data('name'),
                                 selected: node.children()[x].data('selected'),
-                                cnv: node.children()[x].data('cnv'),
-                                rna: node.children()[x].data('rna'),
-                                mut: node.children()[x].data('mut'),
+                                Cnv: node.children()[x].data('Cnv'),
+                                Rna: node.children()[x].data('Rna'),
+                                Mut: node.children()[x].data('Mut'),
                                 parent: node.parent().data('id'),
-                                backgroundImage: node.children()[x].data('backgroundImage'),
-                                zIndex: node.children()[x].data('zIndex')
+                                BackgroundImage: node.children()[x].data('BackgroundImage'),
+                                ZIndex: node.children()[x].data('ZIndex')
                             },
                             position: {
                                 x: node.children()[x].position('x'),
@@ -891,11 +895,11 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 id: node.children()[x].data('id'),
                                 name: node.children()[x].data('name'),
                                 selected: node.children()[x].data('selected'),
-                                cnv: node.children()[x].data('cnv'),
-                                rna: node.children()[x].data('rna'),
-                                mut: node.children()[x].data('mut'),
-                                backgroundImage: node.children()[x].data('backgroundImage'),
-                                zIndex: node.children()[x].data('zIndex')
+                                Cnv: node.children()[x].data('Cnv'),
+                                Rna: node.children()[x].data('Rna'),
+                                Mut: node.children()[x].data('Mut'),
+                                BackgroundImage: node.children()[x].data('BackgroundImage'),
+                                ZIndex: node.children()[x].data('ZIndex')
                             },
                             position: {
                                 x: node.children()[x].position('x'),
@@ -916,9 +920,9 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 source: node.children()[x].connectedEdges()[j].data('source'),
                                 target: node.children()[x].connectedEdges()[j].data('target'),
                                 StartArrow: node.children()[x].connectedEdges()[j].data('StartArrow'),
-                                curveStyle: node.children()[x].connectedEdges()[j].data('curveStyle'),
-                                segmentDistances: node.children()[x].connectedEdges()[j].data('segmentDistances'),
-                                segmentWeights: node.children()[x].connectedEdges()[j].data('segmentWeights'),
+                                CurveStyle: node.children()[x].connectedEdges()[j].data('CurveStyle'),
+                                SegmentDistances: node.children()[x].connectedEdges()[j].data('SegmentDistances'),
+                                SegmentWeights: node.children()[x].connectedEdges()[j].data('SegmentWeights'),
                                 selected: node.children()[x].connectedEdges()[j].data('selected')
                             }
                         })
@@ -939,12 +943,12 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 id: node.children()[x].data('id'),
                                 name: node.children()[x].data('name'),
                                 selected: node.children()[x].data('selected'),
-                                cnv: node.children()[x].data('cnv'),
-                                rna: node.children()[x].data('rna'),
-                                mut: node.children()[x].data('mut'),
+                                Cnv: node.children()[x].data('Cnv'),
+                                Rna: node.children()[x].data('Rna'),
+                                Mut: node.children()[x].data('Mut'),
                                 parent: node.data('id'),
-                                backgroundImage: node.children()[x].data('backgroundImage'),
-                                zIndex: node.children()[x].data('zIndex')
+                                BackgroundImage: node.children()[x].data('BackgroundImage'),
+                                ZIndex: node.children()[x].data('ZIndex')
                             },
                             position: {
                                 x: node.children()[x].position('x'),
@@ -963,11 +967,11 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 id: node.children()[x].data('id'),
                                 name: node.children()[x].data('name'),
                                 selected: node.children()[x].data('selected'),
-                                cnv: node.children()[x].data('cnv'),
-                                rna: node.children()[x].data('rna'),
-                                mut: node.children()[x].data('mut'),
-                                backgroundImage: node.children()[x].data('backgroundImage'),
-                                zIndex: node.children()[x].data('zIndex')
+                                Cnv: node.children()[x].data('Cnv'),
+                                Rna: node.children()[x].data('Rna'),
+                                Mut: node.children()[x].data('Mut'),
+                                BackgroundImage: node.children()[x].data('BackgroundImage'),
+                                ZIndex: node.children()[x].data('ZIndex')
                             },
                             position: {
                                 x: node.children()[x].position('x'),
@@ -989,9 +993,9 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 source: node.children()[x].connectedEdges()[j].data('source'),
                                 target: node.children()[x].connectedEdges()[j].data('target'),
                                 StartArrow: node.children()[x].connectedEdges()[j].data('StartArrow'),
-                                curveStyle: node.children()[x].connectedEdges()[j].data('curveStyle'),
-                                segmentDistances: node.children()[x].connectedEdges()[j].data('segmentDistances'),
-                                segmentWeights: node.children()[x].connectedEdges()[j].data('segmentWeights'),
+                                CurveStyle: node.children()[x].connectedEdges()[j].data('CurveStyle'),
+                                SegmentDistances: node.children()[x].connectedEdges()[j].data('SegmentDistances'),
+                                SegmentWeights: node.children()[x].connectedEdges()[j].data('SegmentWeights'),
                                 selected: node.children()[x].connectedEdges()[j].data('selected')
                             }
                         })
@@ -1013,12 +1017,12 @@ var VQI_PathwayEditorGUI = function (parent) {
                     id: node.data('id'),
                     name: node.data('name'),
                     selected: node.data('selected'),
-                    cnv: node.data('cnv'),
-                    rna: node.data('rna'),
-                    mut: node.data('mut'),
+                    Cnv: node.data('Cnv'),
+                    Rna: node.data('Rna'),
+                    Mut: node.data('Mut'),
                     parent: node.data('parent'),
-                    backgroundImage: node.data('backgroundImage'),
-                    zIndex: node.data('zIndex')
+                    BackgroundImage: node.data('BackgroundImage'),
+                    ZIndex: node.data('ZIndex')
                 },
                 position: {
                     x: node.position('x'),
@@ -1038,9 +1042,9 @@ var VQI_PathwayEditorGUI = function (parent) {
                         source: node.connectedEdges()[j].data('source'),
                         target: node.connectedEdges()[j].data('target'),
                         StartArrow: node.connectedEdges()[j].data('StartArrow'),
-                        curveStyle: node.connectedEdges()[j].data('curveStyle'),
-                        segmentDistances: node.connectedEdges()[j].data('segmentDistances'),
-                        segmentWeights: node.connectedEdges()[j].data('segmentWeights'),
+                        CurveStyle: node.connectedEdges()[j].data('CurveStyle'),
+                        SegmentDistances: node.connectedEdges()[j].data('SegmentDistances'),
+                        SegmentWeights: node.connectedEdges()[j].data('SegmentWeights'),
                         selected: node.connectedEdges()[j].data('selected')
                     }
                 })
@@ -1089,8 +1093,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     id: "n" + nodeCounter,
                     name: "n" + nodeCounter,
                     selected: false,
-                    backgroundImage: "",
-                    zIndex: 0
+                    BackgroundImage: "",
+                    ZIndex: 0
                 },
                 position: {
                     x: 500,
@@ -1112,12 +1116,12 @@ var VQI_PathwayEditorGUI = function (parent) {
                             id: selectedForEditNodes[i].data('id'),
                             name: selectedForEditNodes[i].data('name'),
                             selected: selectedForEditNodes[i].data('selected'),
-                            cnv: selectedForEditNodes[i].data('cnv'),
-                            rna: selectedForEditNodes[i].data('rna'),
-                            mut: selectedForEditNodes[i].data('mut'),
+                            Cnv: selectedForEditNodes[i].data('Cnv'),
+                            Rna: selectedForEditNodes[i].data('Rna'),
+                            Mut: selectedForEditNodes[i].data('Mut'),
                             parent: "n" + nodeCounter,
-                            backgroundImage: selectedForEditNodes[i].data('backgroundImage'),
-                            zIndex: selectedForEditNodes[i].data('zIndex')
+                            BackgroundImage: selectedForEditNodes[i].data('BackgroundImage'),
+                            ZIndex: selectedForEditNodes[i].data('ZIndex')
 
                         },
                         position: {
@@ -1138,9 +1142,9 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 source: selectedForEditNodes[i].connectedEdges()[j].data('source'),
                                 target: selectedForEditNodes[i].connectedEdges()[j].data('target'),
                                 StartArrow: selectedForEditNodes[i].connectedEdges()[j].data('StartArrow'),
-                                curveStyle: selectedForEditNodes[i].connectedEdges()[j].data('curveStyle'),
-                                segmentDistances: selectedForEditNodes[i].connectedEdges()[j].data('segmentDistances'),
-                                segmentWeights: selectedForEditNodes[i].connectedEdges()[j].data('segmentWeights'),
+                                CurveStyle: selectedForEditNodes[i].connectedEdges()[j].data('CurveStyle'),
+                                SegmentDistances: selectedForEditNodes[i].connectedEdges()[j].data('SegmentDistances'),
+                                SegmentWeights: selectedForEditNodes[i].connectedEdges()[j].data('SegmentWeights'),
                                 selected: selectedForEditNodes[i].connectedEdges()[j].data('selected')
                             }
                         })
@@ -1382,26 +1386,26 @@ var VQI_PathwayEditorGUI = function (parent) {
         }
 
         function edgeEnableSegmentedStyle() {
-            var segmentDistances = document.getElementById(parent + "-segment-distances").value;
-            var segmentWeights = document.getElementById(parent + "-segment-weights").value;
+            var SegmentDistances = document.getElementById(parent + "-segment-distances").value;
+            var SegmentWeights = document.getElementById(parent + "-segment-weights").value;
             selectedForEditEdges.style('curve-style', 'segments');
-            selectedForEditEdges.style('segment-distances', segmentDistances);
-            selectedForEditEdges.style('segment-weights', segmentWeights);
-            selectedForEditEdges.data('curveStyle', 'segments');
-            selectedForEditEdges.data('segmentDistances', segmentDistances);
-            selectedForEditEdges.data('segmentWeights', segmentWeights);
+            selectedForEditEdges.style('segment-distances', SegmentDistances);
+            selectedForEditEdges.style('segment-weights', SegmentWeights);
+            selectedForEditEdges.data('CurveStyle', 'segments');
+            selectedForEditEdges.data('SegmentDistances', SegmentDistances);
+            selectedForEditEdges.data('SegmentWeights', SegmentWeights);
             saveState();
         }
 
         function edgeDisableSegmentedStyle() {
             selectedForEditEdges.style('curve-style', 'bezier');
-            selectedForEditEdges.data('curveStyle', 'bezier');
+            selectedForEditEdges.data('CurveStyle', 'bezier');
             saveState();
         }
 
         function moveElementtoBackground(event) {
             selectedForEditNodes.style("z-index", 0);
-            selectedForEditNodes.data("zIndex", 0);
+            selectedForEditNodes.data("ZIndex", 0);
             selectedForEditEdges.style("z-index", 0);
             selectedForEditEdges.data("zOrder", 0);
             saveState();
@@ -1410,7 +1414,7 @@ var VQI_PathwayEditorGUI = function (parent) {
         function moveElementtoForeground(event) {
             highestZOrder++;
             selectedForEditNodes.style("z-index", highestZOrder);
-            selectedForEditNodes.data("zIndex", highestZOrder);
+            selectedForEditNodes.data("ZIndex", highestZOrder);
             selectedForEditEdges.style("z-index", highestZOrder);
             selectedForEditEdges.data("zOrder", highestZOrder);
             saveState();
@@ -1418,7 +1422,7 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         function removeBackgroundImageOnNode(event) {
             selectedForEditNodes.removeStyle("background-image");
-            selectedForEditNodes.data("backgroundImage", "");
+            selectedForEditNodes.data("BackgroundImage", "");
             saveState();
         }
 
@@ -1432,7 +1436,7 @@ var VQI_PathwayEditorGUI = function (parent) {
         function onBackgroundImageReaderLoad() {
             var img = event.target.result;
             selectedForEditNodes.data('Type', "image");
-            selectedForEditNodes.data("backgroundImage", img);
+            selectedForEditNodes.data("BackgroundImage", img);
             selectedForEditNodes.style("background-image", img);
             saveState();
         }
@@ -1487,8 +1491,8 @@ var VQI_PathwayEditorGUI = function (parent) {
 								id: "n" + nodeCounter,
 								name: names[j],
 								selected: false,
-								backgroundImage: "",
-								zIndex: 0,
+								BackgroundImage: "",
+								ZIndex: 0,
 								parent: selectedForEditNodes[i].data("id")
 								
 							},
@@ -1507,21 +1511,21 @@ var VQI_PathwayEditorGUI = function (parent) {
 			}	
         }
 
-        function editNodeMUT() {
-            var mut = document.getElementById(parent + "-mut").value;
-            selectedForEditNodes.data('mut', mut);
+        function editNodeMut() {
+            var Mut = document.getElementById(parent + "-Mut").value;
+            selectedForEditNodes.data('Mut', Mut);
             saveState();
         }
 
-        function editNodeCNV() {
-            var cnv = document.getElementById(parent + "-cnv").value;
-            selectedForEditNodes.data('cnv', cnv);
+        function editNodeCnv() {
+            var Cnv = document.getElementById(parent + "-Cnv").value;
+            selectedForEditNodes.data('Cnv', Cnv);
             saveState();
         }
 
-        function editNodeRNA() {
-            var rna = document.getElementById(parent + "-rna").value;
-            selectedForEditNodes.data('cnv', rna);
+        function editNodeRna() {
+            var Rna = document.getElementById(parent + "-Rna").value;
+            selectedForEditNodes.data('Cnv', Rna);
             saveState();
         }
 		
@@ -1562,7 +1566,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                 pattern: JSON.stringify(coloredNodes)
             }, function (data) {
                 if (data == "[]")
-                    data = '{"X1":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X2":{"percentage":0.33333,"rna_distance":30.44444,"cnv_distance":0,"mut_distance":0},"X9":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X29":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X24":{"percentage":0.33333,"rna_distance":36,"cnv_distance":0,"mut_distance":0},"X34":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X38":{"percentage":0.33333,"rna_distance":30.44444,"cnv_distance":0,"mut_distance":0},"X40":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X45":{"percentage":0.66667,"rna_distance":36,"cnv_distance":0,"mut_distance":0},"X46":{"percentage":0.66667,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X48":{"percentage":1,"rna_distance":36,"cnv_distance":0,"mut_distance":0},"X53":{"percentage":1,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X59":{"percentage":0.66667,"rna_distance":36,"cnv_distance":0,"mut_distance":0},"X156":{"percentage":0.33333,"rna_distance":0,"cnv_distance":0,"mut_distance":0},"X15":{"percentage":0.33333,"rna_distance":0,"cnv_distance":0,"mut_distance":2},"X22":{"percentage":0.33333,"rna_distance":0,"cnv_distance":0,"mut_distance":0}}'
+                    data = '{"X1":{"percentage":0.66667,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0},"X2":{"percentage":0.33333,"Rna_distance":30.44444,"Cnv_distance":0,"Mut_distance":0},"X9":{"percentage":0.66667,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0},"X29":{"percentage":0.66667,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0},"X24":{"percentage":0.33333,"Rna_distance":36,"Cnv_distance":0,"Mut_distance":0},"X34":{"percentage":0.66667,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0},"X38":{"percentage":0.33333,"Rna_distance":30.44444,"Cnv_distance":0,"Mut_distance":0},"X40":{"percentage":0.66667,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0},"X45":{"percentage":0.66667,"Rna_distance":36,"Cnv_distance":0,"Mut_distance":0},"X46":{"percentage":0.66667,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0},"X48":{"percentage":1,"Rna_distance":36,"Cnv_distance":0,"Mut_distance":0},"X53":{"percentage":1,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0},"X59":{"percentage":0.66667,"Rna_distance":36,"Cnv_distance":0,"Mut_distance":0},"X156":{"percentage":0.33333,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0},"X15":{"percentage":0.33333,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":2},"X22":{"percentage":0.33333,"Rna_distance":0,"Cnv_distance":0,"Mut_distance":0}}'
                 var array = data.split("},");
                 for (var i = 0; i < array.length; i++) {
                     array[i] = array[i].split(":{");
@@ -1583,24 +1587,24 @@ var VQI_PathwayEditorGUI = function (parent) {
 
                     var name = row.insertCell(0)
                     var percentage = row.insertCell(1);
-                    var rnaDistance = row.insertCell(2);
-                    var cnvDistance = row.insertCell(3);
-                    var mutDistance = row.insertCell(4);
+                    var RnaDistance = row.insertCell(2);
+                    var CnvDistance = row.insertCell(3);
+                    var MutDistance = row.insertCell(4);
 
                     // Add some text to the new cells:
 
                     if (n == 0) {
                         name.innerHTML = "<i><h3>name</h3></i>";
                         percentage.innerHTML = "<i><h3>percentage</h3></i>";
-                        rnaDistance.innerHTML = "<i><h3>rna</h3></i>";
-                        cnvDistance.innerHTML = "<i><h3>cnv</h3></i>";
-                        mutDistance.innerHTML = "<i><h3>mut</h3></i>";
+                        RnaDistance.innerHTML = "<i><h3>Rna</h3></i>";
+                        CnvDistance.innerHTML = "<i><h3>Cnv</h3></i>";
+                        MutDistance.innerHTML = "<i><h3>Mut</h3></i>";
                     } else {
                         name.innerHTML = array[n - 1][0];
                         percentage.innerHTML = array[n - 1][1][0];
-                        rnaDistance.innerHTML = array[n - 1][1][1];
-                        cnvDistance.innerHTML = array[n - 1][1][2];
-                        mutDistance.innerHTML = array[n - 1][1][3];
+                        RnaDistance.innerHTML = array[n - 1][1][1];
+                        CnvDistance.innerHTML = array[n - 1][1][2];
+                        MutDistance.innerHTML = array[n - 1][1][3];
                     }
                 }
                 //document.getElementById(parent + "-dialog-table").innerHTML = data;
@@ -1665,7 +1669,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-color': 'black',
                     'border-style': 'solid',
                     'border-width': 1
-                }).selector('node[Type="rna"]').css({
+                }).selector('node[Type="Rna"]').css({
                     'shape': 'circle',
                     'radius': 5,
                     'color': 'black',
@@ -1674,7 +1678,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-color': 'black',
                     'border-style': 'dotted',
                     'border-width': 1
-                }).selector('node[Type="microrna"]').css({
+                }).selector('node[Type="microRna"]').css({
                     'shape': 'circle',
                     'radius': 5,
                     'color': 'black',
@@ -1873,19 +1877,19 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-color': 'black',
                     'border-style': 'solid',
                     'border-width': 1
-                }).selector('node[rna < 0]').css({
+                }).selector('node[Rna < 0]').css({
                     'background-color': 'lightgreen',
                     'color': 'black'
-                }).selector('node[rna > 0]').css({
+                }).selector('node[Rna > 0]').css({
                     'background-color': 'lightsalmon',
                     'color': 'black'
-                }).selector('node[cnv < 0]').css({
+                }).selector('node[Cnv < 0]').css({
                     'border-color': 'mediumpurple',
                     'border-width': 3
-                }).selector('node[cnv > 0]').css({
+                }).selector('node[Cnv > 0]').css({
                     'border-color': 'red',
                     'border-width': 3
-                }).selector('node[mut > 0]').css({
+                }).selector('node[Mut > 0]').css({
                     'shadow-opacity': 1,
                     'shadow-color': 'red',
                     'border-width': 1
@@ -2163,7 +2167,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-select-geneProduct").disabled = false;
                     document.getElementById(parent + "-select-protein").disabled = false;
                     document.getElementById(parent + "-select-rna").disabled = false;
-                    document.getElementById(parent + "-select-mircoRNA").disabled = false;
+                    document.getElementById(parent + "-select-mircoRna").disabled = false;
                     document.getElementById(parent + "-select-kinase").disabled = false;
                     document.getElementById(parent + "-select-ligand").disabled = false;
                     document.getElementById(parent + "-select-receptor").disabled = false;
@@ -2188,7 +2192,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-select-geneProduct").disabled = true;
                     document.getElementById(parent + "-select-protein").disabled = true;
                     document.getElementById(parent + "-select-rna").disabled = true;
-                    document.getElementById(parent + "-select-mircoRNA").disabled = true;
+                    document.getElementById(parent + "-select-mircoRna").disabled = true;
                     document.getElementById(parent + "-select-kinase").disabled = true;
                     document.getElementById(parent + "-select-ligand").disabled = true;
                     document.getElementById(parent + "-select-receptor").disabled = true;
@@ -2211,20 +2215,20 @@ var VQI_PathwayEditorGUI = function (parent) {
                 document.getElementById(parent + "-width").value = target.data('Width');
                 document.getElementById(parent + "-height").value = target.data('Height');
                 document.getElementById(parent + "-type-node").value = target.data('Type');
-                if (typeof (target.data('rna')) != "undefined")
-                    document.getElementById(parent + "-rna").value = target.data('rna');
+                if (typeof (target.data('Rna')) != "undefined")
+                    document.getElementById(parent + "-Rna").value = target.data('Rna');
                 else
-                    document.getElementById(parent + "-rna").value = '0';
+                    document.getElementById(parent + "-Rna").value = '0';
 
-                if (typeof (target.data('cnv')) != "undefined")
-                    document.getElementById(parent + "-cnv").value = target.data('cnv');
+                if (typeof (target.data('Cnv')) != "undefined")
+                    document.getElementById(parent + "-Cnv").value = target.data('Cnv');
                 else
-                    document.getElementById(parent + "-cnv").value = '0';
+                    document.getElementById(parent + "-Cnv").value = '0';
 
-                if (typeof (target.data('mut')) != "undefined")
-                    document.getElementById(parent + "-mut").value = target.data('mut');
+                if (typeof (target.data('Mut')) != "undefined")
+                    document.getElementById(parent + "-Mut").value = target.data('Mut');
                 else
-                    document.getElementById(parent + "-mut").value = '0';
+                    document.getElementById(parent + "-Mut").value = '0';
             },
             autoOpen: false,
             height: 300,
@@ -2341,9 +2345,9 @@ var VQI_PathwayEditorGUI = function (parent) {
         document.getElementById(parent + '-height-apply').addEventListener('click', editNodeHeight);
         document.getElementById(parent + '-width-apply').addEventListener('click', editNodeWidth);
         document.getElementById(parent + '-type-node-apply').addEventListener('click', editNodeType);
-        document.getElementById(parent + '-rna-apply').addEventListener('click', editNodeRNA);
-        document.getElementById(parent + '-cnv-apply').addEventListener('click', editNodeCNV);
-        document.getElementById(parent + '-mut-apply').addEventListener('click', editNodeMUT);
+        document.getElementById(parent + '-Rna-apply').addEventListener('click', editNodeRna);
+        document.getElementById(parent + '-Cnv-apply').addEventListener('click', editNodeCnv);
+        document.getElementById(parent + '-Mut-apply').addEventListener('click', editNodeMut);
 
         //edit edge(s)
         document.getElementById(parent + '-edge-move-to-background').addEventListener('click', moveElementtoBackground);
@@ -2384,13 +2388,13 @@ var VQI_PathwayEditorGUI = function (parent) {
         document.getElementById(parent + '-search-node-name').addEventListener('keyup', search);
         document.getElementById(parent + '-search-node-name').addEventListener('focusout', exitSearch);
 
-        //external GUI functions
+        //exteRnal GUI functions
 
-        self.loadPathwayExternal = function (id) {
+        self.loadPathwayExteRnal = function (id) {
             loadPathway(id);
         }
 
-        self.sprayColorExternal = function (list) {
+        self.sprayColorExteRnal = function (list) {
             sprayColor(list);
         }
 
