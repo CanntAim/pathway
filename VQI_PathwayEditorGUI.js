@@ -179,7 +179,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += " 		<form>";
     strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-direction\">change direction:<\/label>";
-    strVar += "      			<input type=\"checkbox\" class=\"form-control\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
+    strVar += "      			<input style=\"width: 30px\" type=\"checkbox\" class=\"form-control\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
     strVar += " 				<input id=\"" + parent + "-direction-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
     strVar += "    			<div class =\"form-group\">";
@@ -232,24 +232,24 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += " </div>";
     strVar += "	<div id=\"" + parent + "-dialog-form-node\" title=\"Edit node(s)\">";
     strVar += " 		<form>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-gene-name\">gene-name:<\/label>";
-    strVar += "      			<input type=\"text\" name=\"" + parent + "-gene-name\" class=\"form-control\" id=\"" + parent + "-gene-name\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-    strVar += " 				<input id=\"" + parent + "-gene-name-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-gene-name\">gene-name:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" name=\"" + parent + "-gene-name\" class=\"form-control col-md-4\" id=\"" + parent + "-gene-name\" value=\"\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-gene-name-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-height\">height:<\/label>";
-    strVar += "      			<input type=\"text\" name=\"" + parent + "-height\" id=\"" + parent + "-height\" class=\"form-control\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-    strVar += " 				<input id=\"" + parent + "-height-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-height\">height:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" name=\"" + parent + "-height\" id=\"" + parent + "-height\" class=\"form-control col-md-4\" value=\"\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-height-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-width\">width:<\/label>";
-    strVar += "      			<input type=\"text\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" class=\"form-control\" value=\"\" class=\"text ui-widget-content ui-corner-all\"><\/input>";
-    strVar += " 				<input id=\"" + parent + "-width-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-width\">width:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" name=\"" + parent + "-width\" id=\"" + parent + "-width\" class=\"form-control col-md-4\" value=\"\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-width-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-type-node\">type:<\/label>";
-    strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" class=\"form-control\" name=\"" + parent + "-type-node\">";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-type-node\">type:<\/label>";
+    strVar += "      			<select style=\"width: 150px\" id=\"" + parent + "-type-node\" class=\"form-control col-md-4\" name=\"" + parent + "-type-node\">";
     strVar += "  					<option id=\"" + parent + "-select-bundleOne\" selected=\"\">bundleone<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-bundleTwo\">bundletwo<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-gene\">gene<\/option>";
@@ -275,38 +275,38 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "  					<option id=\"" + parent + "-select-rhomboid\">rhomboid<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-label\">label<\/option>";
     strVar += "					<\/select>";
-    strVar += " 				<input id=\"" + parent + "-type-node-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-type-node-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-Rna\">Rna:<\/label>";
-    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-Rna\" class=\"form-control\" name=\"" + parent + "-Rna\">";
-    strVar += " 				<input id=\"" + parent + "-Rna-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-rna\">Rna:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-rna\" class=\"form-control col-md-4\" name=\"" + parent + "-rna\">";
+    strVar += " 				<input id=\"" + parent + "-rna-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "					<label for=\"" + parent + "-Cnv\">Cnv:<\/label>";
-    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-Cnv\" class=\"form-control\" name=\"" + parent + "-Cnv\">";
-    strVar += " 				<input id=\"" + parent + "-Cnv-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "					<label class=\"col-md-4\" for=\"" + parent + "-cnv\">Cnv:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-cnv\" class=\"form-control col-md-4\" name=\"" + parent + "-cnv\">";
+    strVar += " 				<input id=\"" + parent + "-cnv-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "					<label for=\"" + parent + "-Mut\">Mut:<\/label>";
-    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-Mut\" class=\"form-control\" name=\"" + parent + "-Mut\">";
-    strVar += " 				<input id=\"" + parent + "-Mut-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "					<label class=\"col-md-4\" for=\"" + parent + "-mut\">Mut:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" class=\"form-control col-md-4\" name=\"" + parent + "-mut\">";
+    strVar += " 				<input id=\"" + parent + "-mut-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "    				<label for=\"" + parent + "-background-image\">Local Image File:<\/label>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "    				<label class=\"col-md-4\" for=\"" + parent + "-background-image\">Local Image File:<\/label>";
     strVar += "					<input id=\"" + parent + "-background-image\" value=\"Pick an Image File\" type=\"file\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "    				<label for=\"" + parent + "-background-image-remove\">Remove Background image:<\/label>";
-    strVar += "					<input id=\"" + parent + "-background-image-remove\" value=\"Remove\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "    				<label class=\"col-md-4\" for=\"" + parent + "-background-image-remove\">Remove Background image:<\/label>";
+    strVar += "					<input id=\"" + parent + "-background-image-remove\" value=\"Remove\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "    				<label for=\"" + parent + "-node-move-to-background\">Move to Background:<\/label>";
-    strVar += "    				<input id=\"" + parent + "-node-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "    				<label class=\"col-md-4\" for=\"" + parent + "-node-move-to-background\">Move to Background:<\/label>";
+    strVar += "    				<input id=\"" + parent + "-node-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "    				<label for=\"" + parent + "-node-move-to-foreground\">Move to Foreground:<\/label>";
-    strVar += "    				<input id=\"" + parent + "-node-move-to-foreground\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "    				<label class=\"col-md-4\" for=\"" + parent + "-node-move-to-foreground\">Move to Foreground:<\/label>";
+    strVar += "    				<input id=\"" + parent + "-node-move-to-foreground\" value=\"Move\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
     strVar += "  		<\/form>";
     strVar += "	<\/div>";
@@ -1512,19 +1512,19 @@ var VQI_PathwayEditorGUI = function (parent) {
         }
 
         function editNodeMut() {
-            var Mut = document.getElementById(parent + "-Mut").value;
+            var Mut = document.getElementById(parent + "-mut").value;
             selectedForEditNodes.data('Mut', Mut);
             saveState();
         }
 
         function editNodeCnv() {
-            var Cnv = document.getElementById(parent + "-Cnv").value;
+            var Cnv = document.getElementById(parent + "-cnv").value;
             selectedForEditNodes.data('Cnv', Cnv);
             saveState();
         }
 
         function editNodeRna() {
-            var Rna = document.getElementById(parent + "-Rna").value;
+            var Rna = document.getElementById(parent + "-rna").value;
             selectedForEditNodes.data('Cnv', Rna);
             saveState();
         }
@@ -2216,23 +2216,24 @@ var VQI_PathwayEditorGUI = function (parent) {
                 document.getElementById(parent + "-height").value = target.data('Height');
                 document.getElementById(parent + "-type-node").value = target.data('Type');
                 if (typeof (target.data('Rna')) != "undefined")
-                    document.getElementById(parent + "-Rna").value = target.data('Rna');
+                    document.getElementById(parent + "-rna").value = target.data('Rna');
                 else
-                    document.getElementById(parent + "-Rna").value = '0';
+                    document.getElementById(parent + "-rna").value = '0';
 
                 if (typeof (target.data('Cnv')) != "undefined")
-                    document.getElementById(parent + "-Cnv").value = target.data('Cnv');
+                    document.getElementById(parent + "-cnv").value = target.data('Cnv');
                 else
-                    document.getElementById(parent + "-Cnv").value = '0';
+                    document.getElementById(parent + "-cnv").value = '0';
 
                 if (typeof (target.data('Mut')) != "undefined")
-                    document.getElementById(parent + "-Mut").value = target.data('Mut');
+                    document.getElementById(parent + "-mut").value = target.data('Mut');
                 else
-                    document.getElementById(parent + "-Mut").value = '0';
+                    document.getElementById(parent + "-mut").value = '0';
             },
             autoOpen: false,
-            height: 300,
-            width: 350,
+            height: 500,
+            width: 600,
+			resizable: false,
             buttons: {
                 Cancel: function () {
                     dialogNode.dialog("close");
@@ -2345,9 +2346,9 @@ var VQI_PathwayEditorGUI = function (parent) {
         document.getElementById(parent + '-height-apply').addEventListener('click', editNodeHeight);
         document.getElementById(parent + '-width-apply').addEventListener('click', editNodeWidth);
         document.getElementById(parent + '-type-node-apply').addEventListener('click', editNodeType);
-        document.getElementById(parent + '-Rna-apply').addEventListener('click', editNodeRna);
-        document.getElementById(parent + '-Cnv-apply').addEventListener('click', editNodeCnv);
-        document.getElementById(parent + '-Mut-apply').addEventListener('click', editNodeMut);
+        document.getElementById(parent + '-rna-apply').addEventListener('click', editNodeRna);
+        document.getElementById(parent + '-cnv-apply').addEventListener('click', editNodeCnv);
+        document.getElementById(parent + '-mut-apply').addEventListener('click', editNodeMut);
 
         //edit edge(s)
         document.getElementById(parent + '-edge-move-to-background').addEventListener('click', moveElementtoBackground);
