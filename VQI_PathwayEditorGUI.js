@@ -4,7 +4,7 @@ var VQI_PathwayEditorGUI = function (parent) {
 //	var serverURL = "http://cardinal3.engr.uconn.edu/pathwayVisual/";
     var services = {};
 
-	services["pathwayFinderUrl"] = "http://bibci.engr.uconn.edu/puj07001/pathway_services/find_path_and_score/find_path_and_score.php";
+    services["pathwayFinderUrl"] = "http://bibci.engr.uconn.edu/puj07001/pathway_services/find_path_and_score/find_path_and_score.php";
     services['pathwayFinder'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
     services['pathwaySaver'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/updateDB_json.php';
     services['pathwayScorer'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/ScoreSystem/getScore.php';
@@ -19,11 +19,11 @@ var VQI_PathwayEditorGUI = function (parent) {
     // Globals
     var self = this;
     var nodeTypes = ["bundleone", "bundletwo", "gene", "geneproduct", "protein", "rna", "microrna", "kinase", "ligand", "receptor", "biologicalprocess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
-	var edgeLineTypes = ["line", "dashed","dotted"];
-	var arrowLineTypes = ["solid", "tbar", "arrow"];
+    var edgeLineTypes = ["line", "dashed", "dotted"];
+    var arrowLineTypes = ["solid", "tbar", "arrow"];
     var personId = "";
-	var pathName = "";
-	var states = [];
+    var pathName = "";
+    var states = [];
     var stateRecycle = [];
     var selectedForQueryNodes = [];
     var selectedForEditNodes = [];
@@ -33,7 +33,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     var coloredNodes = [];
     var edgeCounter = 0;
     var nodeCounter = 0;
-	var dupCounter = 0;
+    var dupCounter = 0;
     var loadCounts = 0;
     var target = 0;
     var header = "";
@@ -73,13 +73,13 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "					<li><input id=\"" + parent + "-bundle\" value=\"Bundle\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-unbundle\" value=\"Unbundle\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-expand\" value=\"Expand\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-collapse\" value=\"Collapse\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-expand-informative\" value=\"Expand Informative\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-collapse-informative\" value=\"Collapse Informative\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+    strVar += "					<li><input id=\"" + parent + "-collapse\" value=\"Collapse\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+    strVar += "					<li><input id=\"" + parent + "-expand-informative\" value=\"Expand Informative\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+    strVar += "					<li><input id=\"" + parent + "-collapse-informative\" value=\"Collapse Informative\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-duplicate-nodes\" value=\"Duplicate Nodes\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += " 				<li role=\"separator\" class=\"divider\"></li>";
-	strVar += "					<li><input id=\"" + parent + "-config-pathway\" value=\"Configure\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
-	strVar += "				<\/ul>";
+    strVar += "					<li><input id=\"" + parent + "-config-pathway\" value=\"Configure\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+    strVar += "				<\/ul>";
     strVar += "			</div>";
     strVar += " 	<\/li>";
     strVar += " 	<li style=\"margin: 2px\">";
@@ -87,7 +87,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "  			<button class=\"btn btn-primary dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\">Process<span class=\"caret\"><\/span><\/button>";
     strVar += "				<ul class=\"dropdown-menu\">";
     strVar += "					<li><input id=\"" + parent + "-findpath\" value=\"Find Pathway\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
-	strVar += "					<li><input id=\"" + parent + "-find-paths-all-drop\" value=\"Find All Pathways\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
+    strVar += "					<li><input id=\"" + parent + "-find-paths-all-drop\" value=\"Find All Pathways\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "					<li><input id=\"" + parent + "-find-object\" value=\"Find Object\" type=\"button\" class=\"btn btn-link disabled\"><\/input><\/li>";
     strVar += "				<\/ul>";
     strVar += "			</div>";
@@ -122,7 +122,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "				<td>Rna distance<\/td>";
     strVar += "				<td>Cnv distance<\/td>";
     strVar += "				<td>Mut distance<\/td>";
-	strVar += "			<\/tr>";
+    strVar += "			<\/tr>";
     strVar += "		<\/table>";
     strVar += "	<\/div>";
     strVar += " <div id=\"" + parent + "-dialog-form-save-as-pathway\" title=\"SaveAs\">";
@@ -143,12 +143,12 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "    		<\/fieldset>";
     strVar += " 		<\/form>";
     strVar += "	<\/div>";
-	strVar += " <div id=\"" + parent + "-dialog-form-configure-pathway\" title=\"Configure Pathway\">";
+    strVar += " <div id=\"" + parent + "-dialog-form-configure-pathway\" title=\"Configure Pathway\">";
     strVar += " 		<form role=\"form\">";
     strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-configure-person-id\">person-id:<\/label>";
     strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-configure-person-id\" id=\"" + parent + "-configure-person-id\"><br>";
-	strVar += " 				<input id=\"" + parent + "-apply-configure-person-id\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-apply-configure-person-id\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
     strVar += " 		<\/form>";
     strVar += "	<\/div>";
@@ -171,7 +171,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "      			<label for=\"" + parent + "-vid\">vid:<\/label>";
     strVar += " 				<input type=\"text\" class=\"form-control\" name=\"" + parent + "-vid\" id=\"" + parent + "-vid\"><br>";
     strVar += " 				<input id=\"" + parent + "-find-paths-all\" value=\"Find All\" type=\"button\" class=\"btn btn-link\"><\/input>";
-	strVar += " 				<input id=\"" + parent + "-find-paths-one\" value=\"Find\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-find-paths-one\" value=\"Find\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
     strVar += " 		<\/form>";
     strVar += "	<\/div>";
@@ -262,8 +262,8 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "  					<option id=\"" + parent + "-select-receptor\">receptor<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-biologicalProcess\">biologicalprocess<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-triangle\">triangle<\/option>";
-	strVar += "  					<option id=\"" + parent + "-select-rectangle\">rectangle<\/option>";
-	strVar += "  					<option id=\"" + parent + "-select-circle\">circle<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-rectangle\">rectangle<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-circle\">circle<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-ellipse\">ellipse<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-pentagon\">pentagon<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-hexagon\">hexagon<\/option>";
@@ -327,8 +327,8 @@ var VQI_PathwayEditorGUI = function (parent) {
             var data = '{"format_version" : "1.0","generated_by" : "cytoscape-3.2.1","target_cytoscapejs_version" : "~2.1","data" :{"shared_name":"","ID":"","BOARDWIDTH":"","BOARDHEIGHT":"","LICENSE":"CC BY 2.0","ORGANISM":"","NAME":"","INSTRUCTION":"","AUTHOR":"","VERSION":"","PATHWAY_TYPE":"original","SUID":205,"__Annotations":[],"selected":true},"elements" : {"nodes" :[],"edges" :[]}}'
             var obj = JSON.parse(data);
             var title = document.getElementById(parent + "-pathway-title");
-			pathName = name;
-            title.innerHTML = pathName+" <small>"+personId+"</small>";
+            pathName = name;
+            title.innerHTML = pathName + " <small>" + personId + "</small>";
             removeHeroUnit();
             setElements(obj);
             save(obj, name);
@@ -346,8 +346,8 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         function unFocus() {
             var cy = $('#' + parent + '-cy').cytoscape('get');
-			cy.$('node').unselect();
-			cy.$('edge').unselect();
+            cy.$('node').unselect();
+            cy.$('edge').unselect();
             cy.$('node').removeClass('unfocused').removeClass('focused');
             cy.$('edge').removeClass('unfocused').removeClass('focused');
         }
@@ -374,64 +374,64 @@ var VQI_PathwayEditorGUI = function (parent) {
             reader.readAsText(event.target.files[0]);
             removeHeroUnit();
         }
-		
-		function collapseBundleInformative(event) {
+
+        function collapseBundleInformative(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             for (var i = 0; i < selectedForEditNodes.size(); i++) {
                 if (selectedForEditNodes[i].isParent() && !selectedForEditNodes[i].descendants()[0].hasClass('collapsed_informative')) {
-					var staticOldPosX = selectedForEditNodes[i].position('x');
-					var staticOldPosY = selectedForEditNodes[i].position('y');
-					selectedForEditNodes[i].descendants().addClass('collapsed_informative');
-					selectedForEditNodes[i].descendants().unselectify();
-					var xGap=0;
-					var yGap=0;
-					for(var j = 0; selectedForEditNodes[i].descendants().length > j; j++){
-						if(j%5 == 0){
-							xGap=0
-							yGap+=10
-						}else{
-							xGap+=10
-						}
-						var newPositionX = staticOldPosX + xGap;
-						var newPositionY = staticOldPosY + yGap;
-						selectedForEditNodes[i].descendants()[j].data('oldPositionX',selectedForEditNodes[i].descendants()[j].position('x'));
-						selectedForEditNodes[i].descendants()[j].data('oldPositionY',selectedForEditNodes[i].descendants()[j].position('y'));
-						selectedForEditNodes[i].descendants()[j].position({
-							x: newPositionX,
-							y: newPositionY
-						});
-					}
+                    var staticOldPosX = selectedForEditNodes[i].position('x');
+                    var staticOldPosY = selectedForEditNodes[i].position('y');
+                    selectedForEditNodes[i].descendants().addClass('collapsed_informative');
+                    selectedForEditNodes[i].descendants().unselectify();
+                    var xGap = 0;
+                    var yGap = 0;
+                    for (var j = 0; selectedForEditNodes[i].descendants().length > j; j++) {
+                        if (j % 5 == 0) {
+                            xGap = 0
+                            yGap += 10
+                        } else {
+                            xGap += 10
+                        }
+                        var newPositionX = staticOldPosX + xGap;
+                        var newPositionY = staticOldPosY + yGap;
+                        selectedForEditNodes[i].descendants()[j].data('oldPositionX', selectedForEditNodes[i].descendants()[j].position('x'));
+                        selectedForEditNodes[i].descendants()[j].data('oldPositionY', selectedForEditNodes[i].descendants()[j].position('y'));
+                        selectedForEditNodes[i].descendants()[j].position({
+                            x: newPositionX,
+                            y: newPositionY
+                        });
+                    }
                 }
             }
             saveState();
-		}
-		
-		function expandBundleInformative(event) {
+        }
+
+        function expandBundleInformative(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             for (var i = 0; i < selectedForEditNodes.size(); i++) {
                 if (selectedForEditNodes[i].isParent() && selectedForEditNodes[i].descendants()[0].hasClass('collapsed_informative')) {
-					selectedForEditNodes[i].descendants().removeClass('collapsed_informative');
-					selectedForEditNodes[i].descendants().selectify();
-					for(var j = 0; selectedForEditNodes[i].descendants().length > j; j++){
-						selectedForEditNodes[i].descendants()[j].position('x',selectedForEditNodes[i].descendants()[j].data('oldPositionX'));
-						selectedForEditNodes[i].descendants()[j].position('y',selectedForEditNodes[i].descendants()[j].data('oldPositionY'));
-					}
+                    selectedForEditNodes[i].descendants().removeClass('collapsed_informative');
+                    selectedForEditNodes[i].descendants().selectify();
+                    for (var j = 0; selectedForEditNodes[i].descendants().length > j; j++) {
+                        selectedForEditNodes[i].descendants()[j].position('x', selectedForEditNodes[i].descendants()[j].data('oldPositionX'));
+                        selectedForEditNodes[i].descendants()[j].position('y', selectedForEditNodes[i].descendants()[j].data('oldPositionY'));
+                    }
                 }
             }
             saveState();
-		}
+        }
 
         function collapseBundle(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             for (var i = 0; i < selectedForEditNodes.size(); i++) {
                 if (selectedForEditNodes[i].isParent() && !selectedForEditNodes[i].descendants()[0].hasClass('collapsed')) {
                     selectedForEditNodes[i].descendants().addClass('collapsed');
-					selectedForEditNodes[i].descendants().unselectify();
-					for(var j = 0; selectedForEditNodes[i].descendants().length > j; j++){
-						selectedForEditNodes[i].descendants()[j].data('oldPositionX',selectedForEditNodes[i].descendants()[j].position('x'));
-						selectedForEditNodes[i].descendants()[j].data('oldPositionY',selectedForEditNodes[i].descendants()[j].position('y'));
+                    selectedForEditNodes[i].descendants().unselectify();
+                    for (var j = 0; selectedForEditNodes[i].descendants().length > j; j++) {
+                        selectedForEditNodes[i].descendants()[j].data('oldPositionX', selectedForEditNodes[i].descendants()[j].position('x'));
+                        selectedForEditNodes[i].descendants()[j].data('oldPositionY', selectedForEditNodes[i].descendants()[j].position('y'));
                     }
-					selectedForEditNodes[i].descendants().positions({
+                    selectedForEditNodes[i].descendants().positions({
                         x: selectedForEditNodes[i].position('x') + selectedForEditNodes[i].width() / 2,
                         y: selectedForEditNodes[i].position('y') + selectedForEditNodes[i].height() / 2
                     });
@@ -439,17 +439,17 @@ var VQI_PathwayEditorGUI = function (parent) {
             }
             saveState();
         }
-		
+
         function expandBundle(event) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             for (var i = 0; i < selectedForEditNodes.size(); i++) {
                 if (selectedForEditNodes[i].isParent() && selectedForEditNodes[i].descendants()[0].hasClass('collapsed')) {
                     selectedForEditNodes[i].descendants().removeClass('collapsed');
-					selectedForEditNodes[i].descendants().selectify();
-					for(var j = 0; selectedForEditNodes[i].descendants().length > j; j++){
-						selectedForEditNodes[i].descendants()[j].position('x',selectedForEditNodes[i].descendants()[j].data('oldPositionX'));
-						selectedForEditNodes[i].descendants()[j].position('y',selectedForEditNodes[i].descendants()[j].data('oldPositionY'));
-					}
+                    selectedForEditNodes[i].descendants().selectify();
+                    for (var j = 0; selectedForEditNodes[i].descendants().length > j; j++) {
+                        selectedForEditNodes[i].descendants()[j].position('x', selectedForEditNodes[i].descendants()[j].data('oldPositionX'));
+                        selectedForEditNodes[i].descendants()[j].position('y', selectedForEditNodes[i].descendants()[j].data('oldPositionY'));
+                    }
                 }
             }
             saveState();
@@ -459,9 +459,9 @@ var VQI_PathwayEditorGUI = function (parent) {
             var reader = new FileReader();
             reader.onload = onColoringReaderLoad;
 //			personId = event.target.files[0].name.substring(0,event.target.files[0].name.indexOf("."))
-			personId = event.target.files[0].name;
-			var title = document.getElementById(parent + "-pathway-title");
-            title.innerHTML = pathName+" <small>"+personId+"</small>";
+            personId = event.target.files[0].name;
+            var title = document.getElementById(parent + "-pathway-title");
+            title.innerHTML = pathName + " <small>" + personId + "</small>";
             reader.readAsText(event.target.files[0]);
             saveState();
         }
@@ -479,8 +479,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (typeof (cy.$("node")[i].data("ZIndex")) != "undefined") {
                     cy.$("node")[i].style("z-index", cy.$("node")[i].data("ZIndex"));
                 }
-				
-				if (cy.$("node")[i].isParent() && (cy.$("node")[i].data("Type") != "bundleone" || cy.$("node")[i].data("Type") != "bundletwo")) {
+
+                if (cy.$("node")[i].isParent() && (cy.$("node")[i].data("Type") != "bundleone" || cy.$("node")[i].data("Type") != "bundletwo")) {
                     cy.$("node")[i].data("Type", "bundleone");
                 }
             }
@@ -489,8 +489,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (typeof (cy.$("edge")[i].data("CurveStyle")) != "undefined") {
                     cy.$("edge")[i].style("curve-style", cy.$("edge")[i].data("CurveStyle"));
                 }
-				
-				if (typeof (cy.$("edge")[i].data("zOrder")) != "undefined") {
+
+                if (typeof (cy.$("edge")[i].data("zOrder")) != "undefined") {
                     cy.$("edge")[i].style("z-index", cy.$("edge")[i].data("zOrder"));
                 }
 
@@ -519,12 +519,12 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (typeof (obj.elements.nodes[i].data.ZIndex) == "undefined") {
                     obj.elements.nodes[i].data.ZIndex = 0;
                 }
-				
+
                 if (typeof (obj.elements.nodes[i].data.Type) == "undefined" || nodeTypes.indexOf(obj.elements.nodes[i].data.Type.toLowerCase()) == -1) {
                     obj.elements.nodes[i].data.Type = "label";
                 } else {
-					obj.elements.nodes[i].data.Type = obj.elements.nodes[i].data.Type.toLowerCase();
-				}
+                    obj.elements.nodes[i].data.Type = obj.elements.nodes[i].data.Type.toLowerCase();
+                }
 
                 if (typeof (obj.elements.nodes[i].data.Rna) == "undefined" || isNaN(obj.elements.nodes[i].data.Rna)) {
                     obj.elements.nodes[i].data.Rna = 0;
@@ -537,20 +537,20 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (typeof (obj.elements.nodes[i].data.Mut) == "undefined" || isNaN(obj.elements.nodes[i].data.Mut)) {
                     obj.elements.nodes[i].data.Mut = 0;
                 }
-				
-				if (typeof (obj.elements.nodes[i].data.oldPositionX) == "undefined" || isNaN(obj.elements.nodes[i].data.oldPositionX)) {
+
+                if (typeof (obj.elements.nodes[i].data.oldPositionX) == "undefined" || isNaN(obj.elements.nodes[i].data.oldPositionX)) {
                     obj.elements.nodes[i].data.oldPositionX = 0;
                 }
-				
-				if (typeof (obj.elements.nodes[i].data.oldPositionY) == "undefined" || isNaN(obj.elements.nodes[i].data.oldPositionY)) {
+
+                if (typeof (obj.elements.nodes[i].data.oldPositionY) == "undefined" || isNaN(obj.elements.nodes[i].data.oldPositionY)) {
                     obj.elements.nodes[i].data.oldPositionY = 0;
                 }
-				
-				if (typeof (obj.elements.nodes[i].data.Width) == "undefined" || isNaN(obj.elements.nodes[i].data.Width)) {
+
+                if (typeof (obj.elements.nodes[i].data.Width) == "undefined" || isNaN(obj.elements.nodes[i].data.Width)) {
                     obj.elements.nodes[i].data.Width = 50;
                 }
-				
-				if (typeof (obj.elements.nodes[i].data.Height) == "undefined" || isNaN(obj.elements.nodes[i].data.Height)) {
+
+                if (typeof (obj.elements.nodes[i].data.Height) == "undefined" || isNaN(obj.elements.nodes[i].data.Height)) {
                     obj.elements.nodes[i].data.Height = 30;
                 }
             }
@@ -561,18 +561,18 @@ var VQI_PathwayEditorGUI = function (parent) {
                     if (number > edgeCounter)
                         edgeCounter = number + 1;
                 }
-				
-				if (typeof (obj.elements.edges[i].data.Type) == "undefined" || edgeLineTypes.indexOf(obj.elements.edges[i].data.Type.toLowerCase()) == -1) {
+
+                if (typeof (obj.elements.edges[i].data.Type) == "undefined" || edgeLineTypes.indexOf(obj.elements.edges[i].data.Type.toLowerCase()) == -1) {
                     obj.elements.edges[i].data.Type = "solid";
                 } else {
-					obj.elements.edges[i].data.Type = obj.elements.edges[i].data.Type.toLowerCase();
-				}
-				
-				if (typeof (obj.elements.edges[i].data.EndArrow) == "undefined" || arrowLineTypes.indexOf(obj.elements.edges[i].data.EndArrow.toLowerCase()) == -1) {
+                    obj.elements.edges[i].data.Type = obj.elements.edges[i].data.Type.toLowerCase();
+                }
+
+                if (typeof (obj.elements.edges[i].data.EndArrow) == "undefined" || arrowLineTypes.indexOf(obj.elements.edges[i].data.EndArrow.toLowerCase()) == -1) {
                     obj.elements.edges[i].data.EndArrow = "line";
                 } else {
-					obj.elements.edges[i].data.EndArrow = obj.elements.edges[i].data.EndArrow.toLowerCase();
-				}
+                    obj.elements.edges[i].data.EndArrow = obj.elements.edges[i].data.EndArrow.toLowerCase();
+                }
             }
         }
 
@@ -608,8 +608,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                 removeHeroUnit();
                 var obj = JSON.parse(data);
                 var title = document.getElementById(parent + "-pathway-title");
-                pathName= obj.data.NAME;
-				title.innerHTML = pathName+" <small>"+personId+"</small>";
+                pathName = obj.data.NAME;
+                title.innerHTML = pathName + " <small>" + personId + "</small>";
                 setElements(obj);
             });
         }
@@ -656,8 +656,8 @@ var VQI_PathwayEditorGUI = function (parent) {
         function onPathwayReaderLoad(event) {
             var obj = JSON.parse(event.target.result);
             var title = document.getElementById(parent + "-pathway-title");
-			pathName = obj.data.NAME;
-            title.innerHTML = pathName+" <small>"+personId+"</small>";
+            pathName = obj.data.NAME;
+            title.innerHTML = pathName + " <small>" + personId + "</small>";
             setElements(obj);
         }
 
@@ -730,12 +730,12 @@ var VQI_PathwayEditorGUI = function (parent) {
                         Valign: selectedForEditNodes[i].data('Valign'),
                         Width: selectedForEditNodes[i].data('Width'),
                         Height: selectedForEditNodes[i].data('Height'),
-                        id: "dup" + dupCounter.toString()+ selectedForEditNodes[i].data('id'),
+                        id: "dup" + dupCounter.toString() + selectedForEditNodes[i].data('id'),
                         name: selectedForEditNodes[i].data('name'),
                         selected: false,
                         BackgroundImage: selectedForEditNodes[i].data('BackgroundImage'),
                         ZIndex: selectedForEditNodes[i].data('ZIndex'),
-						parent: "dup" + dupCounter.toString() + selectedForEditNodes[i].data('parent')
+                        parent: "dup" + dupCounter.toString() + selectedForEditNodes[i].data('parent')
                     },
                     position: {
                         x: selectedForEditNodes[i].position('x') + 100,
@@ -772,7 +772,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     }
                 }
             }
-			dupCounter++;
+            dupCounter++;
             cy.add(node.concat(edge));
             postAddProcessing();
             saveState();
@@ -1004,8 +1004,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                 }
             }
         }
-		
-		function recursiveBundle(node, edges, nodes) {
+
+        function recursiveBundle(node, edges, nodes) {
             nodes.push({
                 group: "nodes",
                 data: {
@@ -1199,13 +1199,13 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         }
 
-        function findPath(sid,vid) {
+        function findPath(sid, vid) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             $.post(services['pathwayFinderUrl'], {
-				s: sid,
-				d: vid,
-				json: JSON.stringify(JSON.parse(states[states.length - 1])),
-				p: personId
+                s: sid,
+                d: vid,
+                json: JSON.stringify(JSON.parse(states[states.length - 1])),
+                p: personId
             }, function (yue_data) {
                 var result = JSON.parse(yue_data);
                 var table = document.getElementById(parent + "-inner-table");
@@ -1214,18 +1214,18 @@ var VQI_PathwayEditorGUI = function (parent) {
                 for (var n = 0; n < length; n++) {
                     table.deleteRow(0);
                 }
-				table.deleteTHead();
-                
-				for (var n = 0; n <= result.length; n++) {
+                table.deleteTHead();
+
+                for (var n = 0; n <= result.length; n++) {
                     var row = table.insertRow();
 
                     var path = row.insertCell(0);
                     var rScore = row.insertCell(1);
-					var genes = row.insertCell(2)
-					var source = row.insertCell(3);
-					var destination = row.insertCell(4);
-					var person = row.insertCell(5);
-					var consistent = row.insertCell(6);
+                    var genes = row.insertCell(2)
+                    var source = row.insertCell(3);
+                    var destination = row.insertCell(4);
+                    var person = row.insertCell(5);
+                    var consistent = row.insertCell(6);
                     var mScore = row.insertCell(7);
                     var mFdr = row.insertCell(8)
                     var lowP = row.insertCell(9);
@@ -1237,11 +1237,11 @@ var VQI_PathwayEditorGUI = function (parent) {
                         path.innerHTML = "<i><h5><small>paths</small></h5></i>";
                         rScore.innerHTML = "<i><h5><small>R-Score</small></h5></i>";
                         genes.innerHTML = "<i><h5><small>Genes</small></h5></i>";
-						source.innerHTML = "<i><h5><small>Source</small></h5></i>";
-						destination.innerHTML = "<i><h5><small>Destination</small></h5></i>";
-						person.innerHTML = "<i><h5><small>Person</small></h5></i>";
-						consistent.innerHTML = "<i><h5><small>Consistent</small></h5></i>";
-						mScore.innerHTML = "<i><h5><small>M-Score</small></h5></i>";
+                        source.innerHTML = "<i><h5><small>Source</small></h5></i>";
+                        destination.innerHTML = "<i><h5><small>Destination</small></h5></i>";
+                        person.innerHTML = "<i><h5><small>Person</small></h5></i>";
+                        consistent.innerHTML = "<i><h5><small>Consistent</small></h5></i>";
+                        mScore.innerHTML = "<i><h5><small>M-Score</small></h5></i>";
                         mFdr.innerHTML = "<i><h5><small>M-FDR</small></h5></i>";
                         lowP.innerHTML = "<i><h5><small>LowP</small></h5></i>"
                         consistentLowP.innerHTML = "<i><h5><small>Consistent Low P</small></h5></i>"
@@ -1252,9 +1252,9 @@ var VQI_PathwayEditorGUI = function (parent) {
                         btn.appendChild(t);
                         btn.addEventListener('click', function (event) {
                             var k = parseInt(event.currentTarget.innerHTML);
-							cy.$('node').removeClass('focused');
+                            cy.$('node').removeClass('focused');
                             cy.$('edge').removeClass('focused');
-							cy.$('node').addClass('unfocused');
+                            cy.$('node').addClass('unfocused');
                             cy.$('edge').addClass('unfocused');
                             for (var j = 0; j < result[k].edges.length; j++) {
                                 cy.elements("edge[id = \"" + result[k].edges[j] + "\"]").addClass('focused');
@@ -1265,33 +1265,33 @@ var VQI_PathwayEditorGUI = function (parent) {
                             }
                         });
                         path.appendChild(btn);
-                        rScore.innerHTML="<h5><small>"+result[n-1].rscore+"</small></h5>";
-                        genes.innerHTML="<h5><small>"+Object.keys(result[n-1].genes)+"</small></h5>";
-						source.innerHTML="<h5><small>"+result[n-1].source+"</small></h5>";
-						destination.innerHTML="<h5><small>"+result[n-1].destination+"</small></h5>";
-						person.innerHTML="<h5><small>"+result[n-1].person+"</small></h5>";
-						consistent.innerHTML="<h5><small>"+result[n-1].consistent+"</small></h5>";
-						mScore.innerHTML="<h5><small>"+result[n-1].mscore+"</small></h5>";
-						mFdr.innerHTML="<h5><small>"+result[n-1].mFDR+"</small></h5>";
-                        lowP.innerHTML="<h5><small>"+result[n-1].lowp+"</small></h5>";
-                        consistentLowP.innerHTML="<h5><small>"+result[n-1].consistent_lowp+"</small></h5>";
+                        rScore.innerHTML = "<h5><small>" + result[n - 1].rscore + "</small></h5>";
+                        genes.innerHTML = "<h5><small>" + Object.keys(result[n - 1].genes) + "</small></h5>";
+                        source.innerHTML = "<h5><small>" + result[n - 1].source + "</small></h5>";
+                        destination.innerHTML = "<h5><small>" + result[n - 1].destination + "</small></h5>";
+                        person.innerHTML = "<h5><small>" + result[n - 1].person + "</small></h5>";
+                        consistent.innerHTML = "<h5><small>" + result[n - 1].consistent + "</small></h5>";
+                        mScore.innerHTML = "<h5><small>" + result[n - 1].mscore + "</small></h5>";
+                        mFdr.innerHTML = "<h5><small>" + result[n - 1].mFDR + "</small></h5>";
+                        lowP.innerHTML = "<h5><small>" + result[n - 1].lowp + "</small></h5>";
+                        consistentLowP.innerHTML = "<h5><small>" + result[n - 1].consistent_lowp + "</small></h5>";
                     }
                 }
-				sorttable.makeSortable(table);
+                sorttable.makeSortable(table);
                 dialogTable.dialog("open");
                 dialogPathfind.dialog("close");
             });
         }
-		
-		function findPathsAll(){
-			findPath(null,null);
-		}
-		
-		function findPathOne(){
-			var sid = orderedSelectedNodes[0]._private.data['id'];
+
+        function findPathsAll() {
+            findPath(null, null);
+        }
+
+        function findPathOne() {
+            var sid = orderedSelectedNodes[0]._private.data['id'];
             var vid = orderedSelectedNodes[1]._private.data['id'];
-			findPath(sid,vid);
-		}
+            findPath(sid, vid);
+        }
 
         function saveState() {
             var cy = $('#' + parent + '-cy').cytoscape('get');
@@ -1460,55 +1460,55 @@ var VQI_PathwayEditorGUI = function (parent) {
         }
 
         function editNodeName() {
-			var cy = $('#' + parent + '-cy').cytoscape('get');
+            var cy = $('#' + parent + '-cy').cytoscape('get');
             var name = document.getElementById(parent + "-gene-name").value;
-			if(name.indexOf(',')==-1)
-				selectedForEditNodes.data('name', name);
-			else{
-				var node = [];
-				var names = name.split(',');
-				for(var i=0; selectedForEditNodes.length > i; i++){
-					selectedForEditNodes[i].data("Type","bundleOne");
-					var xGap=0;
-					var yGap=0;
-					for(var j=0; names.length > j; j++){
-						if(j%5 == 0){
-							xGap=0
-							yGap+=10
-						}else{
-							xGap+=10
-						}
-						var newPositionX = selectedForEditNodes[i].position("x")+xGap;
-						var newPositionY = selectedForEditNodes[i].position("y")+yGap;
-						node.push({
-							group: "nodes",
-							data: {
-								LabelSize: 10,
-								Type: "circle",
-								Valign: "Middle",
-								Width: 10,
-								Height: 10,
-								id: "n" + nodeCounter,
-								name: names[j],
-								selected: false,
-								BackgroundImage: "",
-								ZIndex: 0,
-								parent: selectedForEditNodes[i].data("id")
-								
-							},
-							position: {
-								x: newPositionX,
-								y: newPositionY
-							}	
-						})
-						nodeCounter++;
-					}
-					cy.add(node);
-					postAddProcessing();
+            if (name.indexOf(',') == -1)
+                selectedForEditNodes.data('name', name);
+            else {
+                var node = [];
+                var names = name.split(',');
+                for (var i = 0; selectedForEditNodes.length > i; i++) {
+                    selectedForEditNodes[i].data("Type", "bundleOne");
+                    var xGap = 0;
+                    var yGap = 0;
+                    for (var j = 0; names.length > j; j++) {
+                        if (j % 5 == 0) {
+                            xGap = 0
+                            yGap += 10
+                        } else {
+                            xGap += 10
+                        }
+                        var newPositionX = selectedForEditNodes[i].position("x") + xGap;
+                        var newPositionY = selectedForEditNodes[i].position("y") + yGap;
+                        node.push({
+                            group: "nodes",
+                            data: {
+                                LabelSize: 10,
+                                Type: "circle",
+                                Valign: "Middle",
+                                Width: 10,
+                                Height: 10,
+                                id: "n" + nodeCounter,
+                                name: names[j],
+                                selected: false,
+                                BackgroundImage: "",
+                                ZIndex: 0,
+                                parent: selectedForEditNodes[i].data("id")
+
+                            },
+                            position: {
+                                x: newPositionX,
+                                y: newPositionY
+                            }
+                        })
+                        nodeCounter++;
+                    }
+                    cy.add(node);
+                    postAddProcessing();
                     selectedForEditNodes[i].descendants().ungrabify();
-					saveState();
-				}
-			}	
+                    saveState();
+                }
+            }
         }
 
         function editNodeMut() {
@@ -1528,18 +1528,18 @@ var VQI_PathwayEditorGUI = function (parent) {
             selectedForEditNodes.data('Cnv', Rna);
             saveState();
         }
-		
-		function editPersonId() {
-			id = document.getElementById(parent + "-configure-person-id").value;
-			setPersonId(id);
+
+        function editPersonId() {
+            id = document.getElementById(parent + "-configure-person-id").value;
+            setPersonId(id);
         }
-		
-		function setPersonId(id) {
-			personId = id;
-			var title = document.getElementById(parent + "-pathway-title")
-			title.innerHTML = pathName+" <small>"+personId+"</small>";
+
+        function setPersonId(id) {
+            personId = id;
+            var title = document.getElementById(parent + "-pathway-title")
+            title.innerHTML = pathName + " <small>" + personId + "</small>";
         }
-		
+
         function dialogNewPathwayOpen(event) {
             dialogNewPathway.dialog("open");
         }
@@ -1555,8 +1555,8 @@ var VQI_PathwayEditorGUI = function (parent) {
         function dialogPathwaySaveAsOpen(event) {
             dialogPathwaySaveAs.dialog("open");
         }
-		
-		function dialogPathwayConfigureOpen(event) {
+
+        function dialogPathwayConfigureOpen(event) {
             dialogPathwayConfigure.dialog("open");
         }
 
@@ -1615,8 +1615,8 @@ var VQI_PathwayEditorGUI = function (parent) {
         function visualPathway(obj) {
             $('#' + parent + '-cy').cytoscape({
                 style: cytoscape.stylesheet()
-                // node elements default css (unselected state)
-                .selector('node').css({
+                        // node elements default css (unselected state)
+                        .selector('node').css({
                     'content': 'data(name)',
                     'padding-left': 2,
                     'padding-right': 2,
@@ -1651,8 +1651,17 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-style': 'solid',
                     'border-width': 1
                 }).selector('node[Type="geneproduct"]').css({
-                    'shape': 'circle',
-                    'radius': 5,
+//                    'shape': 'ellipse',
+//                    'radius': 5,
+//                    'color': 'black',
+//                    'text-valign': 'center',
+//                    'background-color': 'white',
+//                    'border-color': 'black',
+//                    'border-style': 'solid',
+//                    'border-width': 1,
+                    'shape': 'ellipse',
+                    'width': 'data(Width)',
+                    'height': 'data(Height)',
                     'color': 'black',
                     'text-valign': 'center',
                     'background-color': 'white',
@@ -1895,8 +1904,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-width': 1
                 })
 
-                // edge elements default css (unselected)
-                .selector('edge').css({
+                        // edge elements default css (unselected)
+                        .selector('edge').css({
                     'line-color': 'black',
                     'line-style': 'solid',
                     'opacity': 0.75,
@@ -1923,8 +1932,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                 })
 
 
-                // node & edge elements (selected state)
-                .selector('edge:selected').css({
+                        // node & edge elements (selected state)
+                        .selector('edge:selected').css({
                     'background-color': 'green',
                     'line-color': 'green',
                     'target-arrow-color': 'green',
@@ -1937,8 +1946,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'text-opacity': 1.0
                 })
 
-                // query purpose
-                .selector('.green_bg').css({
+                        // query purpose
+                        .selector('.green_bg').css({
                     'background-color': 'lightgreen',
                     'color': 'black'
                 }).selector('.red_bg').css({
@@ -1966,10 +1975,10 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-width': 1
                 })
 
-                // collapse
-                .selector('.collapsed').css({
+                        // collapse
+                        .selector('.collapsed').css({
                     'opacity': 0.01,
-					'width': .01,
+                    'width': .01,
                     'height': .01
                 }).selector('.collapsed_informative').css({
                     'shape': 'circle',
@@ -1981,10 +1990,10 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-style': 'solid',
                     'border-width': 1
                 }).selector('.unfocused').css({
-					'opacity': 0.2
-				}).selector('.focused').css({
-					'opacity': 1.0
-				}),
+                    'opacity': 0.2
+                }).selector('.focused').css({
+                    'opacity': 1.0
+                }),
                 layout: {
                     name: 'preset',
                     padding: 10
@@ -2001,8 +2010,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     $('#' + parent + '-bundle').removeClass('disabled');
                     $('#' + parent + '-unbundle').removeClass('disabled');
                     $('#' + parent + '-collapse').removeClass('disabled');
-					$('#' + parent + '-collapse-informative').removeClass('disabled');
-					$('#' + parent + '-expand-informative').removeClass('disabled');
+                    $('#' + parent + '-collapse-informative').removeClass('disabled');
+                    $('#' + parent + '-expand-informative').removeClass('disabled');
                     $('#' + parent + '-expand').removeClass('disabled');
                     $('#' + parent + '-findpath').removeClass('disabled');
                     $('#' + parent + '-find-object').removeClass('disabled');
@@ -2012,8 +2021,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     $('#' + parent + '-undo').removeClass('disabled');
                     $('#' + parent + '-redo').removeClass('disabled');
                     $('#' + parent + '-duplicate-nodes').removeClass('disabled');
-					$('#' + parent + '-config-pathway').removeClass('disabled');
-					$('#' + parent + '-find-paths-all-drop').removeClass('disabled');
+                    $('#' + parent + '-config-pathway').removeClass('disabled');
+                    $('#' + parent + '-find-paths-all-drop').removeClass('disabled');
 
                     cy.add(obj.elements);
                     cy.center();
@@ -2091,15 +2100,23 @@ var VQI_PathwayEditorGUI = function (parent) {
                     cy.on('style', 'node', function (event) {
                         //					saveState();
                     });
-					
-					cy.nodes().nonorphans()
-					.on('grab', function(){ if(this.hasClass("collapsed") || this.hasClass("collapsed_informative"))
-					{this.ungrabify();} })
-					.on('free', function(){ if(this.hasClass("collapsed") || this.hasClass("collapsed_informative"))
-					{this.grabify();} });
+
+                    cy.nodes().nonorphans()
+                            .on('grab', function () {
+                                if (this.hasClass("collapsed") || this.hasClass("collapsed_informative"))
+                                {
+                                    this.ungrabify();
+                                }
+                            })
+                            .on('free', function () {
+                                if (this.hasClass("collapsed") || this.hasClass("collapsed_informative"))
+                                {
+                                    this.grabify();
+                                }
+                            });
 
                     saveState();
-                    if(typeof(self.sprayData) != "undefined")
+                    if (typeof (self.sprayData) != "undefined")
                         sprayColor(self.sprayData);
                 },
                 // initial viewport state:
@@ -2122,7 +2139,6 @@ var VQI_PathwayEditorGUI = function (parent) {
                 autolock: false,
                 autoungrabify: false,
                 autounselectify: false,
-				
                 // rendering options:
                 headless: false,
                 styleEnabled: true,
@@ -2153,7 +2169,7 @@ var VQI_PathwayEditorGUI = function (parent) {
             },
             close: function () {
                 var cy = $('#' + parent + '-cy').cytoscape('get');
-				cy.$('node').removeClass("unfocused");
+                cy.$('node').removeClass("unfocused");
                 cy.$('edge').removeClass("focused");
             }
         });
@@ -2173,8 +2189,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-select-receptor").disabled = false;
                     document.getElementById(parent + "-select-biologicalProcess").disabled = false;
                     document.getElementById(parent + "-select-triangle").disabled = false;
-					document.getElementById(parent + "-select-rectangle").disabled = false;
-					document.getElementById(parent + "-select-circle").disabled = false;
+                    document.getElementById(parent + "-select-rectangle").disabled = false;
+                    document.getElementById(parent + "-select-circle").disabled = false;
                     document.getElementById(parent + "-select-ellipse").disabled = false;
                     document.getElementById(parent + "-select-pentagon").disabled = false;
                     document.getElementById(parent + "-select-hexagon").disabled = false;
@@ -2198,8 +2214,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-select-receptor").disabled = true;
                     document.getElementById(parent + "-select-biologicalProcess").disabled = true;
                     document.getElementById(parent + "-select-triangle").disabled = true;
-					document.getElementById(parent + "-select-rectangle").disabled = true;
-					document.getElementById(parent + "-select-circle").disabled = true;
+                    document.getElementById(parent + "-select-rectangle").disabled = true;
+                    document.getElementById(parent + "-select-circle").disabled = true;
                     document.getElementById(parent + "-select-ellipse").disabled = true;
                     document.getElementById(parent + "-select-pentagon").disabled = true;
                     document.getElementById(parent + "-select-hexagon").disabled = true;
@@ -2233,7 +2249,7 @@ var VQI_PathwayEditorGUI = function (parent) {
             autoOpen: false,
             height: 500,
             width: 600,
-			resizable: false,
+            resizable: false,
             buttons: {
                 Cancel: function () {
                     dialogNode.dialog("close");
@@ -2272,9 +2288,9 @@ var VQI_PathwayEditorGUI = function (parent) {
             close: function () {
             }
         });
-		
-		dialogPathwayConfigure = $("#" + parent + "-dialog-form-configure-pathway").dialog({
-			open: function (event) {
+
+        dialogPathwayConfigure = $("#" + parent + "-dialog-form-configure-pathway").dialog({
+            open: function (event) {
                 document.getElementById(parent + "-configure-person-id").value = personId;
             },
             autoOpen: false,
@@ -2357,9 +2373,9 @@ var VQI_PathwayEditorGUI = function (parent) {
         document.getElementById(parent + '-arrow-type-edge-apply').addEventListener('click', editEdgeArrowType);
         document.getElementById(parent + '-line-type-edge-apply').addEventListener('click', editEdgeLineType);
         document.getElementById(parent + '-apply-curve-changes').addEventListener('click', toggleEdgeStyle);
-		
-		//edit pathway settings
-		document.getElementById(parent + '-apply-configure-person-id').addEventListener('click', editPersonId);
+
+        //edit pathway settings
+        document.getElementById(parent + '-apply-configure-person-id').addEventListener('click', editPersonId);
 
         document.getElementById(parent + '-new-pathway').addEventListener('click', dialogNewPathwayOpen);
         document.getElementById(parent + '-findpath').addEventListener('click', dialogPathfindOpen);
@@ -2370,9 +2386,9 @@ var VQI_PathwayEditorGUI = function (parent) {
         document.getElementById(parent + '-delete-elements').addEventListener('click', removeElements);
         document.getElementById(parent + '-add-node').addEventListener('click', addNode);
         document.getElementById(parent + '-add-edge').addEventListener('click', addEdge);
-		document.getElementById(parent + '-expand-informative').addEventListener('click', expandBundleInformative);
-		document.getElementById(parent + '-collapse-informative').addEventListener('click', collapseBundleInformative);
-		document.getElementById(parent + '-expand').addEventListener('click', expandBundle);
+        document.getElementById(parent + '-expand-informative').addEventListener('click', expandBundleInformative);
+        document.getElementById(parent + '-collapse-informative').addEventListener('click', collapseBundleInformative);
+        document.getElementById(parent + '-expand').addEventListener('click', expandBundle);
         document.getElementById(parent + '-collapse').addEventListener('click', collapseBundle);
         document.getElementById(parent + '-bundle').addEventListener('click', dialogBundleOpen);
         document.getElementById(parent + '-unbundle').addEventListener('click', unbundle);
@@ -2380,10 +2396,10 @@ var VQI_PathwayEditorGUI = function (parent) {
         document.getElementById(parent + '-undo').addEventListener('click', undo);
         document.getElementById(parent + '-redo').addEventListener('click', redo);
         document.getElementById(parent + '-duplicate-nodes').addEventListener('click', addDuplicateNodes);
-		document.getElementById(parent + '-find-paths-all').addEventListener('click', findPathsAll);
-		document.getElementById(parent + '-find-paths-all-drop').addEventListener('click', findPathsAll);
-		document.getElementById(parent + '-find-paths-one').addEventListener('click', findPathOne);
-		document.getElementById(parent + '-config-pathway').addEventListener('click', dialogPathwayConfigureOpen);
+        document.getElementById(parent + '-find-paths-all').addEventListener('click', findPathsAll);
+        document.getElementById(parent + '-find-paths-all-drop').addEventListener('click', findPathsAll);
+        document.getElementById(parent + '-find-paths-one').addEventListener('click', findPathOne);
+        document.getElementById(parent + '-config-pathway').addEventListener('click', dialogPathwayConfigureOpen);
 
         //search
         document.getElementById(parent + '-search-node-name').addEventListener('keyup', search);
@@ -2402,8 +2418,8 @@ var VQI_PathwayEditorGUI = function (parent) {
         self.setDataToSpray = function (data) {
             this.sprayData = data;
         };
-		
-		self.setPersonId = function (data) {
+
+        self.setPersonId = function (data) {
             setPersonId(data);
         };
     });

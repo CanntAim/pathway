@@ -21,7 +21,7 @@
 		<input id="file" type=file value="spray from file">
 -->
         <div id="parent"></div>
-        <script src="VQI_Observable.js"></script>
+        <!--<script src="VQI_Observable.js"></script>-->
         <script src="VQI_PathwayEditorGUI.js"></script>
 		<script src="VQI_PathwayEditorNoGUI.js"></script>
         <script>
