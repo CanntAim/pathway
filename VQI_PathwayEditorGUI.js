@@ -2391,11 +2391,11 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         //exteRnal GUI functions
 
-        self.loadPathwayExteRnal = function (id) {
+        self.loadPathwayExternal = function (id) {
             loadPathway(id);
         }
 
-        self.sprayColorExteRnal = function (list) {
+        self.sprayColorExternal = function (list) {
             sprayColor(list);
         }
 
