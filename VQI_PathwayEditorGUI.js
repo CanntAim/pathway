@@ -185,18 +185,18 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-arrow-type-edge\">arrow type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-arrow-type-edge\" name=\"" + parent + "-arrow-type-edge\">";
-    strVar += "  					<option selected=\"\">TBar<\/option>";
-    strVar += "  					<option>Arrow<\/option>";
-    strVar += "  					<option>Line<\/option>";
+    strVar += "  					<option selected=\"\">tbar<\/option>";
+    strVar += "  					<option>arrow<\/option>";
+    strVar += "  					<option>line<\/option>";
     strVar += "					<\/select>";
     strVar += " 				<input id=\"" + parent + "-arrow-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
     strVar += "    			<div class =\"form-group\">";
     strVar += "      			<label for=\"" + parent + "-line-type-edge\">line type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-line-type-edge\" name=\"" + parent + "-line-type-edge\">";
-    strVar += "  					<option selected=\"\">Solid<\/option>";
-    strVar += "  					<option>Dotted<\/option>";
-    strVar += "  					<option>Dashed<\/option>";
+    strVar += "  					<option selected=\"\">solid<\/option>";
+    strVar += "  					<option>dotted<\/option>";
+    strVar += "  					<option>dashed<\/option>";
     strVar += "					<\/select>";
     strVar += " 				<input id=\"" + parent + "-line-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
     strVar += "    			</div>";
@@ -1615,8 +1615,8 @@ var VQI_PathwayEditorGUI = function (parent) {
         function visualPathway(obj) {
             $('#' + parent + '-cy').cytoscape({
                 style: cytoscape.stylesheet()
-                        // node elements default css (unselected state)
-                        .selector('node').css({
+                // node elements default css (unselected state)
+                .selector('node').css({
                     'content': 'data(name)',
                     'padding-left': 2,
                     'padding-right': 2,
@@ -1651,14 +1651,6 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-style': 'solid',
                     'border-width': 1
                 }).selector('node[Type="geneproduct"]').css({
-//                    'shape': 'ellipse',
-//                    'radius': 5,
-//                    'color': 'black',
-//                    'text-valign': 'center',
-//                    'background-color': 'white',
-//                    'border-color': 'black',
-//                    'border-style': 'solid',
-//                    'border-width': 1,
                     'shape': 'ellipse',
                     'width': 'data(Width)',
                     'height': 'data(Height)',
@@ -1904,8 +1896,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-width': 1
                 })
 
-                        // edge elements default css (unselected)
-                        .selector('edge').css({
+                // edge elements default css (unselected)
+                .selector('edge').css({
                     'line-color': 'black',
                     'line-style': 'solid',
                     'opacity': 0.75,
