@@ -681,22 +681,22 @@ var VQI_PathwayEditorGUI = function (parent) {
 
             for (var line = 1; line < lines.length; line++) {
                 var target = cy.elements("node[name = \"" + lines[line][header["gene"]] + "\"]");
-                if (typeof (header["Mut"]) != "undefined") {
-                    Mut = lines[line][header["Mut"]];
+                if (typeof (header["mut"]) != "undefined") {
+                    Mut = lines[line][header["mut"]];
                     if (!isNaN(Mut))
                         target.data('Mut', Mut);
                     else
                         target.data('Mut', '0');
                 }
-                if (typeof (header["Cnv"]) != "undefined") {
-                    Cnv = lines[line][header["Cnv"]];
+                if (typeof (header["cnv"]) != "undefined") {
+                    Cnv = lines[line][header["cnv"]];
                     if (!isNaN(Cnv))
                         target.data('Cnv', Cnv);
                     else
                         target.data('Cnv', '0');
                 }
-                if (typeof (header["Rna"]) != "undefined") {
-                    Rna = lines[line][header["Rna"]];
+                if (typeof (header["rna"]) != "undefined") {
+                    Rna = lines[line][header["rna"]];
                     if (!isNaN(Rna))
                         target.data('Rna', Rna);
                     else
