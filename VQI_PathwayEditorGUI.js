@@ -703,6 +703,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                         target.data('Rna', '0');
                 }
             }
+			saveState();
         }
 
         function removeElements(event) {
