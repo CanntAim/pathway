@@ -178,31 +178,31 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "	<\/div>";
     strVar += "	<div id=\"" + parent + "-dialog-form-edge\" title=\"Edit edge(s)\">";
     strVar += " 		<form>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-direction\">change direction:<\/label>";
-    strVar += "      			<input style=\"width: 30px\" type=\"checkbox\" class=\"form-control\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
-    strVar += " 				<input id=\"" + parent + "-direction-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
-    strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-arrow-type-edge\">arrow type:<\/label>";
-    strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-arrow-type-edge\" name=\"" + parent + "-arrow-type-edge\">";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-arrow-type-edge\">arrow type:<\/label>";
+    strVar += "      			<select style=\"width: 150px\" class=\"form-control col-md-4\" id=\"" + parent + "-arrow-type-edge\" name=\"" + parent + "-arrow-type-edge\">";
     strVar += "  					<option selected=\"\">inhibit<\/option>";
     strVar += "  					<option>activate<\/option>";
     strVar += "  					<option>line<\/option>";
 	strVar += "  					<option>regulated<\/option>";
     strVar += "					<\/select>";
-    strVar += " 				<input id=\"" + parent + "-arrow-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-arrow-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "      			<label for=\"" + parent + "-line-type-edge\">line type:<\/label>";
-    strVar += "      			<select style=\"width: 150px\" class=\"form-control\" id=\"" + parent + "-line-type-edge\" name=\"" + parent + "-line-type-edge\">";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-line-type-edge\">line type:<\/label>";
+    strVar += "      			<select style=\"width: 150px\" class=\"form-control col-md-4\" id=\"" + parent + "-line-type-edge\" name=\"" + parent + "-line-type-edge\">";
     strVar += "  					<option selected=\"\">solid<\/option>";
     strVar += "  					<option>dotted<\/option>";
     strVar += "  					<option>dashed<\/option>";
     strVar += "					<\/select>";
-    strVar += " 				<input id=\"" + parent + "-line-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-line-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
+	strVar += "    			<div class =\"form-group row\">";
+    strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-direction\">change direction:<\/label>";
+    strVar += "      			<input style=\"width: 150px\" type=\"checkbox\" class=\"form-control col-md-4\" name=\"" + parent + "-direction\" id=\"" + parent + "-direction\" value=\"Yes\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-direction-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
+    strVar += "    			</div>";
+    strVar += "    			<div class =\"form-group row\">";
     strVar += "      			<label for=\"" + parent + "-segment-distances\">Segment Distances:(e.g. -20 20 -20)<\/label>";
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-segment-distances\" class=\"form-control\" name=\"" + parent + "-segment-distances\">";
     strVar += "      			<label for=\"" + parent + "-segment-weights\">Segment Weights:(e.g. 0.25 0.5 0.75)<\/label>";
@@ -212,15 +212,15 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "  					<option selected=\"\">enable<\/option>";
     strVar += "  					<option\>disable<\/option>";
     strVar += "					<\/select>";
-    strVar += " 				<input id=\"" + parent + "-apply-curve-changes\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += " 				<input id=\"" + parent + "-apply-curve-changes\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4 col-md-offset-8\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "    				<label for=\"" + parent + "-edge-move-to-background\">Move to Background:<\/label>";
-    strVar += "    				<input id=\"" + parent + "-edge-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "    				<label class=\"col-md-4\" for=\"" + parent + "-edge-move-to-background\">Move to Background:<\/label>";
+    strVar += "    				<input id=\"" + parent + "-edge-move-to-background\" value=\"Move\" type=\"button\" class=\"btn btn-link col-md-4 col-md-offset-8\"><\/input>";
     strVar += "    			</div>";
-    strVar += "    			<div class =\"form-group\">";
-    strVar += "    				<label for=\"" + parent + "-edge-move-to-foreground\">Move to Foreground:<\/label>";
-    strVar += "    				<input id=\"" + parent + "-edge-move-to-foreground\" value=\"Move\" type=\"button\" class=\"btn btn-link\"><\/input>";
+    strVar += "    			<div class =\"form-group row\">";
+    strVar += "    				<label class=\"col-md-4\" for=\"" + parent + "-edge-move-to-foreground\">Move to Foreground:<\/label>";
+    strVar += "    				<input id=\"" + parent + "-edge-move-to-foreground\" value=\"Move\" type=\"button\" class=\"btn btn-link col-md-4 col-md-offset-8\"><\/input>";
     strVar += "    			</div>";
     strVar += "  		<\/form>";
     strVar += "	<\/div>";
@@ -2262,8 +2262,9 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         dialogEdge = $("#" + parent + "-dialog-form-edge").dialog({
             autoOpen: false,
-            height: 300,
-            width: 350,
+            height: 500,
+            width: 600,
+			resizable: false,
             buttons: {
                 Cancel: function () {
                     dialogEdge.dialog("close");
