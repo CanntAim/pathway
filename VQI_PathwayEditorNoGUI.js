@@ -1,7 +1,11 @@
 var VQI_PathwayEditorNoGUI = function () {
-	self = this;
-	
-	function preAddProcessing(obj) {
+    self = this;
+    var nodeTypes = ["bundleone", "bundletwo", "gene", "geneproduct", "protein", "rna", "microrna", "kinase", "ligand", "receptor", "biologicalprocess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
+    var services = {};
+    services['pathwayFinder'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/ajaxJSON.php';
+    var nodeCounter = 0;
+    var edgeCounter = 0;
+    function preAddProcessing(obj) {
         for (var i = 0; i < obj.elements.nodes.length; i++) {
             if (obj.elements.nodes[i].data.id.substring(0, 1) == "n") {
                 var number = parseInt(obj.elements.nodes[i].data.id.substring(1, obj.elements.nodes.length - 1));
@@ -17,7 +21,7 @@ var VQI_PathwayEditorNoGUI = function () {
                 obj.elements.nodes[i].data.zIndex = 0;
             }
 
-            if (types.indexOf(obj.elements.nodes[i].data.Type) == -1) {
+            if (nodeTypes.indexOf(obj.elements.nodes[i].data.Type) == -1) {
                 obj.elements.nodes[i].data.Type = "label";
             }
 
@@ -47,8 +51,8 @@ var VQI_PathwayEditorNoGUI = function () {
             }
         }
     }
-		
-	function sprayColorNoGUI(lines, obj) {
+
+    function sprayColorNoGUI(lines, obj) {
         var lookup = {};
         for (var i = 0, len = obj.elements.nodes.length; i < len; i++) {
             if (typeof (lookup[obj.elements.nodes[i].data.name]) != "undefined")
@@ -80,7 +84,7 @@ var VQI_PathwayEditorNoGUI = function () {
                             lookup[target][entry].cnv = cnv;
                         else
                             lookup[target][entry].cnv = "0";
-                        }
+                    }
                     if (typeof (header["rna"]) != "undefined") {
                         rna = lines[line][header["rna"]];
                         if (!isNaN(rna))
@@ -92,12 +96,12 @@ var VQI_PathwayEditorNoGUI = function () {
             }
         }
     }
-	
-	function setElementsNoGUI(obj) {
+
+    function setElementsNoGUI(obj) {
         preAddProcessing(obj);
     }
-		
-	self.printGraphExternalNoGUI = function () {
+
+    self.printGraphExternalNoGUI = function () {
         console.log(self.json);
     }
 
@@ -108,13 +112,21 @@ var VQI_PathwayEditorNoGUI = function () {
     self.sprayColorExternalNoGUI = function (list) {
         sprayColorNoGUI(list, self.json);
     }
-
-    self.loadPathwayExternalNoGUI = function (id) {
+    
+    self.getJSON = function () {
+        return JSON.stringify(self.json);
+    }
+    
+    self.loadPathwayExternalNoGUI = function (id, person, f) {
+        var callback = f || null;
         $.post(services['pathwayFinder'], {
             pid: id
         }, function (data) {
             self.json = JSON.parse(data);
             setElementsNoGUI(self.json);
+            if (callback !== null) {
+                callback(id, person);
+            }
         });
     }
 }
