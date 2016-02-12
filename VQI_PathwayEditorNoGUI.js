@@ -2,7 +2,7 @@ var VQI_PathwayEditorNoGUI = function () {
     self = this;
     var nodeTypes = ["bundleone", "bundletwo", "gene", "geneproduct", "protein", "rna", "microrna", "kinase", "ligand", "receptor", "biologicalprocess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
     var services = {};
-    services['pathwayFinder'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/ajaxJSON.php';
+    services['PATHWAY_LIST'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/ajaxJSON.php';
     var nodeCounter = 0;
     var edgeCounter = 0;
     function preAddProcessing(obj) {
@@ -112,20 +112,20 @@ var VQI_PathwayEditorNoGUI = function () {
     self.sprayColorExternalNoGUI = function (list) {
         sprayColorNoGUI(list, self.json);
     }
-    
+
     self.getJSON = function () {
         return JSON.stringify(self.json);
     }
     
-    self.loadPathwayExternalNoGUI = function (id, person, f) {
+    self.loadPathwayExternalNoGUI = function (id, f) {
         var callback = f || null;
-        $.post(services['pathwayFinder'], {
+        $.post(services['PATHWAY_LIST'], {
             pid: id
         }, function (data) {
             self.json = JSON.parse(data);
             setElementsNoGUI(self.json);
             if (callback !== null) {
-                callback(id, person);
+                callback();
             }
         });
     }
