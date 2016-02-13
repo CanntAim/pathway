@@ -828,7 +828,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                 group: "nodes",
                 data: {
                     LabelSize: 10,
-                    Type: "gene",
+                    Type: "nType15",
                     Valign: "Middle",
                     Width: 100,
                     Height: 25,
