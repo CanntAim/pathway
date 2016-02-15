@@ -21,13 +21,13 @@ var VQI_PathwayEditorGUI = function (parent) {
     var self = this;
     var definitionHub = {}
     
-	definitionHub.nodeTypes = {nType1: ["bundleone","nType1"], nType2: ["bundletwo","nType2"], nType3: ["gene",,"nType3"], nType4: ["geneproduct",,"nType4"], nType5: ["protein",,"nType5"], 
-	nType6: ["rna","nType6"], nType7: ["microrna","nType7"], nType8: ["kinase","nType8"], nType9: ["ligand","nType9"], nType10: ["receptor","nType10"], nType11: ["biologicalprocess","nType11"], 
-	nType12: ["triangle","nType12"], nType13: ["rectangle","nType13"], nType14: ["circle","nType14"], nType15: ["ellipse","nType15"], nType16: ["pentagon","nType16"], nType17: ["hexagon","nType17"], 
-	nType18: ["heptagon","nType18"], nType19: ["octagon","nType19"], nType20: ["star","nType20"], nType21: ["diamond","nType21"], nType22: ["vee","nType22"], nType23: ["rhomboid","nType23"], nType24: ["label","nType24"]};
+	definitionHub.nodeTypes = {nType1: ["bundleone","ntype1"], nType2: ["bundletwo","ntype2"], nType3: ["gene","ntype3"], nType4: ["geneproduct","ntype4"], nType5: ["protein","ntype5"], 
+	nType6: ["rna","ntype6"], nType7: ["microrna","ntype7"], nType8: ["kinase","ntype8"], nType9: ["ligand","ntype9"], nType10: ["receptor","ntype10"], nType11: ["biologicalprocess","ntype11"], 
+	nType12: ["triangle","ntype12"], nType13: ["rectangle","ntype13"], nType14: ["circle","ntype14"], nType15: ["ellipse","ntype15"], nType16: ["pentagon","ntype16"], nType17: ["hexagon","ntype17"], 
+	nType18: ["heptagon","ntype18"], nType19: ["octagon","ntype19"], nType20: ["star","ntype20"], nType21: ["diamond","ntype21"], nType22: ["vee","ntype22"], nType23: ["rhomboid","ntype23"], nType24: ["label","ntype24"]};
     
-	definitionHub.edgeLineTypes = {elType1: ["solid","elType1"], elType2: ["dashed","elType2"], elType3: ["dotted","elType3"]};
-    definitionHub.arrowLineTypes = {alType1: ["line","alType1","1"], alType2: ["activate","alType2","2"], alType3: ["inhibit", "tbar","alType3","3"], alType4: ["regulated","alType4","4"]};
+	definitionHub.edgeLineTypes = {elType1: ["solid","eltype1"], elType2: ["dashed","eltype2"], elType3: ["dotted","eltype3"]};
+    definitionHub.arrowLineTypes = {alType1: ["line","altype1","1"], alType2: ["activate","altype2","2"], alType3: ["inhibit", "tbar","altype3","3"], alType4: ["regulate","altype4","4"]};
 	
     var personId = "";
     var pathName = "";
