@@ -20,21 +20,35 @@
 		<input type=button onclick="save()" value="save">
 		<input id="file" type=file value="spray from file">
 -->
+		<input type=button onclick="load()" value="load">
+        <input type=button onclick="spray()" value="spray">
+        <input type=button onclick="print()" value="print">
+		<input type=button onclick="save()" value="save">
+		<input type=button onclick="find()" value="find">
+		<input type=button onclick="setPerson()" value="setPerson">
+		<input type=button onclick="getPerson()" value="getPerson">
+		<input id="file" type=file value="spray from file">
+		
         <div id="parent"></div>
         <!--<script src="VQI_Observable.js"></script>-->
         <script src="VQI_PathwayEditorGUI.js"></script>
 		<script src="VQI_PathwayEditorNoGUI.js"></script>
-        <script>
-		
+        <script>		
             var objVQI_PathwayEditorGUI = new VQI_PathwayEditorGUI("parent");
 			var objVQI_PathwayEditorNoGUI = new VQI_PathwayEditorNoGUI();
             
 			function load() {
                 objVQI_PathwayEditorNoGUI.loadPathwayExternalNoGUI(334);
             }
-			function setPersonId() {
+			
+			function setPerson() {
                 var data = "Hello!";
-                objVQI_PathwayEditorGUI.setPersonId(data);
+                objVQI_PathwayEditorNoGUI.setPersonIdNoGUI(data);
+            }
+			
+			function getPerson() {
+                var result = objVQI_PathwayEditorNoGUI.getPersonIdNoGUI();
+				console.log(result);
             }
 
             function spray() {
@@ -57,10 +71,17 @@
 				reader.readAsText(file);
             }			
             function print() {
-                objVQI_PathwayEditorNoGUI.printGraphNoGUI();
+                objVQI_PathwayEditorNoGUI.printGraphExternalNoGUI();
             }
+			
 			function save() {
                 objVQI_PathwayEditorNoGUI.produceJSONExternalNoGUI();
+            }
+			
+			function find() {
+				var sid = "n1";
+				var vid = "n22";
+                objVQI_PathwayEditorNoGUI.findPathExternalNoGUI(sid,vid);
             }
 			
 //			document.getElementById("file").addEventListener("change", sprayFromFile); 

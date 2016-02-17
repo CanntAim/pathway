@@ -1,9 +1,6 @@
 var VQI_PathwayEditorGUI = function (parent) {
 
     // Web services
-
-    // var serverURL = "http://cardinal3.engr.uconn.edu/pathwayVisual/";
-
     var services = {};
     services["pathwayFinderUrl"] = "http://bibci.engr.uconn.edu/puj07001/pathway_services/find_path_and_score/find_path_and_score.php";
     services['pathwayFinder'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
@@ -11,11 +8,6 @@ var VQI_PathwayEditorGUI = function (parent) {
     services['pathwayScorer'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/ScoreSystem/getScore.php';
     services['pathwayWeightedScorer'] = 'http://137.99.11.122/pathway2/pathwayweightedscorer.php';
     services['objectFinder'] = 'http://137.99.11.122/pathway2/qsys_json.php';
-//    services['pathwayFinder'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/ajaxJSON.php';
-//    services['pathwaySaver'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/updateDB_json.php';
-//    services['pathwayScorer'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual/ScoreSystem/getScore.php';
-//    services['pathwayWeightedScorer'] = 'http://bibci.engr.uconn.edu/thh13003/pathway2/pathwayweightedscorer.php';
-//    services['objectFinder'] = 'http://bibci.engr.uconn.edu/thh13003/pathway2/qsys_json.php';
 
     // Globals
     var self = this;
@@ -27,7 +19,7 @@ var VQI_PathwayEditorGUI = function (parent) {
 	nType18: ["heptagon","ntype18"], nType19: ["octagon","ntype19"], nType20: ["star","ntype20"], nType21: ["diamond","ntype21"], nType22: ["vee","ntype22"], nType23: ["rhomboid","ntype23"], nType24: ["label","ntype24"]};
     
 	definitionHub.edgeLineTypes = {elType1: ["solid","eltype1"], elType2: ["dashed","eltype2"], elType3: ["dotted","eltype3"]};
-    definitionHub.arrowLineTypes = {rType1: ["line","altype1","rtype1","1"], rType2: ["activate","altype2","rtype2","2"], rType3: ["inhibit", "tbar","altype3","rtype3","3"], rType4: ["regulate","altype4","rtype4","4"]};
+    definitionHub.arrowLineTypes = {alType1: ["line","altype1","1"], alType2: ["activate","altype2","2"], alType3: ["inhibit", "tbar","altype3","3"], alType4: ["regulate","altype4","4"]};
 	
     var personId = "";
     var pathName = "";
@@ -188,10 +180,10 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "    			<div class =\"form-group row\">";
     strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-arrow-type-edge\">arrow type:<\/label>";
     strVar += "      			<select style=\"width: 150px\" class=\"form-control col-md-4\" id=\"" + parent + "-arrow-type-edge\" name=\"" + parent + "-arrow-type-edge\">";
-    strVar += "  					<option value=\"rType1\" selected=\"\">" + definitionHub.arrowLineTypes.rType1[0] + "<\/option>";
-    strVar += "  					<option value=\"rType2\">" + definitionHub.arrowLineTypes.rType2[0] + "<\/option>";
-    strVar += "  					<option value=\"rType3\">" + definitionHub.arrowLineTypes.rType3[0] + "<\/option>";
-    strVar += "  					<option value=\"rType4\">" + definitionHub.arrowLineTypes.rType4[0] + "<\/option>";
+    strVar += "  					<option value=\"alType1\" selected=\"\">" + definitionHub.arrowLineTypes.alType1[0] + "<\/option>";
+    strVar += "  					<option value=\"alType2\">" + definitionHub.arrowLineTypes.alType2[0] + "<\/option>";
+    strVar += "  					<option value=\"alType3\">" + definitionHub.arrowLineTypes.alType3[0] + "<\/option>";
+    strVar += "  					<option value=\"alType4\">" + definitionHub.arrowLineTypes.alType4[0] + "<\/option>";
     strVar += "					<\/select>";
     strVar += " 				<input id=\"" + parent + "-arrow-type-edge-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
@@ -1936,19 +1928,19 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'opacity': 0.75,
                     'text-opacity': 0.75,
                     'width': 1
-                }).selector('edge[EndArrow="rType1"]').css({
+                }).selector('edge[EndArrow="alType1"]').css({
                     'target-arrow-shape': 'line',
                     'target-arrow-color': 'black',
                     'target-arrow-fill': 'filled'
-                }).selector('edge[EndArrow="rType2"]').css({
+                }).selector('edge[EndArrow="alType2"]').css({
                     'target-arrow-shape': 'triangle',
                     'target-arrow-color': 'black',
                     'target-arrow-fill': 'filled'
-                }).selector('edge[EndArrow="rType3"]').css({
+                }).selector('edge[EndArrow="alType3"]').css({
                     'target-arrow-shape': 'tee',
                     'target-arrow-color': 'black',
                     'target-arrow-fill': 'filled'
-                }).selector('edge[EndArrow="rType4"]').css({
+                }).selector('edge[EndArrow="alType4"]').css({
                     'target-arrow-shape': 'diamond',
                     'target-arrow-color': 'black',
                     'target-arrow-fill': 'filled'

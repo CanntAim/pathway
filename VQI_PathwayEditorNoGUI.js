@@ -1,45 +1,93 @@
 var VQI_PathwayEditorNoGUI = function () {
     self = this;
-    var nodeTypes = ["bundleone", "bundletwo", "gene", "geneproduct", "protein", "rna", "microrna", "kinase", "ligand", "receptor", "biologicalprocess", "triangle", "rectangle", "circle", "ellipse", "pentagon", "hexagon", "heptagon", "octagon", "star", "diamond", "vee", "rhomboid", "label"];
-    var services = {};
-    services['PATHWAY_LIST'] = 'http://bibci.engr.uconn.edu/yuz12012/pathwayVisual//PathwayParser/ajaxJSON.php';
+    var definitionHub = {}
+	
+	definitionHub.nodeTypes = {nType1: ["bundleone","ntype1"], nType2: ["bundletwo","ntype2"], nType3: ["gene","ntype3"], nType4: ["geneproduct","ntype4"], nType5: ["protein","ntype5"], 
+	nType6: ["rna","ntype6"], nType7: ["microrna","ntype7"], nType8: ["kinase","ntype8"], nType9: ["ligand","ntype9"], nType10: ["receptor","ntype10"], nType11: ["biologicalprocess","ntype11"], 
+	nType12: ["triangle","ntype12"], nType13: ["rectangle","ntype13"], nType14: ["circle","ntype14"], nType15: ["ellipse","ntype15"], nType16: ["pentagon","ntype16"], nType17: ["hexagon","ntype17"], 
+	nType18: ["heptagon","ntype18"], nType19: ["octagon","ntype19"], nType20: ["star","ntype20"], nType21: ["diamond","ntype21"], nType22: ["vee","ntype22"], nType23: ["rhomboid","ntype23"], nType24: ["label","ntype24"]};
+    
+	definitionHub.edgeLineTypes = {elType1: ["solid","eltype1"], elType2: ["dashed","eltype2"], elType3: ["dotted","eltype3"]};
+    definitionHub.arrowLineTypes = {alType1: ["line","altype1","1"], alType2: ["activate","altype2","2"], alType3: ["inhibit", "tbar","altype3","3"], alType4: ["regulate","altype4","4"]};
+    
+	var services = {};
+    services["pathwayFinderUrl"] = "http://bibci.engr.uconn.edu/puj07001/pathway_services/find_path_and_score/find_path_and_score.php";
+	services['pathwayFinder'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
+	
     var nodeCounter = 0;
     var edgeCounter = 0;
+	
+    function mapReverseDictionary() {
+        var reverseLookup = {};
+        for (var i in definitionHub.nodeTypes) {
+            for (var j = 0, innerLen = definitionHub.nodeTypes[i].length; j < innerLen; j++) {
+                reverseLookup[definitionHub.nodeTypes[i][j]] = i;
+            }
+        }
+        for (var i in definitionHub.arrowLineTypes) {
+            for (var j = 0, innerLen = definitionHub.arrowLineTypes[i].length; j < innerLen; j++) {
+                reverseLookup[definitionHub.arrowLineTypes[i][j]] = i;
+            }
+        }
+        
+		for (var i in definitionHub.edgeLineTypes) {
+            for (var j = 0, innerLen = definitionHub.edgeLineTypes[i].length; j < innerLen; j++) {
+                reverseLookup[definitionHub.edgeLineTypes[i][j]] = i;
+            }
+        }
+        return reverseLookup;
+    }
+
     function preAddProcessing(obj) {
+        var reverseLookup = mapReverseDictionary();
+
         for (var i = 0; i < obj.elements.nodes.length; i++) {
             if (obj.elements.nodes[i].data.id.substring(0, 1) == "n") {
                 var number = parseInt(obj.elements.nodes[i].data.id.substring(1, obj.elements.nodes.length - 1));
                 if (number > nodeCounter)
                     nodeCounter = number + 1;
             }
-
-            if (typeof (obj.elements.nodes[i].data.backgroundImage) == "undefined") {
-                obj.elements.nodes[i].data.backgroundImage = "";
+			
+            if (typeof (obj.elements.nodes[i].data.BackgroundImage) == "undefined") {
+                obj.elements.nodes[i].data.BackgroundImage = "";
             }
 
-            if (typeof (obj.elements.nodes[i].data.zIndex) == "undefined") {
-                obj.elements.nodes[i].data.zIndex = 0;
+            if (typeof (obj.elements.nodes[i].data.ZIndex) == "undefined") {
+                obj.elements.nodes[i].data.ZIndex = 0;
             }
 
-            if (nodeTypes.indexOf(obj.elements.nodes[i].data.Type) == -1) {
-                obj.elements.nodes[i].data.Type = "label";
+            if (typeof (obj.elements.nodes[i].data.Type) == "undefined" || typeof (reverseLookup[obj.elements.nodes[i].data.Type.toLowerCase()]) == "undefined") {
+                obj.elements.nodes[i].data.Type = "nType15";
+            } else {
+                obj.elements.nodes[i].data.Type = reverseLookup[obj.elements.nodes[i].data.Type.toLowerCase()];
             }
 
-            if (typeof (obj.elements.nodes[i].data.rna) == "undefined") {
-                obj.elements.nodes[i].data.rna = 0;
+            if (typeof (obj.elements.nodes[i].data.Rna) == "undefined" || isNaN(obj.elements.nodes[i].data.Rna)) {
+                obj.elements.nodes[i].data.Rna = 0;
             }
 
-            if (typeof (obj.elements.nodes[i].data.cnv) == "undefined") {
-                obj.elements.nodes[i].data.cnv = 0;
+            if (typeof (obj.elements.nodes[i].data.Cnv) == "undefined" || isNaN(obj.elements.nodes[i].data.Cnv)) {
+                obj.elements.nodes[i].data.Cnv = 0;
             }
 
-            if (typeof (obj.elements.nodes[i].data.mut) == "undefined") {
-                obj.elements.nodes[i].data.mut = 0;
+            if (typeof (obj.elements.nodes[i].data.Mut) == "undefined" || isNaN(obj.elements.nodes[i].data.Mut)) {
+                obj.elements.nodes[i].data.Mut = 0;
             }
 
-            if (obj.elements.nodes[i].data.Type == "gene") {
-                obj.elements.nodes[i].data.Height = 20;
+            if (typeof (obj.elements.nodes[i].data.oldPositionX) == "undefined" || isNaN(obj.elements.nodes[i].data.oldPositionX)) {
+                obj.elements.nodes[i].data.oldPositionX = 0;
+            }
+
+            if (typeof (obj.elements.nodes[i].data.oldPositionY) == "undefined" || isNaN(obj.elements.nodes[i].data.oldPositionY)) {
+                obj.elements.nodes[i].data.oldPositionY = 0;
+            }
+
+            if (typeof (obj.elements.nodes[i].data.Width) == "undefined" || isNaN(obj.elements.nodes[i].data.Width)) {
                 obj.elements.nodes[i].data.Width = 50;
+            }
+
+            if (typeof (obj.elements.nodes[i].data.Height) == "undefined" || isNaN(obj.elements.nodes[i].data.Height)) {
+                obj.elements.nodes[i].data.Height = 30;
             }
         }
 
@@ -48,6 +96,18 @@ var VQI_PathwayEditorNoGUI = function () {
                 var number = parseInt(obj.elements.edges[i].data.id.substring(1, obj.elements.edges.length - 1));
                 if (number > edgeCounter)
                     edgeCounter = number + 1;
+            }
+
+            if (typeof (obj.elements.edges[i].data.Type) == "undefined" || typeof (reverseLookup[obj.elements.edges[i].data.Type.toLowerCase()]) == "undefined") {
+                obj.elements.edges[i].data.Type = "elType1";
+            } else {
+                obj.elements.edges[i].data.Type = reverseLookup[obj.elements.edges[i].data.Type.toLowerCase()];
+            }
+
+            if (typeof (obj.elements.edges[i].data.EndArrow) == "undefined" || typeof (reverseLookup[obj.elements.edges[i].data.EndArrow.toLowerCase()]) == "undefined") {
+                obj.elements.edges[i].data.EndArrow = "alType1";
+            } else {
+                obj.elements.edges[i].data.EndArrow = reverseLookup[obj.elements.edges[i].data.EndArrow.toLowerCase()];
             }
         }
     }
@@ -108,6 +168,14 @@ var VQI_PathwayEditorNoGUI = function () {
     self.produceJSONExternalNoGUI = function () {
         download(JSON.stringify(self.json), "data.txt", "text/plain");
     }
+	
+	self.setPersonIdNoGUI = function (id) {
+		self.personId = id;
+    }
+	
+	self.getPersonIdNoGUI = function () {
+        return self.personId;
+    }
 
     self.sprayColorExternalNoGUI = function (list) {
         sprayColorNoGUI(list, self.json);
@@ -119,7 +187,7 @@ var VQI_PathwayEditorNoGUI = function () {
     
     self.loadPathwayExternalNoGUI = function (id, f) {
         var callback = f || null;
-        $.post(services['PATHWAY_LIST'], {
+        $.post(services['pathwayFinder'], {
             pid: id
         }, function (data) {
             self.json = JSON.parse(data);
@@ -129,4 +197,17 @@ var VQI_PathwayEditorNoGUI = function () {
             }
         });
     }
+	
+	self.findPathExternalNoGUI = function(sid,vid){
+		$.post(services['pathwayFinderUrl'], {
+                s: sid,
+                d: vid,
+                json: JSON.stringify(self.json),
+                p: self.personId
+            }, function (yue_data) {
+                var result = JSON.parse(yue_data);
+				console.log(result);
+				return result;
+			})
+	}
 }
