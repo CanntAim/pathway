@@ -160,12 +160,41 @@ var VQI_PathwayEditorNoGUI = function () {
     function setElementsNoGUI(obj) {
         preAddProcessing(obj);
     }
+	
+	function defineNoGUI(key){
+		var definition = "";
+		for (var i in definitionHub.nodeTypes) {
+            if(i == key)
+				definition = definitionHub.nodeTypes[i][0];
+            }
+		for (var i in definitionHub.arrowLineTypes) {
+            if(i == key)
+				definition = definitionHub.arrowLineTypes[i][0];
+           
+            }
+		for (var i in definitionHub.edgeLineTypes) {
+            if(i == key)
+				definition = definitionHub.edgeLineTypes[i][0];
+        }
+        return definition;
+	}
+	
+	function mapForExportNoGUI(obj){
+		for(var i = 0; i < obj.elements.nodes.length-1; i++){
+			obj.elements.nodes[i].data.Type = defineNoGUI(obj.elements.nodes[i].data.Type);
+		}
+		for(var i = 0; i < obj.elements.edges.length-1; i++){
+			obj.elements.edges[i].data.Type = defineNoGUI(obj.elements.edges[i].data.Type);
+			obj.elements.edges[i].data.EndArrow = defineNoGUI(obj.elements.edges[i].data.EndArrow);
+		}
+	}
 
     self.printGraphExternalNoGUI = function () {
         console.log(self.json);
     }
 
     self.produceJSONExternalNoGUI = function () {
+		mapForExportNoGUI(self.json)
         download(JSON.stringify(self.json), "data.txt", "text/plain");
     }
 	
@@ -199,6 +228,7 @@ var VQI_PathwayEditorNoGUI = function () {
     }
 	
 	self.findPathExternalNoGUI = function(sid,vid){
+		mapForExportNoGUI(self.json);
 		$.post(services['pathwayFinderUrl'], {
                 s: sid,
                 d: vid,

@@ -1259,10 +1259,12 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         function findPath(sid, vid) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
+			var obj = JSON.parse(states[states.length - 1]);
+			mapForExport(obj);
             $.post(services['pathwayFinderUrl'], {
                 s: sid,
                 d: vid,
-                json: JSON.stringify(JSON.parse(states[states.length - 1])),
+                json: JSON.stringify(obj),
                 p: personId
             }, function (yue_data) {
                 var result = JSON.parse(yue_data);
