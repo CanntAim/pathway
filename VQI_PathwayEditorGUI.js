@@ -524,6 +524,24 @@ var VQI_PathwayEditorGUI = function (parent) {
             }
             return reverseLookup;
         }
+		
+		function define(key){
+			var definition = "";
+			for (var i in definitionHub.nodeTypes) {
+                if(i == key)
+					definition = definitionHub.nodeTypes[i][0];
+            }
+			for (var i in definitionHub.arrowLineTypes) {
+                if(i == key)
+					definition = definitionHub.arrowLineTypes[i][0];
+           
+            }
+			for (var i in definitionHub.edgeLineTypes) {
+                if(i == key)
+					definition = definitionHub.edgeLineTypes[i][0];
+            }
+            return definition;
+		}
 
         function preAddProcessing(obj) {
             var reverseLookup = mapReverseDictionary();
@@ -664,12 +682,14 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         function saveAsPathway(event) {
             var obj = JSON.parse(states[states.length - 1]);
+			mapForExport(obj);
             var name = document.getElementById(parent + "-pathway-name").value;
             save(obj, name);
         }
 
         function savePathway(event) {
             var obj = JSON.parse(states[states.length - 1]);
+			mapForExport(obj);
             $.post(services['pathwaySaver'], {
                 updatePathway: JSON.stringify(obj)
             }, function (data) {
@@ -1193,9 +1213,22 @@ var VQI_PathwayEditorGUI = function (parent) {
             dialogBundle.dialog("close");
             saveState();
         }
+		
+		// eventually can set unique mappings based on who client is (use some form of assigned signature?).
+		function mapForExport(obj){
+			for(var i = 0; i < obj.elements.nodes.length-1; i++){
+				obj.elements.nodes[i].data.Type = define(obj.elements.nodes[i].data.Type);
+			}
+			for(var i = 0; i < obj.elements.edges.length-1; i++){
+				obj.elements.edges[i].data.Type = define(obj.elements.edges[i].data.Type);
+				obj.elements.edges[i].data.EndArrow = define(obj.elements.edges[i].data.EndArrow);
+			}
+		}
 
         function produceJSON(event) {
-            download(states[states.length - 1], "data.txt", "text/plain");
+			var obj = JSON.parse(states[states.length - 1]);
+			mapForExport(obj);
+            download(JSON.stringify(obj), "data.txt", "text/plain");
         }
 
         function refreshPathwayList() {
