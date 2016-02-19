@@ -1,38 +1,40 @@
 var VQI_PathwayEditorNoGUI = function () {
     self = this;
     var definitionHub = {}
-	
-	definitionHub.nodeTypes = {nType1: ["bundleone","ntype1"], nType2: ["bundletwo","ntype2"], nType3: ["gene","ntype3"], nType4: ["geneproduct","ntype4"], nType5: ["protein","ntype5"], 
-	nType6: ["rna","ntype6"], nType7: ["microrna","ntype7"], nType8: ["kinase","ntype8"], nType9: ["ligand","ntype9"], nType10: ["receptor","ntype10"], nType11: ["biologicalprocess","ntype11"], 
-	nType12: ["triangle","ntype12"], nType13: ["rectangle","ntype13"], nType14: ["circle","ntype14"], nType15: ["ellipse","ntype15"], nType16: ["pentagon","ntype16"], nType17: ["hexagon","ntype17"], 
-	nType18: ["heptagon","ntype18"], nType19: ["octagon","ntype19"], nType20: ["star","ntype20"], nType21: ["diamond","ntype21"], nType22: ["vee","ntype22"], nType23: ["rhomboid","ntype23"], nType24: ["label","ntype24"]};
-    
-	definitionHub.edgeLineTypes = {elType1: ["solid","eltype1"], elType2: ["dashed","eltype2"], elType3: ["dotted","eltype3"]};
-    definitionHub.arrowLineTypes = {alType1: ["line","altype1","1"], alType2: ["activate","altype2","2"], alType3: ["inhibit", "tbar","altype3","3"], alType4: ["regulate","altype4","4"]};
-    
-	var services = {};
+
+    definitionHub.nodeTypes = {nType1: ["bundleone", "ntype1"], nType2: ["bundletwo", "ntype2"], nType3: ["gene", "ntype3"], nType4: ["geneproduct", "ntype4"], nType5: ["protein", "ntype5"],
+        nType6: ["rna", "ntype6"], nType7: ["microrna", "ntype7"], nType8: ["kinase", "ntype8"], nType9: ["ligand", "ntype9"], nType10: ["receptor", "ntype10"], nType11: ["biologicalprocess", "ntype11"],
+        nType12: ["triangle", "ntype12"], nType13: ["rectangle", "ntype13"], nType14: ["circle", "ntype14"], nType15: ["ellipse", "ntype15"], nType16: ["pentagon", "ntype16"], nType17: ["hexagon", "ntype17"],
+        nType18: ["heptagon", "ntype18"], nType19: ["octagon", "ntype19"], nType20: ["star", "ntype20"], nType21: ["diamond", "ntype21"], nType22: ["vee", "ntype22"], nType23: ["rhomboid", "ntype23"], nType24: ["label", "ntype24"]};
+
+    definitionHub.edgeLineTypes = {elType1: ["solid", "eltype1"], elType2: ["dashed", "eltype2"], elType3: ["dotted", "eltype3"]};
+    definitionHub.arrowLineTypes = {
+        alType1: ["line", "altype1", "1", "rType1"]
+        , alType2: ["activate", "altype2", "2", "rType2"]
+        , alType3: ["inhibit", "tbar", "altype3", "3", "rType3"]
+        , alType4: ["regulate", "altype4", "4", "rType4"]};
+    var services = {};
     services["pathwayFinderUrl"] = "http://bibci.engr.uconn.edu/puj07001/pathway_services/find_path_and_score/find_path_and_score.php";
-	services['pathwayFinder'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
-	
+    services['pathwayFinder'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
+
     var nodeCounter = 0;
     var edgeCounter = 0;
-	
+
     function mapReverseDictionary() {
         var reverseLookup = {};
         for (var i in definitionHub.nodeTypes) {
             for (var j = 0, innerLen = definitionHub.nodeTypes[i].length; j < innerLen; j++) {
-                reverseLookup[definitionHub.nodeTypes[i][j]] = i;
+                reverseLookup[definitionHub.nodeTypes[i][j].toLowerCase()] = i;
             }
         }
         for (var i in definitionHub.arrowLineTypes) {
             for (var j = 0, innerLen = definitionHub.arrowLineTypes[i].length; j < innerLen; j++) {
-                reverseLookup[definitionHub.arrowLineTypes[i][j]] = i;
+                reverseLookup[definitionHub.arrowLineTypes[i][j].toLowerCase()] = i;
             }
         }
-        
-		for (var i in definitionHub.edgeLineTypes) {
+        for (var i in definitionHub.edgeLineTypes) {
             for (var j = 0, innerLen = definitionHub.edgeLineTypes[i].length; j < innerLen; j++) {
-                reverseLookup[definitionHub.edgeLineTypes[i][j]] = i;
+                reverseLookup[definitionHub.edgeLineTypes[i][j].toLowerCase()] = i;
             }
         }
         return reverseLookup;
@@ -47,7 +49,7 @@ var VQI_PathwayEditorNoGUI = function () {
                 if (number > nodeCounter)
                     nodeCounter = number + 1;
             }
-			
+
             if (typeof (obj.elements.nodes[i].data.BackgroundImage) == "undefined") {
                 obj.elements.nodes[i].data.BackgroundImage = "";
             }
@@ -160,49 +162,49 @@ var VQI_PathwayEditorNoGUI = function () {
     function setElementsNoGUI(obj) {
         preAddProcessing(obj);
     }
-	
-	function defineNoGUI(key){
-		var definition = "";
-		for (var i in definitionHub.nodeTypes) {
-            if(i == key)
-				definition = definitionHub.nodeTypes[i][0];
-            }
-		for (var i in definitionHub.arrowLineTypes) {
-            if(i == key)
-				definition = definitionHub.arrowLineTypes[i][0];
-           
-            }
-		for (var i in definitionHub.edgeLineTypes) {
-            if(i == key)
-				definition = definitionHub.edgeLineTypes[i][0];
+
+    function defineNoGUI(key) {
+        var definition = "";
+        for (var i in definitionHub.nodeTypes) {
+            if (i == key)
+                definition = definitionHub.nodeTypes[i][0];
+        }
+        for (var i in definitionHub.arrowLineTypes) {
+            if (i == key)
+                definition = definitionHub.arrowLineTypes[i][0];
+
+        }
+        for (var i in definitionHub.edgeLineTypes) {
+            if (i == key)
+                definition = definitionHub.edgeLineTypes[i][0];
         }
         return definition;
-	}
-	
-	function mapForExportNoGUI(obj){
-		for(var i = 0; i < obj.elements.nodes.length-1; i++){
-			obj.elements.nodes[i].data.Type = defineNoGUI(obj.elements.nodes[i].data.Type);
-		}
-		for(var i = 0; i < obj.elements.edges.length-1; i++){
-			obj.elements.edges[i].data.Type = defineNoGUI(obj.elements.edges[i].data.Type);
-			obj.elements.edges[i].data.EndArrow = defineNoGUI(obj.elements.edges[i].data.EndArrow);
-		}
-	}
+    }
+
+    function mapForExportNoGUI(obj) {
+        for (var i = 0; i < obj.elements.nodes.length - 1; i++) {
+            obj.elements.nodes[i].data.Type = defineNoGUI(obj.elements.nodes[i].data.Type);
+        }
+        for (var i = 0; i < obj.elements.edges.length - 1; i++) {
+            obj.elements.edges[i].data.Type = defineNoGUI(obj.elements.edges[i].data.Type);
+            obj.elements.edges[i].data.EndArrow = defineNoGUI(obj.elements.edges[i].data.EndArrow);
+        }
+    }
 
     self.printGraphExternalNoGUI = function () {
         console.log(self.json);
     }
 
     self.produceJSONExternalNoGUI = function () {
-		mapForExportNoGUI(self.json)
+        mapForExportNoGUI(self.json)
         download(JSON.stringify(self.json), "data.txt", "text/plain");
     }
-	
-	self.setPersonIdNoGUI = function (id) {
-		self.personId = id;
+
+    self.setPersonIdNoGUI = function (id) {
+        self.personId = id;
     }
-	
-	self.getPersonIdNoGUI = function () {
+
+    self.getPersonIdNoGUI = function () {
         return self.personId;
     }
 
@@ -213,7 +215,7 @@ var VQI_PathwayEditorNoGUI = function () {
     self.getJSON = function () {
         return JSON.stringify(self.json);
     }
-    
+
     self.loadPathwayExternalNoGUI = function (id, f) {
         var callback = f || null;
         $.post(services['pathwayFinder'], {
@@ -226,18 +228,22 @@ var VQI_PathwayEditorNoGUI = function () {
             }
         });
     }
-	
-	self.findPathExternalNoGUI = function(sid,vid){
-		mapForExportNoGUI(self.json);
-		$.post(services['pathwayFinderUrl'], {
-                s: sid,
-                d: vid,
-                json: JSON.stringify(self.json),
-                p: self.personId
-            }, function (yue_data) {
-                var result = JSON.parse(yue_data);
-				console.log(result);
-				return result;
-			})
-	}
+
+    self.findPathExternalNoGUI = function (sid, vid, f) {
+        var callback = f || null;
+        mapForExportNoGUI(self.json);
+        $.post(services['pathwayFinderUrl'], {
+            s: sid,
+            d: vid,
+            json: JSON.stringify(self.json),
+            p: self.personId
+        }, function (yue_data) {
+            var result = JSON.parse(yue_data);
+//            console.log(result);
+            if (callback !== null) {
+                callback(result);
+            }
+            return result;
+        })
+    }
 }

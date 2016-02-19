@@ -12,15 +12,19 @@ var VQI_PathwayEditorGUI = function (parent) {
     // Globals
     var self = this;
     var definitionHub = {}
-    
-	definitionHub.nodeTypes = {nType1: ["bundleone","ntype1"], nType2: ["bundletwo","ntype2"], nType3: ["gene","ntype3"], nType4: ["geneproduct","ntype4"], nType5: ["protein","ntype5"], 
-	nType6: ["rna","ntype6"], nType7: ["microrna","ntype7"], nType8: ["kinase","ntype8"], nType9: ["ligand","ntype9"], nType10: ["receptor","ntype10"], nType11: ["biologicalprocess","ntype11"], 
-	nType12: ["triangle","ntype12"], nType13: ["rectangle","ntype13"], nType14: ["circle","ntype14"], nType15: ["ellipse","ntype15"], nType16: ["pentagon","ntype16"], nType17: ["hexagon","ntype17"], 
-	nType18: ["heptagon","ntype18"], nType19: ["octagon","ntype19"], nType20: ["star","ntype20"], nType21: ["diamond","ntype21"], nType22: ["vee","ntype22"], nType23: ["rhomboid","ntype23"], nType24: ["label","ntype24"]};
-    
-	definitionHub.edgeLineTypes = {elType1: ["solid","eltype1"], elType2: ["dashed","eltype2"], elType3: ["dotted","eltype3"]};
-    definitionHub.arrowLineTypes = {alType1: ["line","altype1","1"], alType2: ["activate","altype2","2"], alType3: ["inhibit", "tbar","altype3","3"], alType4: ["regulate","altype4","4"]};
-	
+
+    definitionHub.nodeTypes = {nType1: ["bundleone", "ntype1"], nType2: ["bundletwo", "ntype2"], nType3: ["gene", "ntype3"], nType4: ["geneproduct", "ntype4"], nType5: ["protein", "ntype5"],
+        nType6: ["rna", "ntype6"], nType7: ["microrna", "ntype7"], nType8: ["kinase", "ntype8"], nType9: ["ligand", "ntype9"], nType10: ["receptor", "ntype10"], nType11: ["biologicalprocess", "ntype11"],
+        nType12: ["triangle", "ntype12"], nType13: ["rectangle", "ntype13"], nType14: ["circle", "ntype14"], nType15: ["ellipse", "ntype15"], nType16: ["pentagon", "ntype16"], nType17: ["hexagon", "ntype17"],
+        nType18: ["heptagon", "ntype18"], nType19: ["octagon", "ntype19"], nType20: ["star", "ntype20"], nType21: ["diamond", "ntype21"], nType22: ["vee", "ntype22"], nType23: ["rhomboid", "ntype23"], nType24: ["label", "ntype24"]};
+
+    definitionHub.edgeLineTypes = {elType1: ["solid", "eltype1"], elType2: ["dashed", "eltype2"], elType3: ["dotted", "eltype3"]};
+    definitionHub.arrowLineTypes = {
+        alType1: ["line", "altype1", "1", "rType1"]
+        , alType2: ["activate", "altype2", "2", "rType2"]
+        , alType3: ["inhibit", "tbar", "altype3", "3", "rType3"]
+        , alType4: ["regulate", "altype4", "4", "rType4"]};
+
     var personId = "";
     var pathName = "";
     var states = [];
@@ -509,42 +513,43 @@ var VQI_PathwayEditorGUI = function (parent) {
             var reverseLookup = {};
             for (var i in definitionHub.nodeTypes) {
                 for (var j = 0, innerLen = definitionHub.nodeTypes[i].length; j < innerLen; j++) {
-                    reverseLookup[definitionHub.nodeTypes[i][j]] = i;
+                    reverseLookup[definitionHub.nodeTypes[i][j].toLowerCase()] = i;
                 }
             }
             for (var i in definitionHub.arrowLineTypes) {
                 for (var j = 0, innerLen = definitionHub.arrowLineTypes[i].length; j < innerLen; j++) {
-                    reverseLookup[definitionHub.arrowLineTypes[i][j]] = i;
+                    reverseLookup[definitionHub.arrowLineTypes[i][j].toLowerCase()] = i;
                 }
             }
             for (var i in definitionHub.edgeLineTypes) {
                 for (var j = 0, innerLen = definitionHub.edgeLineTypes[i].length; j < innerLen; j++) {
-                    reverseLookup[definitionHub.edgeLineTypes[i][j]] = i;
+                    reverseLookup[definitionHub.edgeLineTypes[i][j].toLowerCase()] = i;
                 }
             }
             return reverseLookup;
         }
-		
-		function define(key){
-			var definition = "";
-			for (var i in definitionHub.nodeTypes) {
-                if(i == key)
-					definition = definitionHub.nodeTypes[i][0];
+
+        function define(key) {
+            var definition = "";
+            for (var i in definitionHub.nodeTypes) {
+                if (i == key)
+                    definition = definitionHub.nodeTypes[i][0];
             }
-			for (var i in definitionHub.arrowLineTypes) {
-                if(i == key)
-					definition = definitionHub.arrowLineTypes[i][0];
-           
+            for (var i in definitionHub.arrowLineTypes) {
+                if (i == key)
+                    definition = definitionHub.arrowLineTypes[i][0];
+
             }
-			for (var i in definitionHub.edgeLineTypes) {
-                if(i == key)
-					definition = definitionHub.edgeLineTypes[i][0];
+            for (var i in definitionHub.edgeLineTypes) {
+                if (i == key)
+                    definition = definitionHub.edgeLineTypes[i][0];
             }
             return definition;
-		}
+        }
 
         function preAddProcessing(obj) {
             var reverseLookup = mapReverseDictionary();
+//            console.log(reverseLookup);
 
             for (var i = 0; i < obj.elements.nodes.length; i++) {
                 if (obj.elements.nodes[i].data.id.substring(0, 1) == "n") {
@@ -682,14 +687,14 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         function saveAsPathway(event) {
             var obj = JSON.parse(states[states.length - 1]);
-			mapForExport(obj);
+            mapForExport(obj);
             var name = document.getElementById(parent + "-pathway-name").value;
             save(obj, name);
         }
 
         function savePathway(event) {
             var obj = JSON.parse(states[states.length - 1]);
-			mapForExport(obj);
+            mapForExport(obj);
             $.post(services['pathwaySaver'], {
                 updatePathway: JSON.stringify(obj)
             }, function (data) {
@@ -1213,21 +1218,21 @@ var VQI_PathwayEditorGUI = function (parent) {
             dialogBundle.dialog("close");
             saveState();
         }
-		
-		// eventually can set unique mappings based on who client is (use some form of assigned signature?).
-		function mapForExport(obj){
-			for(var i = 0; i < obj.elements.nodes.length-1; i++){
-				obj.elements.nodes[i].data.Type = define(obj.elements.nodes[i].data.Type);
-			}
-			for(var i = 0; i < obj.elements.edges.length-1; i++){
-				obj.elements.edges[i].data.Type = define(obj.elements.edges[i].data.Type);
-				obj.elements.edges[i].data.EndArrow = define(obj.elements.edges[i].data.EndArrow);
-			}
-		}
+
+        // eventually can set unique mappings based on who client is (use some form of assigned signature?).
+        function mapForExport(obj) {
+            for (var i = 0; i < obj.elements.nodes.length - 1; i++) {
+                obj.elements.nodes[i].data.Type = define(obj.elements.nodes[i].data.Type);
+            }
+            for (var i = 0; i < obj.elements.edges.length - 1; i++) {
+                obj.elements.edges[i].data.Type = define(obj.elements.edges[i].data.Type);
+                obj.elements.edges[i].data.EndArrow = define(obj.elements.edges[i].data.EndArrow);
+            }
+        }
 
         function produceJSON(event) {
-			var obj = JSON.parse(states[states.length - 1]);
-			mapForExport(obj);
+            var obj = JSON.parse(states[states.length - 1]);
+            mapForExport(obj);
             download(JSON.stringify(obj), "data.txt", "text/plain");
         }
 
@@ -1259,8 +1264,8 @@ var VQI_PathwayEditorGUI = function (parent) {
 
         function findPath(sid, vid) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
-			var obj = JSON.parse(states[states.length - 1]);
-			mapForExport(obj);
+            var obj = JSON.parse(states[states.length - 1]);
+            mapForExport(obj);
             $.post(services['pathwayFinderUrl'], {
                 s: sid,
                 d: vid,
@@ -1956,8 +1961,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-width': 1
                 })
 
-                // edge elements default css (unselected)
-                .selector('edge').css({
+                        // edge elements default css (unselected)
+                        .selector('edge').css({
                     'line-color': 'black',
                     'line-style': 'solid',
                     'opacity': 0.75,
@@ -1987,8 +1992,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'line-style': 'dotted'
                 })
 
-                // node & edge elements (selected state)
-                .selector('edge:selected').css({
+                        // node & edge elements (selected state)
+                        .selector('edge:selected').css({
                     'background-color': 'green',
                     'line-color': 'green',
                     'target-arrow-color': 'green',
@@ -2001,8 +2006,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'text-opacity': 1.0
                 })
 
-                // query purpose
-                .selector('.green_bg').css({
+                        // query purpose
+                        .selector('.green_bg').css({
                     'background-color': 'lightgreen',
                     'color': 'black'
                 }).selector('.red_bg').css({
@@ -2030,8 +2035,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-width': 1
                 })
 
-                // collapse
-                .selector('.collapsed').css({
+                        // collapse
+                        .selector('.collapsed').css({
                     'opacity': 0.01,
                     'width': .01,
                     'height': .01
