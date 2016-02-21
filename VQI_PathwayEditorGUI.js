@@ -751,32 +751,35 @@ var VQI_PathwayEditorGUI = function (parent) {
                     else
                         target.data('Rna', '0');
                 }
-		if (typeof (header["P"]) != "undefined") {
-                    P = lines[line][header["P"]];
-                    if (!isNaN(P))
-                        target.data('P', P);
-			target.data('label','P=X');
-                    else
+				if (typeof (header["p"]) != "undefined") {
+                    P = lines[line][header["p"]];
+                    if (!isNaN(P)){
+						target.data('P', P);
+						target.data('label',target.data('name')+':('+P.toString());
+                    }else{
                         target.data('P', '0');
-			target.data('label','P=0');
+						target.data('label','label',target.data('name')+':(0,');
+					}
                 }
-		if (typeof (header["M"]) != "undefined") {
-                    M = lines[line][header["M"]];
-                    if (!isNaN(M))
+				if (typeof (header["m"]) != "undefined") {
+                    M = lines[line][header["m"]];
+                    if (!isNaN(M)){
                         target.data('M', M);
-			target.data('label','M=Y')
-                    else
+						target.data('label',target.data('label')+','+M.toString())
+                    }else{
                         target.data('M', '0');
-			target.data('label', 'M=0');
+						target.data('label',target.data('label')+',0');
+					}
                 }
-		if (typeof (header["PA"]) != "undefined") {
-                    PA = lines[line][header["PA"]];
-                    if (!isNaN(PA))
+				if (typeof (header["pa"]) != "undefined") {
+                    PA = lines[line][header["pa"]];
+                    if (!isNaN(PA)){
                         target.data('PA', PA);
-			target.data('label', 'PA=Z');
-                    else
+						target.data('label',target.data('label')+','+PA.toString()+')');
+                    }else{
                         target.data('PA', '0');
-			target.data('label', 'PA=0');
+						target.data('label',target.data('label')+',0)');
+					}
                 }
             }
             saveState();
@@ -1986,27 +1989,15 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'shadow-opacity': 1,
                     'shadow-color': 'red',
                     'border-width': 1
-                }).selector('node[P != 0]').css({
-		    'text-background-opacity': 1,
-                    'text-background-color': '#ccc',
-                    'text-background-shape': 'roundrectangle',
-                    'text-border-color': '#000',
-                    'text-border-width': 1,
-                    'text-border-opacity': 1
-		}).selector('node[M != 0]').css({
-                    'text-background-opacity': 1,
-                    'text-background-color': '#ccc',
-                    'text-background-shape': 'roundrectangle',
-                    'text-border-color': '#000',
-                    'text-border-width': 1,
-                    'text-border-opacity': 1
-                }).selector('node[PA != 0]').css({
-                    'text-background-opacity': 1,
-                    'text-background-color': '#ccc',
-                    'text-background-shape': 'roundrectangle',
-                    'text-border-color': '#000',
-                    'text-border-width': 1,
-                    'text-border-opacity': 1
+                }).selector('node[P > 0]').css({
+					'label': 'data(label)',
+					'text-valign': 'center',
+				}).selector('node[M > 0]').css({
+					'label': 'data(label)',
+					'text-valign': 'center',
+                }).selector('node[PA > 0]').css({
+					'label': 'data(label)',
+					'text-valign': 'center',
                 })
                 
 		// edge elements default css (unselected)
