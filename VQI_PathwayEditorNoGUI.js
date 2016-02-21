@@ -154,6 +154,27 @@ var VQI_PathwayEditorNoGUI = function () {
                         else
                             lookup[target][entry].rna = "0";
                     }
+					if (typeof (header["p"]) != "undefined") {
+                        p = lines[line][header["p"]];
+                        if (!isNaN(p))
+                            lookup[target][entry].p = p;
+                        else
+                            lookup[target][entry].p = "0";
+                    }
+                    if (typeof (header["m"]) != "undefined") {
+                        m = lines[line][header["m"]];
+                        if (!isNaN(m))
+                            lookup[target][entry].m = m;
+                        else
+                            lookup[target][entry].m = "0";
+                    }
+                    if (typeof (header["pa"]) != "undefined") {
+                        pa = lines[line][header["pa"]];
+                        if (!isNaN(pa))
+                            lookup[target][entry].pa = pa;
+                        else
+                            lookup[target][entry].pa = "0";
+                    }
                 }
             }
         }
