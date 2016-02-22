@@ -16,7 +16,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     definitionHub.nodeTypes = {nType1: ["bundleone", "ntype1"], nType2: ["bundletwo", "ntype2"], nType3: ["gene", "ntype3"], nType4: ["geneproduct", "ntype4"], nType5: ["protein", "ntype5"],
         nType6: ["rna", "ntype6"], nType7: ["microrna", "ntype7"], nType8: ["kinase", "ntype8"], nType9: ["ligand", "ntype9"], nType10: ["receptor", "ntype10"], nType11: ["biologicalprocess", "ntype11"],
         nType12: ["triangle", "ntype12"], nType13: ["rectangle", "ntype13"], nType14: ["circle", "ntype14"], nType15: ["ellipse", "ntype15"], nType16: ["pentagon", "ntype16"], nType17: ["hexagon", "ntype17"],
-        nType18: ["heptagon", "ntype18"], nType19: ["octagon", "ntype19"], nType20: ["star", "ntype20"], nType21: ["diamond", "ntype21"], nType22: ["vee", "ntype22"], nType23: ["rhomboid", "ntype23"], nType24: ["label", "ntype24"]};
+        nType18: ["heptagon", "ntype18"], nType19: ["octagon", "ntype19"], nType20: ["star", "ntype20"], nType21: ["diamond", "ntype21"], nType22: ["vee", "ntype22"], nType23: ["rhomboid", "ntype23"], nType24: ["label", "ntype24"], nType25: ["transcriptionfactor", "ntype25"]};
 
     definitionHub.edgeLineTypes = {elType1: ["solid", "eltype1"], elType2: ["dashed", "eltype2"], elType3: ["dotted", "eltype3"]};
     definitionHub.arrowLineTypes = {
@@ -279,6 +279,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "  					<option id=\"" + parent + "-select-vee\" value=\"nType22\">" + definitionHub.nodeTypes.nType22[0] + "<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-rhomboid\" value=\"nType23\">" + definitionHub.nodeTypes.nType23[0] + "<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-label\" value=\"nType24\">" + definitionHub.nodeTypes.nType24[0] + "<\/option>";
+	strVar += "  					<option id=\"" + parent + "-select-transcriptionFactor\" value=\"nType25\">" + definitionHub.nodeTypes.nType25[0] + "<\/option>";
     strVar += "					<\/select>";
     strVar += " 				<input id=\"" + parent + "-type-node-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
@@ -1962,6 +1963,16 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-color': 'white',
                     'border-style': 'solid',
                     'border-width': 1
+                }).selector('node[Type="nType25"]').css({
+                    'shape': 'diamond',
+                    'width': 'data(Width)',
+                    'height': 'data(Height)',
+                    'color': 'black',
+                    'text-valign': 'center',
+                    'background-color': 'white',
+                    'border-color': 'black',
+                    'border-style': 'solid',
+                    'border-width': 1
                 }).selector('node[Type="image"]').css({
                     'shape': 'rectangle',
                     'width': 'data(Width)',
@@ -2297,7 +2308,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-select-kinase").disabled = false;
                     document.getElementById(parent + "-select-ligand").disabled = false;
                     document.getElementById(parent + "-select-receptor").disabled = false;
-                    document.getElementById(parent + "-select-biologicalProcess").disabled = false;
+                    document.getElementById(parent + "-select-transcriptionFactor").disabled = false;
+					document.getElementById(parent + "-select-label").disabled = true;
                     document.getElementById(parent + "-select-triangle").disabled = false;
                     document.getElementById(parent + "-select-rectangle").disabled = false;
                     document.getElementById(parent + "-select-circle").disabled = false;
@@ -2323,6 +2335,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-select-ligand").disabled = true;
                     document.getElementById(parent + "-select-receptor").disabled = true;
                     document.getElementById(parent + "-select-biologicalProcess").disabled = true;
+					document.getElementById(parent + "-select-transcriptionFactor").disabled = true;
                     document.getElementById(parent + "-select-triangle").disabled = true;
                     document.getElementById(parent + "-select-rectangle").disabled = true;
                     document.getElementById(parent + "-select-circle").disabled = true;
