@@ -240,7 +240,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "    			<div class =\"form-group row\">";
     strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-node-name\">node-name:<\/label>";
     strVar += "      			<input type=\"text\" style=\"width: 150px\" name=\"" + parent + "-node-name\" class=\"form-control col-md-4\" id=\"" + parent + "-node-name\" value=\"\"><\/input>";
-    strVar += " 				<input id=\"" + parent + "-node-name-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
+    strVar += " 			<div col-md-4><input id=\"" + parent + "-node-name-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link\"><\/input><input id=\"" + parent + "-node-name-cbio\" value=\"cBio Portal\" type=\"button\" class=\"btn btn-default btn-xs\"><\/input></div>";
     strVar += "    			</div>";
     strVar += "    			<div class =\"form-group row\">";
     strVar += "      			<label class=\"col-md-4\" for=\"" + parent + "-height\">height:<\/label>";
@@ -279,7 +279,7 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "  					<option id=\"" + parent + "-select-vee\" value=\"nType22\">" + definitionHub.nodeTypes.nType22[0] + "<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-rhomboid\" value=\"nType23\">" + definitionHub.nodeTypes.nType23[0] + "<\/option>";
     strVar += "  					<option id=\"" + parent + "-select-label\" value=\"nType24\">" + definitionHub.nodeTypes.nType24[0] + "<\/option>";
-	strVar += "  					<option id=\"" + parent + "-select-transcriptionFactor\" value=\"nType25\">" + definitionHub.nodeTypes.nType25[0] + "<\/option>";
+    strVar += "  					<option id=\"" + parent + "-select-transcriptionFactor\" value=\"nType25\">" + definitionHub.nodeTypes.nType25[0] + "<\/option>";
     strVar += "					<\/select>";
     strVar += " 				<input id=\"" + parent + "-type-node-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
@@ -298,17 +298,17 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" class=\"form-control col-md-4\" name=\"" + parent + "-mut\">";
     strVar += " 				<input id=\"" + parent + "-mut-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-	strVar += "    			<div class =\"form-group row\">";
+    strVar += "    			<div class =\"form-group row\">";
     strVar += "					<label class=\"col-md-4\" for=\"" + parent + "-p\">P:<\/label>";
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-p\" class=\"form-control col-md-4\" name=\"" + parent + "-p\">";
     strVar += " 				<input id=\"" + parent + "-p-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-	strVar += "    			<div class =\"form-group row\">";
+    strVar += "    			<div class =\"form-group row\">";
     strVar += "					<label class=\"col-md-4\" for=\"" + parent + "-m\">M:<\/label>";
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-m\" class=\"form-control col-md-4\" name=\"" + parent + "-m\">";
     strVar += " 				<input id=\"" + parent + "-m-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
-	strVar += "    			<div class =\"form-group row\">";
+    strVar += "    			<div class =\"form-group row\">";
     strVar += "					<label class=\"col-md-4\" for=\"" + parent + "-pa\">Pa:<\/label>";
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-pa\" class=\"form-control col-md-4\" name=\"" + parent + "-pa\">";
     strVar += " 				<input id=\"" + parent + "-pa-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
@@ -767,29 +767,29 @@ var VQI_PathwayEditorGUI = function (parent) {
                     else
                         target.data('Rna', '0');
                 }
-				if (typeof (header["p"]) != "undefined") {
+                if (typeof (header["p"]) != "undefined") {
                     P = lines[line][header["p"]];
-                    if (!isNaN(P)){
-						target.data('P', P);			
-                    }else{
+                    if (!isNaN(P)) {
+                        target.data('P', P);
+                    } else {
                         target.data('P', '0');
-					}
+                    }
                 }
-				if (typeof (header["m"]) != "undefined") {
+                if (typeof (header["m"]) != "undefined") {
                     M = lines[line][header["m"]];
-                    if (!isNaN(M)){
+                    if (!isNaN(M)) {
                         target.data('M', M);
-                    }else{
+                    } else {
                         target.data('M', '0');
-					}
+                    }
                 }
-				if (typeof (header["pa"]) != "undefined") {
+                if (typeof (header["pa"]) != "undefined") {
                     PA = lines[line][header["pa"]];
-                    if (!isNaN(PA)){
+                    if (!isNaN(PA)) {
                         target.data('PA', PA);
-                    }else{
+                    } else {
                         target.data('PA', '0');
-					}
+                    }
                 }
             }
             saveState();
@@ -1564,6 +1564,14 @@ var VQI_PathwayEditorGUI = function (parent) {
             saveState();
         }
 
+        function cBioPortal() {
+            var name = document.getElementById(parent + "-node-name").value;
+            var link = "http://www.cbioportal.org/cross_cancer.do?cancer_study_id=all&data_priority=0&patient_case_select=sample&gene_set_choice=user-defined-list&gene_list="
+                    + name + "&clinical_param_selection=null&tab_index=tab_visualize&Action=Submit&Action=Submit#crosscancer/overview/0/" + name
+                    + "/sarc_mskcc,sarc_tcga,thyroid_mskcc_2016,acc_tcga,chol_jhu_2013,chol_nccs_2013,chol_nus_2012,chol_tcga,gbc_shanghai_2014,blca_bgi,blca_dfarber_mskcc_2014,blca_mskcc_solit_2012,blca_mskcc_solit_2014,blca_tcga,blca_tcga_pub,mm_broad,es_dfarber_broad_2014,es_iocurie_2014,coadread_genentech,coadread_mskcc,coadread_tcga,coadread_tcga_pub,brca_bccrc,brca_bccrc_xenograft_2014,brca_broad,brca_sanger,brca_tcga,brca_tcga_pub,brca_tcga_pub2015,cesc_tcga,lgg_tcga,lgg_ucsf_2014,lgggbm_tcga_pub,pcpg_tcga,escc_icgc,escc_ucla_2014,egc_tmucih_2015,hnsc_broad,hnsc_jhu,hnsc_tcga,hnsc_tcga_pub,npc_nusingapore,lihc_amc_prv,lihc_riken,lihc_tcga,paac_jhu_2014,paad_icgc,paad_tcga,paad_utsw_2015,panet_jhu_2011,meso_tcga,nepc_wcm,prad_broad,prad_broad_2013,prad_mich,prad_mskcc,prad_mskcc_2014,prad_mskcc_cheny1_organoids_2014,prad_su2c_2015,prad_tcga,prad_tcga_pub,cscc_dfarber_2015,rms_nih_2014,tgct_tcga,tet_nci_2014,thca_tcga,thca_tcga_pub,ucec_tcga,ucec_tcga_pub,all_stjude_2015,laml_tcga,laml_tcga_pub,nbl_amc_2012,mbl_broad_2012,mbl_icgc,mbl_pcgp,esca_broad,esca_tcga,stad_pfizer_uhongkong,stad_tcga,stad_tcga_pub,stad_uhongkong,stad_utokyo,uvm_tcga,acyc_mskcc,ccrcc_irc_2014,ccrcc_utokyo_2013,kirc_bgi,kirc_tcga,kirc_tcga_pub,nccrcc_genentech_2014,sclc_clcgp,sclc_jhu,sclc_ucologne_2015,luad_broad,luad_mskcc_2015,luad_tcga,luad_tcga_pub,luad_tsp,lusc_tcga,lusc_tcga_pub,cellline_ccle_broad,cellline_nci60,scco_mskcc,mpnst_mskcc,skcm_broad,skcm_broad_dfarber,skcm_tcga,skcm_yale,desm_broad_2015,thym_tcga,ucs_jhu_2014,ucs_tcga,gbm_tcga,gbm_tcga_pub,gbm_tcga_pub2013,kich_tcga,kich_tcga_pub,kirp_tcga,dlbc_tcga,pcnsl_mayo_2015,ov_tcga,ov_tcga_pub";
+            window.open(link, "_blank");
+
+        }
         function editNodeName() {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var name = document.getElementById(parent + "-node-name").value;
@@ -2010,17 +2018,16 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'shadow-color': 'red',
                     'border-width': 1
                 }).selector('node[PA > 0]').css({
-					'text-valign': 'center',
-					'text-outline-color': '#ff0000',
-					'text-outline-width': 1
-				}).selector('node[PA < 0]').css({
-					'text-valign': 'center',
-					'text-outline-color': '	#0000ff',
-					'text-outline-width': 1
+                    'text-valign': 'center',
+                    'text-outline-color': '#ff0000',
+                    'text-outline-width': 1
+                }).selector('node[PA < 0]').css({
+                    'text-valign': 'center',
+                    'text-outline-color': '#00ff00',
+                    'text-outline-width': 1
                 })
-                
-		// edge elements default css (unselected)
-                .selector('edge').css({
+                        // edge elements default css (unselected)
+                        .selector('edge').css({
                     'line-color': 'black',
                     'line-style': 'solid',
                     'opacity': 0.75,
@@ -2050,8 +2057,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'line-style': 'dotted'
                 })
 
-                // node & edge elements (selected state)
-                .selector('edge:selected').css({
+                        // node & edge elements (selected state)
+                        .selector('edge:selected').css({
                     'background-color': 'green',
                     'line-color': 'green',
                     'target-arrow-color': 'green',
@@ -2064,8 +2071,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'text-opacity': 1.0
                 })
 
-                // query purpose
-                .selector('.green_bg').css({
+                        // query purpose
+                        .selector('.green_bg').css({
                     'background-color': 'lightgreen',
                     'color': 'black'
                 }).selector('.red_bg').css({
@@ -2093,8 +2100,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-width': 1
                 })
 
-                // collapse
-                .selector('.collapsed').css({
+                        // collapse
+                        .selector('.collapsed').css({
                     'opacity': 0.01,
                     'width': .01,
                     'height': .01
@@ -2309,7 +2316,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-select-ligand").disabled = false;
                     document.getElementById(parent + "-select-receptor").disabled = false;
                     document.getElementById(parent + "-select-transcriptionFactor").disabled = false;
-					document.getElementById(parent + "-select-label").disabled = true;
+                    document.getElementById(parent + "-select-label").disabled = true;
                     document.getElementById(parent + "-select-triangle").disabled = false;
                     document.getElementById(parent + "-select-rectangle").disabled = false;
                     document.getElementById(parent + "-select-circle").disabled = false;
@@ -2335,7 +2342,7 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-select-ligand").disabled = true;
                     document.getElementById(parent + "-select-receptor").disabled = true;
                     document.getElementById(parent + "-select-biologicalProcess").disabled = true;
-					document.getElementById(parent + "-select-transcriptionFactor").disabled = true;
+                    document.getElementById(parent + "-select-transcriptionFactor").disabled = true;
                     document.getElementById(parent + "-select-triangle").disabled = true;
                     document.getElementById(parent + "-select-rectangle").disabled = true;
                     document.getElementById(parent + "-select-circle").disabled = true;
@@ -2368,13 +2375,13 @@ var VQI_PathwayEditorGUI = function (parent) {
                     document.getElementById(parent + "-mut").value = target.data('Mut');
                 else
                     document.getElementById(parent + "-p").value = '0';
-				
-				if (typeof (target.data('P')) != "undefined")
+
+                if (typeof (target.data('P')) != "undefined")
                     document.getElementById(parent + "-p").value = target.data('P');
                 else
                     document.getElementById(parent + "-p").value = '0';
 
-				if (typeof (target.data('M')) != "undefined")
+                if (typeof (target.data('M')) != "undefined")
                     document.getElementById(parent + "-m").value = target.data('M');
                 else
                     document.getElementById(parent + "-m").value = '0';
@@ -2498,6 +2505,7 @@ var VQI_PathwayEditorGUI = function (parent) {
         document.getElementById(parent + '-node-move-to-background').addEventListener('click', moveElementtoBackground);
         document.getElementById(parent + '-node-move-to-foreground').addEventListener('click', moveElementtoForeground);
         document.getElementById(parent + '-node-name-apply').addEventListener('click', editNodeName);
+        document.getElementById(parent + '-node-name-cbio').addEventListener('click', cBioPortal);
         document.getElementById(parent + '-height-apply').addEventListener('click', editNodeHeight);
         document.getElementById(parent + '-width-apply').addEventListener('click', editNodeWidth);
         document.getElementById(parent + '-type-node-apply').addEventListener('click', editNodeType);
