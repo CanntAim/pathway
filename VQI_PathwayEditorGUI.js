@@ -754,31 +754,25 @@ var VQI_PathwayEditorGUI = function (parent) {
 				if (typeof (header["p"]) != "undefined") {
                     P = lines[line][header["p"]];
                     if (!isNaN(P)){
-						target.data('P', P);
-						target.data('label',target.data('name')+':('+P.toString());
+						target.data('P', P);			
                     }else{
                         target.data('P', '0');
-						target.data('label','label',target.data('name')+':(0,');
 					}
                 }
 				if (typeof (header["m"]) != "undefined") {
                     M = lines[line][header["m"]];
                     if (!isNaN(M)){
                         target.data('M', M);
-						target.data('label',target.data('label')+','+M.toString())
                     }else{
                         target.data('M', '0');
-						target.data('label',target.data('label')+',0');
 					}
                 }
 				if (typeof (header["pa"]) != "undefined") {
                     PA = lines[line][header["pa"]];
                     if (!isNaN(PA)){
                         target.data('PA', PA);
-						target.data('label',target.data('label')+','+PA.toString()+')');
                     }else{
                         target.data('PA', '0');
-						target.data('label',target.data('label')+',0)');
 					}
                 }
             }
@@ -1989,15 +1983,16 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'shadow-opacity': 1,
                     'shadow-color': 'red',
                     'border-width': 1
-                }).selector('node[P > 0]').css({
-					'label': 'data(label)',
-					'text-valign': 'center',
-				}).selector('node[M > 0]').css({
-					'label': 'data(label)',
-					'text-valign': 'center',
                 }).selector('node[PA > 0]').css({
 					'label': 'data(label)',
 					'text-valign': 'center',
+					'text-outline-color': '#ff0000',
+					'text-outline-width': 3
+				}).selector('node[PA < 0]').css({
+					'label': 'data(label)',
+					'text-valign': 'center',
+					'text-outline-color': '	#0000ff',
+					'text-outline-width': 3
                 })
                 
 		// edge elements default css (unselected)
@@ -2031,8 +2026,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'line-style': 'dotted'
                 })
 
-                        // node & edge elements (selected state)
-                        .selector('edge:selected').css({
+                // node & edge elements (selected state)
+                .selector('edge:selected').css({
                     'background-color': 'green',
                     'line-color': 'green',
                     'target-arrow-color': 'green',
@@ -2045,8 +2040,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'text-opacity': 1.0
                 })
 
-                        // query purpose
-                        .selector('.green_bg').css({
+                // query purpose
+                .selector('.green_bg').css({
                     'background-color': 'lightgreen',
                     'color': 'black'
                 }).selector('.red_bg').css({
@@ -2074,8 +2069,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'border-width': 1
                 })
 
-                        // collapse
-                        .selector('.collapsed').css({
+                // collapse
+                .selector('.collapsed').css({
                     'opacity': 0.01,
                     'width': .01,
                     'height': .01
