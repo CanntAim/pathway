@@ -297,6 +297,21 @@ var VQI_PathwayEditorGUI = function (parent) {
     strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-mut\" class=\"form-control col-md-4\" name=\"" + parent + "-mut\">";
     strVar += " 				<input id=\"" + parent + "-mut-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
     strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group row\">";
+    strVar += "					<label class=\"col-md-4\" for=\"" + parent + "-p\">P:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-p\" class=\"form-control col-md-4\" name=\"" + parent + "-p\">";
+    strVar += " 				<input id=\"" + parent + "-p-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
+    strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group row\">";
+    strVar += "					<label class=\"col-md-4\" for=\"" + parent + "-m\">M:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-m\" class=\"form-control col-md-4\" name=\"" + parent + "-m\">";
+    strVar += " 				<input id=\"" + parent + "-m-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
+    strVar += "    			</div>";
+	strVar += "    			<div class =\"form-group row\">";
+    strVar += "					<label class=\"col-md-4\" for=\"" + parent + "-pa\">Pa:<\/label>";
+    strVar += "      			<input type=\"text\" style=\"width: 150px\" id=\"" + parent + "-pa\" class=\"form-control col-md-4\" name=\"" + parent + "-pa\">";
+    strVar += " 				<input id=\"" + parent + "-pa-apply\" value=\"Apply\" type=\"button\" class=\"btn btn-link col-md-4\"><\/input>";
+    strVar += "    			</div>";
     strVar += "    			<div class =\"form-group row\">";
     strVar += "    				<label class=\"col-md-4\" for=\"" + parent + "-background-image\">Local Image File:<\/label>";
     strVar += "					<input id=\"" + parent + "-background-image\" value=\"Pick an Image File\" type=\"file\"><\/input>";
@@ -1984,15 +1999,13 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'shadow-color': 'red',
                     'border-width': 1
                 }).selector('node[PA > 0]').css({
-					'label': 'data(label)',
 					'text-valign': 'center',
 					'text-outline-color': '#ff0000',
-					'text-outline-width': 3
+					'text-outline-width': 1
 				}).selector('node[PA < 0]').css({
-					'label': 'data(label)',
 					'text-valign': 'center',
 					'text-outline-color': '	#0000ff',
-					'text-outline-width': 3
+					'text-outline-width': 1
                 })
                 
 		// edge elements default css (unselected)
@@ -2341,7 +2354,22 @@ var VQI_PathwayEditorGUI = function (parent) {
                 if (typeof (target.data('Mut')) != "undefined")
                     document.getElementById(parent + "-mut").value = target.data('Mut');
                 else
-                    document.getElementById(parent + "-mut").value = '0';
+                    document.getElementById(parent + "-p").value = '0';
+				
+				if (typeof (target.data('P')) != "undefined")
+                    document.getElementById(parent + "-p").value = target.data('P');
+                else
+                    document.getElementById(parent + "-p").value = '0';
+
+				if (typeof (target.data('M')) != "undefined")
+                    document.getElementById(parent + "-m").value = target.data('M');
+                else
+                    document.getElementById(parent + "-m").value = '0';
+
+                if (typeof (target.data('PA')) != "undefined")
+                    document.getElementById(parent + "-pa").value = target.data('PA');
+                else
+                    document.getElementById(parent + "-pa").value = '0';
             },
             autoOpen: false,
             height: 500,
