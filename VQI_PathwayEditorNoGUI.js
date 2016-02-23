@@ -14,8 +14,9 @@ var VQI_PathwayEditorNoGUI = function () {
         , alType3: ["inhibit", "tbar", "altype3", "3", "rType3"]
         , alType4: ["regulate", "altype4", "4", "rType4"]};
     var services = {};
-    services["pathwayFinderUrl"] = "http://bibci.engr.uconn.edu/puj07001/pathway_services/find_path_and_score/find_path_and_score.php";
-    services['pathwayFinder'] = 'http://cardinal3.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
+    services = web_services['VQI_PATHWAY_EDITOR'];
+//    services["pathwayFinderUrl"] = "http://bibci.engr.uconn.edu/puj07001/pathway_services/find_path_and_score/find_path_and_score.php";
+//    services['pathwayFinder'] = 'http://bibci.engr.uconn.edu/pathwayVisual/PathwayParser/ajaxJSON.php';
 
     var nodeCounter = 0;
     var edgeCounter = 0;
