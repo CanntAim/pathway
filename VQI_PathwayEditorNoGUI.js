@@ -5,7 +5,7 @@ var VQI_PathwayEditorNoGUI = function () {
     definitionHub.nodeTypes = {nType1: ["bundleone", "ntype1"], nType2: ["bundletwo", "ntype2"], nType3: ["gene", "ntype3"], nType4: ["geneproduct", "ntype4"], nType5: ["protein", "ntype5"],
         nType6: ["rna", "ntype6"], nType7: ["microrna", "ntype7"], nType8: ["kinase", "ntype8"], nType9: ["ligand", "ntype9"], nType10: ["receptor", "ntype10"], nType11: ["biologicalprocess", "ntype11"],
         nType12: ["triangle", "ntype12"], nType13: ["rectangle", "ntype13"], nType14: ["circle", "ntype14"], nType15: ["ellipse", "ntype15"], nType16: ["pentagon", "ntype16"], nType17: ["hexagon", "ntype17"],
-        nType18: ["heptagon", "ntype18"], nType19: ["octagon", "ntype19"], nType20: ["star", "ntype20"], nType21: ["diamond", "ntype21"], nType22: ["vee", "ntype22"], nType23: ["rhomboid", "ntype23"], nType24: ["label", "ntype24"]};
+        nType18: ["heptagon", "ntype18"], nType19: ["octagon", "ntype19"], nType20: ["star", "ntype20"], nType21: ["diamond", "ntype21"], nType22: ["vee", "ntype22"], nType23: ["rhomboid", "ntype23"], nType24: ["label", "ntype24"], nType25: ["transcriptionfactor", "ntype25"]};
 
     definitionHub.edgeLineTypes = {elType1: ["solid", "eltype1"], elType2: ["dashed", "eltype2"], elType3: ["dotted", "eltype3"]};
     definitionHub.arrowLineTypes = {
