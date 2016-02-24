@@ -155,7 +155,7 @@ var VQI_PathwayEditorNoGUI = function () {
                         else
                             lookup[target][entry].rna = "0";
                     }
-					if (typeof (header["p"]) != "undefined") {
+                    if (typeof (header["p"]) != "undefined") {
                         p = lines[line][header["p"]];
                         if (!isNaN(p))
                             lookup[target][entry].p = p;
@@ -235,7 +235,9 @@ var VQI_PathwayEditorNoGUI = function () {
     }
 
     self.getJSON = function () {
-        return JSON.stringify(self.json);
+        var obj = JSON.parse(JSON.stringify(self.json));
+        mapForExport(obj);
+        return obj;
     }
 
     self.loadPathwayExternalNoGUI = function (id, f) {

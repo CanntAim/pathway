@@ -1310,7 +1310,7 @@ var VQI_PathwayEditorGUI = function (parent) {
             $.post(services['pathwayFinderUrl'], {
                 s: sid,
                 d: vid,
-                json: JSON.stringify(obj),
+                data_json: JSON.stringify(obj),
                 p: personId
             }, function (yue_data) {
                 var result = JSON.parse(yue_data);
