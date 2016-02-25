@@ -1366,6 +1366,10 @@ var VQI_PathwayEditorGUI = function (parent) {
                                 cy.elements("edge[id = \"" + result[k].edges[j] + "\"]").addClass('focused');
                                 var sourceNode = cy.elements("edge[id = \"" + result[k].edges[j] + "\"]").data('source');
                                 var targetNode = cy.elements("edge[id = \"" + result[k].edges[j] + "\"]").data('target');
+								if( cy.elements("node[id = \"" + sourceNode + "\"]").isParent())
+									 cy.elements("node[id = \"" + sourceNode + "\"]").descendants().addClass('focused');
+								if( cy.elements("node[id = \"" + sourceNode + "\"]").isParent())
+									 cy.elements("node[id = \"" + sourceNode + "\"]").descendants().addClass('focused');
                                 cy.elements("node[id = \"" + sourceNode + "\"]").addClass('focused');
                                 cy.elements("node[id = \"" + targetNode + "\"]").addClass('focused');
                             }
@@ -2292,14 +2296,18 @@ var VQI_PathwayEditorGUI = function (parent) {
                 Cancel: function () {
                     dialogTable.dialog("close");
                     var cy = $('#' + parent + '-cy').cytoscape('get');
-                    cy.$('node').removeClass("unfocused");
-                    cy.$('edge').removeClass("focused");
+					cy.$('node').removeClass('unfocused');
+					cy.$('edge').removeClass('unfocused');
+					cy.$('node').removeClass('focused');
+					cy.$('edge').removeClass('focused');
                 }
             },
             close: function () {
                 var cy = $('#' + parent + '-cy').cytoscape('get');
-                cy.$('node').removeClass("unfocused");
-                cy.$('edge').removeClass("focused");
+				cy.$('node').removeClass('unfocused');
+				cy.$('edge').removeClass('unfocused');
+				cy.$('node').removeClass('focused');
+				cy.$('edge').removeClass('focused');
             }
         });
 
@@ -2430,6 +2438,11 @@ var VQI_PathwayEditorGUI = function (parent) {
             buttons: {
                 Cancel: function () {
                     dialogPathfind.dialog("close");
+					var cy = $('#' + parent + '-cy').cytoscape('get');
+					cy.$('node').removeClass('unfocused');
+					cy.$('edge').removeClass('unfocused');
+					cy.$('node').removeClass('focused');
+					cy.$('edge').removeClass('focused');
                 }
             },
             close: function () {
