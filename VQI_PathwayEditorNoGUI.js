@@ -268,6 +268,6 @@ var VQI_PathwayEditorNoGUI = function () {
                 callback(result);
             }
             return result;
-        })
-    }
-}
+        });
+    };
+};

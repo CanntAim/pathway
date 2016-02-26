@@ -20,14 +20,14 @@
                 <input type=button onclick="save()" value="save">
                 <input id="file" type=file value="spray from file">
         -->
-        <input type=button onclick="load()" value="load">
+<!--        <input type=button onclick="load()" value="load">
         <input type=button onclick="spray()" value="spray">
         <input type=button onclick="print()" value="print">
         <input type=button onclick="save()" value="save">
         <input type=button onclick="find()" value="find">
         <input type=button onclick="setPerson()" value="setPerson">
         <input type=button onclick="getPerson()" value="getPerson">
-        <input id="file" type=file value="spray from file">
+        <input id="file" type=file value="spray from file">-->
 
         <div id="parent"></div>
         <script src="conf/services.js"></script>
