@@ -1741,9 +1741,9 @@ var VQI_PathwayEditorGUI = function (parent) {
                     'padding-left': 2,
                     'padding-right': 2,
                     'font-family': 'data(LabelSize)',
-                    'background-image-opacity': .75,
-                    'opacity': 0.75,
-                    'text-opacity': 0.75
+                    'background-image-opacity': .9,
+                    'opacity': 0.9,
+                    'text-opacity': 0.9
                 }).selector('node[Type="nType1"]').css({
                     'shape': 'roundrectangle',
                     'background-color': 'lightgray',
@@ -2037,8 +2037,8 @@ var VQI_PathwayEditorGUI = function (parent) {
                         .selector('edge').css({
                     'line-color': 'black',
                     'line-style': 'solid',
-                    'opacity': 0.75,
-                    'text-opacity': 0.75,
+                    'opacity': 0.9,
+                    'text-opacity': 0.9,
                     'width': 1
                 }).selector('edge[EndArrow="alType1"]').css({
                     'target-arrow-shape': 'line',
