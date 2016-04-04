@@ -31,11 +31,11 @@
 
         <div id="parent"></div>
         <script src="conf/services.js"></script>
-        <script src="VQI_PathwayEditorGUI.js"></script>
-        <script src="VQI_PathwayEditorNoGUI.js"></script>
+        <script src="VQI_PathwayEditor.js"></script>
         <script>
-                    var objVQI_PathwayEditorGUI = new VQI_PathwayEditorGUI("parent");
-                    var objVQI_PathwayEditorNoGUI = new VQI_PathwayEditorNoGUI();
+					var objVQI_PathwayEditor = new VQI_PathwayEditor();
+                    var objVQI_PathwayEditorGUI = objVQI_PathwayEditor.GUI("parent");
+                    var objVQI_PathwayEditorNoGUI = objVQI_PathwayEditor.NoGUI();
 
                     function load() {
                         objVQI_PathwayEditorNoGUI.loadPathwayExternalNoGUI(334);
