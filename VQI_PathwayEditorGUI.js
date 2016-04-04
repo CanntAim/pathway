@@ -833,14 +833,17 @@ VQI_PathwayEditor.GUI = function (parent) {
         }
 
         function loadPathway(id) {
-            $.post(services['pathwayFinder'], {
+            $.post(services['GET_PATHWAY'], {
                 pid: id
-            }, function (data) {
+            }, function (res) {
+                
                 removeHeroUnit();
-                var obj = JSON.parse(data);
-                var title = document.getElementById(parent + "-pathway-title");
+                var obj = JSON.parse(res);
+                
+                
+//                var title = document.getElementById(parent + "-pathway-title");
                 pathName = obj.data.NAME;
-                title.innerHTML = pathName + " <small>" + personId + "</small>";
+                document.getElementById(parent + "-pathway-title").innerHTML = pathName + " <small>" + personId + "</small>";
                 setElements(obj);
             });
         }
@@ -852,37 +855,43 @@ VQI_PathwayEditor.GUI = function (parent) {
 
         function save(obj, name) {
             obj.data.NAME = name;
-            $.post(services['pathwaySaver'], {
-                insertPathway: JSON.stringify(obj)
+            $.post(services['SAVE_PATHWAY'], {
+                data_json: JSON.stringify(obj)
             }, function (data) {
-                if (data != "Success!") {
-                    obj.data.ID = data;
-                    $.post(services['pathwaySaver'], {
-                        updatePathway: JSON.stringify(obj)
-                    }, function (data) {
-                        dialogPathwaySaveAs.dialog("close");
-                    });
-                } else {
-                    refreshPathwayList();
-                    dialogPathwaySaveAs.dialog("close");
-                }
+                refreshPathwayList();
+//                if (data != "Success!") {
+//                    obj.data.ID = data;
+//                    $.post(services['pathwaySaver'], {
+//                        updatePathway: JSON.stringify(obj)
+//                    }, function (data) {
+//                        dialogPathwaySaveAs.dialog("close");
+//                    });
+//                } else {
+//                    refreshPathwayList();
+//                    dialogPathwaySaveAs.dialog("close");
+//                }
             });
         }
 
         function saveAsPathway(event) {
             var obj = JSON.parse(states[states.length - 1]);
             mapForExport(obj);
+            obj.data.ID = '';
+            
             var name = document.getElementById(parent + "-pathway-name").value;
+            obj.data.NAME = name;
             save(obj, name);
         }
 
         function savePathway(event) {
             var obj = JSON.parse(states[states.length - 1]);
             mapForExport(obj);
-            $.post(services['pathwaySaver'], {
-                updatePathway: JSON.stringify(obj)
+            $.post(services['SAVE_PATHWAY'], {
+                data_json: JSON.stringify(obj)
             }, function (data) {
+                console.log(data);
                 dialogPathwaySaveAs.dialog("close");
+                refreshPathwayList();
             });
         }
 
@@ -890,6 +899,7 @@ VQI_PathwayEditor.GUI = function (parent) {
             var obj = JSON.parse(event.target.result);
             var title = document.getElementById(parent + "-pathway-title");
             pathName = obj.data.NAME;
+            obj.data.ID = '';
             title.innerHTML = pathName + " <small>" + personId + "</small>";
             setElements(obj);
         }
@@ -1450,7 +1460,7 @@ VQI_PathwayEditor.GUI = function (parent) {
                 select.removeChild(select.firstChild);
             }
 
-            $.get(services['pathwayFinder'], {
+            $.post(services['GET_PATHWAY'], {
                 pathwayList: '1'
             }, function (data) {
                 var obj = JSON.parse(data);
@@ -1473,7 +1483,7 @@ VQI_PathwayEditor.GUI = function (parent) {
             var cy = $('#' + parent + '-cy').cytoscape('get');
             var obj = JSON.parse(states[states.length - 1]);
             mapForExport(obj);
-            $.post(services['pathwayFinderUrl'], {
+            $.post(services['FIND_PATH'], {
                 s: sid,
                 d: vid,
                 data_json: JSON.stringify(obj),
