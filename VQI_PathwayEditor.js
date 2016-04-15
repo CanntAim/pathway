@@ -213,36 +213,36 @@ var VQI_PathwayEditor = function () {
 			}
 		}
 
-		self.printGraphExternal = function () {
+		self.NoGUI.printGraphExternal = function () {
 			console.log(self.json);
 		}
 
-		self.produceJSONExternal = function () {
+		self.NoGUI.produceJSONExternal = function () {
 			mapForExportNoGUI(self.json)
 			download(JSON.stringify(self.json), "data.txt", "text/plain");
 		}
 
-		self.setPersonId = function (id) {
+		self.NoGUI.setPersonId = function (id) {
 			self.personId = id;
 		}
 
-		self.getPersonId = function () {
+		self.NoGUI.getPersonId = function () {
 			return self.personId;
 		}
 
-		self.sprayColorExternal = function (list) {
+		self.NoGUI.sprayColorExternal = function (list) {
 			sprayColorNoGUI(list, self.json);
 		}
 
-		self.getJSON = function () {
+		self.NoGUI.getJSON = function () {
 			var obj = JSON.parse(JSON.stringify(self.json));
 			mapForExport(obj);
 			return obj;
 		}
 
-		self.loadPathwayExternal = function (id, f) {
+		self.NoGUI.loadPathwayExternal = function (id, f) {
 			var callback = f || null;
-			$.post(services['pathwayFinder'], {
+			$.post(services['GET_PATHWAY'], {
 				pid: id
 			}, function (data) {
 				self.json = JSON.parse(data);
@@ -253,10 +253,10 @@ var VQI_PathwayEditor = function () {
 			});
 		}
 
-		self.findPathExternal = function (sid, vid, f) {
+		self.NoGUI.findPathExternal = function (sid, vid, f) {
 			var callback = f || null;
 			mapForExportNoGUI(self.json);
-			$.post(services['pathwayFinderUrl'], {
+			$.post(services['FIND_PATH'], {
 				s: sid,
 				d: vid,
 				json: JSON.stringify(self.json),
@@ -812,7 +812,7 @@ var VQI_PathwayEditor = function () {
 			}
 
 			function loadPathway(id) {
-				$.post(services['pathwayFinder'], {
+				$.post(services['GET_PATHWAY'], {
 					pid: id
 				}, function (data) {
 					removeHeroUnit();
@@ -831,12 +831,12 @@ var VQI_PathwayEditor = function () {
 
 			function save(obj, name) {
 				obj.data.NAME = name;
-				$.post(services['pathwaySaver'], {
+				$.post(services['SAVE_PATHWAY'], {
 					insertPathway: JSON.stringify(obj)
 				}, function (data) {
 					if (data != "Success!") {
 						obj.data.ID = data;
-						$.post(services['pathwaySaver'], {
+						$.post(services['SAVE_PATHWAY'], {
 							updatePathway: JSON.stringify(obj)
 						}, function (data) {
 							dialogPathwaySaveAs.dialog("close");
@@ -858,7 +858,7 @@ var VQI_PathwayEditor = function () {
 			function savePathway(event) {
 				var obj = JSON.parse(states[states.length - 1]);
 				mapForExport(obj);
-				$.post(services['pathwaySaver'], {
+				$.post(services['SAVE_PATHWAY'], {
 					updatePathway: JSON.stringify(obj)
 				}, function (data) {
 					dialogPathwaySaveAs.dialog("close");
@@ -1429,7 +1429,7 @@ var VQI_PathwayEditor = function () {
 					select.removeChild(select.firstChild);
 				}
 
-				$.get(services['pathwayFinder'], {
+				$.get(services['GET_PATHWAY'], {
 					pathwayList: '1'
 				}, function (data) {
 					var obj = JSON.parse(data);
@@ -1452,7 +1452,7 @@ var VQI_PathwayEditor = function () {
 				var cy = $('#' + parent + '-cy').cytoscape('get');
 				var obj = JSON.parse(states[states.length - 1]);
 				mapForExport(obj);
-				$.post(services['pathwayFinderUrl'], {
+				$.post(services['FIND_PATH'], {
 					s: sid,
 					d: vid,
 					data_json: JSON.stringify(obj),
@@ -1461,7 +1461,9 @@ var VQI_PathwayEditor = function () {
 					var result = JSON.parse(yue_data);
 					var table = document.getElementById(parent + "-inner-table");
 					var length = document.getElementById(parent + "-inner-table").rows.length;
-
+					
+					console.log(yue_data)
+					
 					for (var n = 0; n < length; n++) {
 						table.deleteRow(0);
 					}
@@ -1519,6 +1521,7 @@ var VQI_PathwayEditor = function () {
 									cy.elements("node[id = \"" + targetNode + "\"]").addClass('focused');
 								}
 							});
+							console.log(result);	
 							path.appendChild(btn);
 							rScore.innerHTML = "<h5><small>" + result[n - 1].rscore + "</small></h5>";
 							genes.innerHTML = "<h5><small>" + Object.keys(result[n - 1].genes) + "</small></h5>";
@@ -2714,22 +2717,55 @@ var VQI_PathwayEditor = function () {
 			document.getElementById(parent + '-search-node-name').addEventListener('focusout', exitSearch);
 
 			//external GUI functions (need to fix this I think...)
-			self.loadPathwayExternal = function (id) {
+			self.GUI.loadPathwayExternal = function (id) {
 				loadPathway(id);
 			}
 
-			self.sprayColorExternal = function (list) {
+			self.GUI.sprayColorExternal = function (list) {
 				sprayColor(list);
 			}
 
-			self.setDataToSpray = function (data) {
+			self.GUI.setDataToSpray = function (data) {
 				this.sprayData = data;
 			};
 
-			self.setPersonId = function (data) {
+			self.GUI.setPersonId = function (data) {
 				setPersonId(data);
 			};
 		});
 	};
-}
+}	
 
+var VQI_PathwayEditorTester = function () {
+	self = this;
+	// test super class	
+	
+	// generic assert function for testing
+	function assert(a, b) {
+		if (a != b)
+			return false;
+		else
+			return true;
+	}
+	self.GUI = function(){
+		// test GUI		
+		function setup(){};
+	
+		function teardown(){};
+		
+		self.GUI.runTests = function(){
+			// will run through all tests and return those that failed
+		}
+	}
+	
+	self.NoGUI = function(){
+		// test No GUI
+		function setup(){};
+	
+		function teardown(){};
+		
+		self.NoGUI.runTests = function(){
+			// will run through all tests and return those that failed
+		}
+	}
+}
