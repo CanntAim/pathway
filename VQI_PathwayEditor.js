@@ -1471,18 +1471,62 @@ var VQI_PathwayEditor = function () {
 
 					for (var n = 0; n <= result.length; n++) {
 						var row = table.insertRow();
-
+						
 						var path = row.insertCell(0);
-						var rScore = row.insertCell(1);
-						var genes = row.insertCell(2)
-						var source = row.insertCell(3);
-						var destination = row.insertCell(4);
-						var person = row.insertCell(5);
-						var consistent = row.insertCell(6);
-						var mScore = row.insertCell(7);
-						var mFdr = row.insertCell(8)
-						var lowP = row.insertCell(9);
-						var consistentLowP = row.insertCell(10);
+						var rScore;
+						var genes;
+						var source;
+						var destination;
+						var person;
+						var consistent;
+						var mScore;
+						var mFdr;
+						var lowP;
+						var consistentLowP;
+						
+						count = 1
+						for(entry in result[0]){
+							if(entry == "rscore"){
+								rScore = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "genes"){
+								genes = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "source"){
+								source = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "destination"){
+								destination = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "person"){
+								person = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "consistent"){
+								consistent = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "mscore"){
+								mScore = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "mFDR"){
+								mFdr = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "lowp"){
+								lowP = row.insertCell(count);
+								count++;
+							}
+							else if(entry == "consistent_lowp"){
+								consistentLowP = row.insertCell(count);
+								count++;
+							}
+						}
 
 						// Add some text to the new cells:
 
@@ -1521,7 +1565,7 @@ var VQI_PathwayEditor = function () {
 									cy.elements("node[id = \"" + targetNode + "\"]").addClass('focused');
 								}
 							});
-							console.log(result);	
+
 							path.appendChild(btn);
 							rScore.innerHTML = "<h5><small>" + result[n - 1].rscore + "</small></h5>";
 							genes.innerHTML = "<h5><small>" + Object.keys(result[n - 1].genes) + "</small></h5>";
