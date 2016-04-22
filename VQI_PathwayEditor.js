@@ -1429,8 +1429,8 @@ var VQI_PathwayEditor = function () {
 					select.removeChild(select.firstChild);
 				}
 
-				$.get(services['GET_PATHWAY'], {
-					pathwayList: '1'
+				$.post(services['GET_PATHWAY'], {
+//					pathwayList: '1'
 				}, function (data) {
 					var obj = JSON.parse(data);
 					var el = document.createElement("option");
