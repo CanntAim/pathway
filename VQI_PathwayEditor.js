@@ -2717,7 +2717,7 @@ var VQI_PathwayEditor = function () {
 
 var VQI_PathwayEditorTester = function () {
 	self = this;
-	// test super class	
+	// test super class - save this for later
 	
 	// generic assert function for testing
 	function assert(a, b) {
@@ -2742,6 +2742,7 @@ var VQI_PathwayEditorTester = function () {
 		function setup(){};
 	
 		function teardown(){};
+		
 		
 		self.NoGUI.runTests = function(){
 			// will run through all tests and return those that failed
