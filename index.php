@@ -30,7 +30,7 @@
         <input id="file" type=file value="spray from file">-->
 
         <div id="parent"></div>
-        <script src="conf/ws-development.js"></script>
+        <script src="conf/ws.js"></script>
         <script src="VQI_PathwayEditor.js"></script>
         <script>
 					var objVQI_PathwayEditor = new VQI_PathwayEditor();
