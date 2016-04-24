@@ -1472,76 +1472,9 @@ var VQI_PathwayEditor = function () {
 					for (var n = 0; n <= result.length; n++) {
 						var row = table.insertRow();
 						
-						var path = row.insertCell(0);
-						var rScore;
-						var genes;
-						var source;
-						var destination;
-						var person;
-						var consistent;
-						var mScore;
-						var mFdr;
-						var lowP;
-						var consistentLowP;
-						
-						count = 1
-						for(entry in result[0]){
-							if(entry == "rscore"){
-								rScore = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "genes"){
-								genes = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "source"){
-								source = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "destination"){
-								destination = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "person"){
-								person = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "consistent"){
-								consistent = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "mscore"){
-								mScore = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "mFDR"){
-								mFdr = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "lowp"){
-								lowP = row.insertCell(count);
-								count++;
-							}
-							else if(entry == "consistent_lowp"){
-								consistentLowP = row.insertCell(count);
-								count++;
-							}
-						}
-
-						// Add some text to the new cells:
-
-						if (n == 0) {
-							path.innerHTML = "<i><h5><small>paths</small></h5></i>";
-							rScore.innerHTML = "<i><h5><small>R-Score</small></h5></i>";
-							genes.innerHTML = "<i><h5><small>Genes</small></h5></i>";
-							source.innerHTML = "<i><h5><small>Source</small></h5></i>";
-							destination.innerHTML = "<i><h5><small>Destination</small></h5></i>";
-							person.innerHTML = "<i><h5><small>Person</small></h5></i>";
-							consistent.innerHTML = "<i><h5><small>Consistent</small></h5></i>";
-							mScore.innerHTML = "<i><h5><small>M-Score</small></h5></i>";
-							mFdr.innerHTML = "<i><h5><small>M-FDR</small></h5></i>";
-							lowP.innerHTML = "<i><h5><small>LowP</small></h5></i>"
-							consistentLowP.innerHTML = "<i><h5><small>Consistent Low P</small></h5></i>"
+						columns = [row.insertCell(0)]
+						if(n == 0){
+							columns[0].innerHTML = "<i><h5><small>paths</small></h5></i>";
 						} else {
 							var btn = document.createElement("button");
 							var t = document.createTextNode((n - 1).toString());
@@ -1565,19 +1498,21 @@ var VQI_PathwayEditor = function () {
 									cy.elements("node[id = \"" + targetNode + "\"]").addClass('focused');
 								}
 							});
-
-							path.appendChild(btn);
-							rScore.innerHTML = "<h5><small>" + result[n - 1].rscore + "</small></h5>";
-							genes.innerHTML = "<h5><small>" + Object.keys(result[n - 1].genes) + "</small></h5>";
-							source.innerHTML = "<h5><small>" + result[n - 1].source + "</small></h5>";
-							destination.innerHTML = "<h5><small>" + result[n - 1].destination + "</small></h5>";
-							person.innerHTML = "<h5><small>" + result[n - 1].person + "</small></h5>";
-							consistent.innerHTML = "<h5><small>" + result[n - 1].consistent + "</small></h5>";
-							mScore.innerHTML = "<h5><small>" + result[n - 1].mscore + "</small></h5>";
-							mFdr.innerHTML = "<h5><small>" + result[n - 1].mFDR + "</small></h5>";
-							lowP.innerHTML = "<h5><small>" + result[n - 1].lowp + "</small></h5>";
-							consistentLowP.innerHTML = "<h5><small>" + result[n - 1].consistent_lowp + "</small></h5>";
+							columns[0].appendChild(btn);				
 						}
+						count = 1
+						for(entry in result[0]){
+							if(entry != "edges"){
+								columns.push(row.insertCell(count));
+								count++;
+								if(n == 0){
+									columns[columns.length-1].innerHTML = "<i><h5><small>"+entry+"</small></h5></i>";
+								} else {
+									columns[columns.length-1].innerHTML = "<h5><small>" + result[n - 1][entry] + "</small></h5>";
+								}
+							}
+						}
+						console.log(columns)
 					}
 					sorttable.makeSortable(table);
 					dialogTable.dialog("open");
