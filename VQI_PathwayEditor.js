@@ -832,24 +832,25 @@ var VQI_PathwayEditor = function () {
             function save(obj, name) {
                 obj.data.NAME = name;
                 $.post(services['SAVE_PATHWAY'], {
-                    insertPathway: JSON.stringify(obj)
+                    data_json: JSON.stringify(obj)
                 }, function (data) {
-                    if (data != "Success!") {
-                        obj.data.ID = data;
-                        $.post(services['SAVE_PATHWAY'], {
-                            updatePathway: JSON.stringify(obj)
-                        }, function (data) {
-                            dialogPathwaySaveAs.dialog("close");
-                        });
-                    } else {
+//                    if (data != "Success!") {
+//                        obj.data.ID = data;
+//                        $.post(services['SAVE_PATHWAY'], {
+//                            updatePathway: JSON.stringify(obj)
+//                        }, function (data) {
+//                            dialogPathwaySaveAs.dialog("close");
+//                        });
+//                    } else {
                         refreshPathwayList();
                         dialogPathwaySaveAs.dialog("close");
-                    }
+//                    }
                 });
             }
 
             function saveAsPathway(event) {
                 var obj = JSON.parse(states[states.length - 1]);
+                obj.data.ID = '';
                 mapForExport(obj);
                 var name = document.getElementById(parent + "-pathway-name").value;
                 save(obj, name);
