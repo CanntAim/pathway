@@ -1,9 +1,8 @@
-var VQI_PathwayEditor = function () {
-    // Web services
+var VQI_PathwayEditor = function (aMode) {
+	var mode = aMode;
     var services = {};
     services = web_services['VQI_PATHWAY_EDITOR'];
 
-    // Globals
     var self = this;
     var definitionHub = {}
 
@@ -205,11 +204,11 @@ var VQI_PathwayEditor = function () {
 
         function mapForExport(obj) {
             for (var i = 0; i < obj.elements.nodes.length - 1; i++) {
-                obj.elements.nodes[i].data.Type = defineNoGUI(obj.elements.nodes[i].data.Type);
+                obj.elements.nodes[i].data.Type = define(obj.elements.nodes[i].data.Type);
             }
             for (var i = 0; i < obj.elements.edges.length - 1; i++) {
-                obj.elements.edges[i].data.Type = defineNoGUI(obj.elements.edges[i].data.Type);
-                obj.elements.edges[i].data.EndArrow = defineNoGUI(obj.elements.edges[i].data.EndArrow);
+                obj.elements.edges[i].data.Type = define(obj.elements.edges[i].data.Type);
+                obj.elements.edges[i].data.EndArrow = define(obj.elements.edges[i].data.EndArrow);
             }
         }
 
@@ -231,7 +230,7 @@ var VQI_PathwayEditor = function () {
         }
 
         self.NoGUI.sprayColorExternal = function (list) {
-            sprayColorNoGUI(list, self.json);
+            sprayColor(list, self.json);
         }
 
         self.NoGUI.getJSON = function () {
@@ -246,7 +245,7 @@ var VQI_PathwayEditor = function () {
                 pid: id
             }, function (data) {
                 self.json = JSON.parse(data);
-                setElementsNoGUI(self.json);
+                setElements(self.json);
                 if (callback !== null) {
                     callback();
                 }
@@ -271,7 +270,9 @@ var VQI_PathwayEditor = function () {
         };
     };
 
-    self.GUI = function (parent) {
+    self.GUI = function (aParent,f) {
+		var callback = f || null;
+		var parent = aParent;
         var personId = "";
         var pathName = "";
         var states = [];
@@ -1703,14 +1704,6 @@ var VQI_PathwayEditor = function () {
                 saveState();
             }
 
-            function cBioPortal() {
-                var name = document.getElementById(parent + "-node-name").value;
-                var link = "http://www.cbioportal.org/cross_cancer.do?cancer_study_id=all&data_priority=0&patient_case_select=sample&gene_set_choice=user-defined-list&gene_list="
-                        + name + "&clinical_param_selection=null&tab_index=tab_visualize&Action=Submit&Action=Submit#crosscancer/overview/0/" + name
-                        + "/sarc_mskcc,sarc_tcga,thyroid_mskcc_2016,acc_tcga,chol_jhu_2013,chol_nccs_2013,chol_nus_2012,chol_tcga,gbc_shanghai_2014,blca_bgi,blca_dfarber_mskcc_2014,blca_mskcc_solit_2012,blca_mskcc_solit_2014,blca_tcga,blca_tcga_pub,mm_broad,es_dfarber_broad_2014,es_iocurie_2014,coadread_genentech,coadread_mskcc,coadread_tcga,coadread_tcga_pub,brca_bccrc,brca_bccrc_xenograft_2014,brca_broad,brca_sanger,brca_tcga,brca_tcga_pub,brca_tcga_pub2015,cesc_tcga,lgg_tcga,lgg_ucsf_2014,lgggbm_tcga_pub,pcpg_tcga,escc_icgc,escc_ucla_2014,egc_tmucih_2015,hnsc_broad,hnsc_jhu,hnsc_tcga,hnsc_tcga_pub,npc_nusingapore,lihc_amc_prv,lihc_riken,lihc_tcga,paac_jhu_2014,paad_icgc,paad_tcga,paad_utsw_2015,panet_jhu_2011,meso_tcga,nepc_wcm,prad_broad,prad_broad_2013,prad_mich,prad_mskcc,prad_mskcc_2014,prad_mskcc_cheny1_organoids_2014,prad_su2c_2015,prad_tcga,prad_tcga_pub,cscc_dfarber_2015,rms_nih_2014,tgct_tcga,tet_nci_2014,thca_tcga,thca_tcga_pub,ucec_tcga,ucec_tcga_pub,all_stjude_2015,laml_tcga,laml_tcga_pub,nbl_amc_2012,mbl_broad_2012,mbl_icgc,mbl_pcgp,esca_broad,esca_tcga,stad_pfizer_uhongkong,stad_tcga,stad_tcga_pub,stad_uhongkong,stad_utokyo,uvm_tcga,acyc_mskcc,ccrcc_irc_2014,ccrcc_utokyo_2013,kirc_bgi,kirc_tcga,kirc_tcga_pub,nccrcc_genentech_2014,sclc_clcgp,sclc_jhu,sclc_ucologne_2015,luad_broad,luad_mskcc_2015,luad_tcga,luad_tcga_pub,luad_tsp,lusc_tcga,lusc_tcga_pub,cellline_ccle_broad,cellline_nci60,scco_mskcc,mpnst_mskcc,skcm_broad,skcm_broad_dfarber,skcm_tcga,skcm_yale,desm_broad_2015,thym_tcga,ucs_jhu_2014,ucs_tcga,gbm_tcga,gbm_tcga_pub,gbm_tcga_pub2013,kich_tcga,kich_tcga_pub,kirp_tcga,dlbc_tcga,pcnsl_mayo_2015,ov_tcga,ov_tcga_pub";
-                window.open(link, "_blank");
-
-            }
             function editNodeName() {
                 var cy = $('#' + parent + '-cy').cytoscape('get');
                 var name = document.getElementById(parent + "-node-name").value;
@@ -1812,6 +1805,14 @@ var VQI_PathwayEditor = function () {
 
             function dialogPathwayConfigureOpen(event) {
                 dialogPathwayConfigure.dialog("open");
+            }
+			
+			function cBioPortal() {
+				var name = document.getElementById(parent + "-node-name").value;
+				var link = "http://www.cbioportal.org/cross_cancer.do?cancer_study_id=all&data_priority=0&patient_case_select=sample&gene_set_choice=user-defined-list&gene_list="
+						+ name + "&clinical_param_selection=null&tab_index=tab_visualize&Action=Submit&Action=Submit#crosscancer/overview/0/" + name
+						+ "/sarc_mskcc,sarc_tcga,thyroid_mskcc_2016,acc_tcga,chol_jhu_2013,chol_nccs_2013,chol_nus_2012,chol_tcga,gbc_shanghai_2014,blca_bgi,blca_dfarber_mskcc_2014,blca_mskcc_solit_2012,blca_mskcc_solit_2014,blca_tcga,blca_tcga_pub,mm_broad,es_dfarber_broad_2014,es_iocurie_2014,coadread_genentech,coadread_mskcc,coadread_tcga,coadread_tcga_pub,brca_bccrc,brca_bccrc_xenograft_2014,brca_broad,brca_sanger,brca_tcga,brca_tcga_pub,brca_tcga_pub2015,cesc_tcga,lgg_tcga,lgg_ucsf_2014,lgggbm_tcga_pub,pcpg_tcga,escc_icgc,escc_ucla_2014,egc_tmucih_2015,hnsc_broad,hnsc_jhu,hnsc_tcga,hnsc_tcga_pub,npc_nusingapore,lihc_amc_prv,lihc_riken,lihc_tcga,paac_jhu_2014,paad_icgc,paad_tcga,paad_utsw_2015,panet_jhu_2011,meso_tcga,nepc_wcm,prad_broad,prad_broad_2013,prad_mich,prad_mskcc,prad_mskcc_2014,prad_mskcc_cheny1_organoids_2014,prad_su2c_2015,prad_tcga,prad_tcga_pub,cscc_dfarber_2015,rms_nih_2014,tgct_tcga,tet_nci_2014,thca_tcga,thca_tcga_pub,ucec_tcga,ucec_tcga_pub,all_stjude_2015,laml_tcga,laml_tcga_pub,nbl_amc_2012,mbl_broad_2012,mbl_icgc,mbl_pcgp,esca_broad,esca_tcga,stad_pfizer_uhongkong,stad_tcga,stad_tcga_pub,stad_uhongkong,stad_utokyo,uvm_tcga,acyc_mskcc,ccrcc_irc_2014,ccrcc_utokyo_2013,kirc_bgi,kirc_tcga,kirc_tcga_pub,nccrcc_genentech_2014,sclc_clcgp,sclc_jhu,sclc_ucologne_2015,luad_broad,luad_mskcc_2015,luad_tcga,luad_tcga_pub,luad_tsp,lusc_tcga,lusc_tcga_pub,cellline_ccle_broad,cellline_nci60,scco_mskcc,mpnst_mskcc,skcm_broad,skcm_broad_dfarber,skcm_tcga,skcm_yale,desm_broad_2015,thym_tcga,ucs_jhu_2014,ucs_tcga,gbm_tcga,gbm_tcga_pub,gbm_tcga_pub2013,kich_tcga,kich_tcga_pub,kirp_tcga,dlbc_tcga,pcnsl_mayo_2015,ov_tcga,ov_tcga_pub";
+				window.open(link, "_blank");
             }
 
             function findObject(event) {
@@ -2212,8 +2213,8 @@ var VQI_PathwayEditor = function () {
                         'text-opacity': 1.0
                     })
 
-                            // query purpose
-                            .selector('.green_bg').css({
+					// query purpose
+					.selector('.green_bg').css({
                         'background-color': 'lightgreen',
                         'color': 'black'
                     }).selector('.red_bg').css({
@@ -2706,54 +2707,194 @@ var VQI_PathwayEditor = function () {
             self.GUI.loadPathwayExternal = function (id) {
                 loadPathway(id);
             }
+			
+			self.GUI.loadPathwayExternalFromJSON = function (json) {
+				var obj = JSON.parse(json)
+                setElements(obj);
+				removeHeroUnit();
+				var title = document.getElementById(parent + "-pathway-title");
+				pathName = obj.data.NAME;
+				title.innerHTML = pathName + " <small>" + personId + "</small>";
+				setElements(obj);
+			}
 
             self.GUI.sprayColorExternal = function (list) {
                 sprayColor(list);
             }
 
-            self.GUI.setDataToSpray = function (data) {
+			self.GUI.setDataToSpray = function (data) {
                 this.sprayData = data;
             };
 
             self.GUI.setPersonId = function (data) {
                 setPersonId(data);
             };
+			
+			self.GUI.refresh = function(){
+				if(mode=="test"){
+					return {parent:parent,personId:personId,pathName:pathName,states:states,stateRecycle:stateRecycle,
+					selectedForQueryNodes:selectedForQueryNodes,
+					selectedForEditNodes:selectedForEditNodes,selectedForEditEdges:selectedForEditEdges,
+					orderedSelectedNodes:orderedSelectedNodes,
+					grabbedCollapsedForEditNodes:grabbedCollapsedForEditNodes,
+					coloredNodes:coloredNodes,dupCounter:dupCounter,loadCounts:loadCounts,
+					target:target,header:header,counts:counts,strInfo:strInfo,highestZOrder:highestZOrder}
+				}else{
+					return {};
+				}
+			}
+			
+			self.GUI.expose = function(){
+				if(mode=="test"){
+					return {removeHeroUnit:removeHeroUnit,newPathway:newPathway,focus:focus,unFocus:unFocus
+					,search:search,exitSearch:exitSearch,onChangePathwayFile:onChangePathwayFile,
+					collapseBundleInformative:collapseBundleInformative,expandBundleInformative:expandBundleInformative,
+					collapseBundle:collapseBundle,expandBundle:expandBundle,onChangeColoringFile:onChangeColoringFile,
+					postAddProcessing:postAddProcessing,define:define,setElements:setElements,loadPathway:loadPathway,
+					onSelect:onSelect,saveAsPathway:saveAsPathway,savePathway:savePathway,onPathwayReaderLoad:onPathwayReaderLoad,
+					onColoringReaderLoad:onColoringReaderLoad,sprayColor:sprayColor,removeElements:removeElements,
+					addDuplicateNodes:addDuplicateNodes,addNode:addNode,addEdge:addEdge,unbundleRecursive:unbundleRecursive,
+					recursiveBundle:recursiveBundle,unbundle:unbundle,bundle:bundle,mapForExport:mapForExport,produceJSON:produceJSON,
+					refreshPathwayList:refreshPathwayList,findPath:findPath,findPathsAll:findPathsAll,findPathOne:findPathOne,
+					saveState:saveState,undo:undo,redo:redo,clone:clone,editEdgeArrowType:editEdgeArrowType,editEdgeLineType:editEdgeLineType,
+					editEdgeDirection:editEdgeDirection,toggleEdgeStyle:toggleEdgeStyle,edgeEnableSegmentedStyle:edgeEnableSegmentedStyle,
+					edgeDisableSegmentedStyle:edgeDisableSegmentedStyle,moveElementtoBackground:moveElementtoBackground,
+					moveElementtoForeground:moveElementtoForeground,removeBackgroundImageOnNode:removeBackgroundImageOnNode,
+					onChangeBackgroundImageOnNode:onChangeBackgroundImageOnNode,editNodeWidth:editNodeWidth,
+					editNodeHeight:editNodeHeight,editNodeType:editNodeType,editNodeName:editNodeName,
+					editNodeMut:editNodeMut,editNodeCnv:editNodeCnv,editNodeRna:editNodeRna,editPersonId:editPersonId,
+					setPersonId:setPersonId}
+				}else{
+					return {};
+				}
+			}
+			if (callback !== null) {
+				callback();
+			}
         });
     };
 }
 
 var VQI_PathwayEditorTester = function () {
-<<<<<<< HEAD
 	self = this;
-	// test super class - save this for later
-	
-	// generic assert function for testing
+
 	function assert(a, b) {
 		if (a != b)
 			return false;
 		else
 			return true;
 	}
-	self.GUI = function(){
-		// test GUI		
-		function setup(){};
-	
-		function teardown(){};
+	self.GUI = function(){	
+		var container;	
+		var objVQI_PathwayEditor;
+		var available={functions:{},objects:{}};
 		
+		function setup(type,test){
+			var callback = test || null;
+			container = document.createElement('div');
+			container.id = 'parent';	
+			
+			objVQI_PathwayEditor = new VQI_PathwayEditor("test");
+			objVQI_PathwayEditor.GUI("parent",(function(){
+				var json = '{"format_version":"1.0","generated_by":"cytoscape-3.2.1","target_cytoscapejs_version":"~2.1","data":{"shared_name":"Pathway","ID":"342","BOARDWIDTH":"1131","BOARDHEIGHT":"858","LICENSE":"CC BY 2.0","ORGANISM":"Homo sapiens","NAME":"EMT","INSTRUCTION":"P53 is not a lonely genome guardian, it operates with the assistance of p73 and p63 within a complex network including distinct but complementary pathways. This protein family presents a      high level of sequence homology in its DNA binding domain. The complexity of the family has been enriched by the alternatively spliced forms of the genes. At present pathway, the alternatively spliced forms of p63 and p73 and how they interact with p53 are shown . However, little is known about the transcriptional regulation of p53 family members. Further studies will tell us whether the three genes of the family also share others regulatory activities.","AUTHOR":"","VERSION":"","PATHWAY_TYPE":"original","SUID":342,"__Annotations":[],"selected":true},"elements":{"nodes":[{"data":{"id":"n13","SUID":"n13","dbId":"34023","shared_name":"","name":"","Type":"bundleone","Height":10,"Width":10,"LabelSize":10,"GraphId":"n13","Valign":"Middle","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":2082.6793338364,"y":241.97831605503498},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n14","SUID":"n14","dbId":"34024","shared_name":"PTK2","name":"PTK2","Type":"ellipse","Height":20,"Width":35,"LabelSize":10,"GraphId":"n14","Valign":"Middle","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":2159.2718434958,"y":273.96705866372},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n0","SUID":"n0","dbId":"34068","shared_name":"IGF","name":"IGF","Type":"ligand","Height":25,"Width":50,"LabelSize":10,"GraphId":"n0","Valign":"Middle","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":2080.5769479934,"y":111.21978147615},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n1","SUID":"n1","dbId":"34069","shared_name":"IGF1R","name":"IGF1R","Type":"receptor","Height":25,"Width":50,"LabelSize":10,"GraphId":"n1","Valign":"Middle","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":2080.5604246648,"y":156.17991338186},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n2","SUID":"n2","dbId":"34070","shared_name":"","name":"","Type":"bundleone","Height":10,"Width":10,"LabelSize":10,"GraphId":"n2","Valign":"Middle","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":1994.5939005576502,"y":240.368611207855},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n3","SUID":"n3","dbId":"34071","shared_name":"NRAS","name":"NRAS","Type":"ellipse","Height":20,"Width":40,"LabelSize":10,"GraphId":"n3","Valign":"Middle","parent":"n2","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":1986.3985233624,"y":232.8477550274},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n12","SUID":"n12","dbId":"34077","shared_name":"PTEN","name":"PTEN","Type":"ellipse","Height":20,"Width":35,"LabelSize":10,"GraphId":"n12","Valign":"Middle","parent":"n13","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":2066.8863333828,"y":253.34641181286},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n4","SUID":"n4","dbId":"34078","shared_name":"PIK3CA","name":"PIK3CA","Type":"ellipse","Height":20,"Width":45,"LabelSize":10,"GraphId":"n4","Valign":"Middle","parent":"n13","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":2091.47233429,"y":230.61022029721},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n5","SUID":"n5","dbId":"34121","shared_name":"SRC","name":"SRC","Type":"ellipse","Height":20,"Width":35,"LabelSize":10,"GraphId":"n5","Valign":"Middle","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":2139.4268370232,"y":225.52515665361},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"n6","SUID":"n6","dbId":"34123","shared_name":"ZHX2","name":"ZHX2","Type":"nType15","Height":20,"Width":35,"LabelSize":10,"GraphId":"n6","Valign":"Middle","parent":"n2","zIndex":"0","selected":false,"BackgroundImage":"","ZIndex":0,"Rna":0,"Cnv":0,"Mut":0,"oldPositionX":0,"oldPositionY":0},"position":{"x":2004.7892777529,"y":247.88946738831},"group":"nodes","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""}],"edges":[{"data":{"id":"e36","SUID":"e36","dbId":"19217","LineThickness":1,"Type":"solid","EndArrow":"activate","Coords":[{"x":0,"y":0},{"x":0,"y":0}],"GraphId":"e36","ZOrder":"12288","source":"n1","target":"n13","StartArrow":"Line","selected":false},"position":{},"group":"edges","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"e8","SUID":"e8","dbId":"19218","LineThickness":1,"Type":"solid","EndArrow":"activate","Coords":[{"x":0,"y":0},{"x":0,"y":0}],"GraphId":"e8","ZOrder":"12288","source":"n5","target":"n14","StartArrow":"Line","selected":false},"position":{},"group":"edges","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"e0","SUID":"e0","dbId":"19254","LineThickness":1,"Type":"solid","EndArrow":"line","Coords":[{"x":0,"y":0},{"x":0,"y":0}],"GraphId":"e0","ZOrder":"12288","source":"n0","target":"n1","StartArrow":"Line","selected":false},"position":{},"group":"edges","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"e1","SUID":"e1","dbId":"19255","LineThickness":1,"Type":"solid","EndArrow":"activate","Coords":[{"x":0,"y":0},{"x":0,"y":0}],"GraphId":"e1","ZOrder":"12288","source":"n1","target":"n2","StartArrow":"Line","selected":false},"position":{},"group":"edges","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"e35","SUID":"e35","dbId":"19261","LineThickness":1,"Type":"solid","EndArrow":"activate","Coords":[{"x":0,"y":0},{"x":0,"y":0}],"GraphId":"e35","ZOrder":"12288","source":"n4","target":"n12","StartArrow":"Line","selected":false},"position":{},"group":"edges","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"e34","SUID":"e34","dbId":"19262","LineThickness":1,"Type":"solid","EndArrow":"activate","Coords":[{"x":0,"y":0},{"x":0,"y":0}],"GraphId":"e34","ZOrder":"12288","source":"n12","target":"n4","StartArrow":"Line","selected":false},"position":{},"group":"edges","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""},{"data":{"id":"e2","SUID":"e2","dbId":"19283","LineThickness":1,"Type":"elType1","EndArrow":"alType2","Coords":[{"x":0,"y":0},{"x":0,"y":0}],"GraphId":"e2","ZOrder":"12288","source":"n1","target":"n5","StartArrow":"Line","selected":false},"position":{},"group":"edges","removed":false,"selected":false,"selectable":true,"locked":false,"grabbable":true,"classes":""}]}}'
+				if(type == "partial"){
+					this.GUI.loadPathwayExternalFromJSON(json);
+					available.functions = this.GUI.expose();
+					available.objects = this.GUI.refresh();
+				}else if(type == "complete"){
+					this.GUI.loadPathwayExternalFromJSON(json);
+					var data = [["gene", "RNA", "PA"], 
+								["IGF", 0, 0],
+								["IGF1R", .5, 0],
+								["NRAS", .25, .25],
+								["ZHX2",-.25,.5],
+								["PTEN",-2,-2],
+								["PIK3CA",-2.5,1],
+								["SRC",1,0],
+								["PTK2",-1,-1]];
+					this.GUI.sprayColorExternal(data);
+					available.functions = this.GUI.expose();
+					available.objects = this.GUI.refresh();
+				}
+				if (callback !== null) {
+					callback();
+				}
+			}).bind(objVQI_PathwayEditor));
+		};
+	
+		function teardown(remaining){
+			var callback = remaining || null;
+			
+			objVQI_PathwayEditor = null;
+			container = null;
+			available.functions = null;
+			available.objects = null;
+			
+			if (callback !== null) {
+				callback();
+			}
+		};
+		
+		function editPersonIdUnderTestAssertPersonIdChanged(remaining){
+			setup("complete",(function(){			
+				//execute
+				testId = 10;
+				document.getElementById(available.objects.parent + "-configure-person-id").value = testId;
+				available.functions.editPersonId(testId);
+				
+				//refresh - acertain current state
+				available.objects = objVQI_PathwayEditor.GUI.refresh();
+				
+				//assert a condition
+				expectedId = testId;
+				actualId = available.objects.personId;
+				console.log(assert(expectedId,actualId));
+				
+				teardown(remaining);
+			}));
+		};
+		
+		function editPersonIdUnderTestAssertTitleMatchesPersonIdChanged(remaining){
+			setup("complete",(function(){			
+				//execute
+				testId = 10;
+				document.getElementById(available.objects.parent + "-configure-person-id").value = testId;
+				available.functions.editPersonId(testId);
+				
+				//refresh - acertain current state
+				available.objects = objVQI_PathwayEditor.GUI.refresh();
+				
+				//assert a condition
+				var expectedTitle = available.objects.pathName + " <small>" + available.objects.personId + "</small>"
+				var actualTitle = document.getElementById(available.objects.parent + "-pathway-title");
+				console.log(assert(actualTitle,expectedTitle));
+				
+				teardown(remaining);
+			}));
+		};
+		
+		function run(tests){
+			var current = tests[0];
+			tests.shift();
+			if(tests.length > 0)
+				current((function(){run(tests)}));
+			else
+				current((function(){}));
+		}
+				
 		self.GUI.runTests = function(){
-			// will run through all tests and return those that failed
+			var tests = [editPersonIdUnderTestAssertTitleMatchesPersonIdChanged,
+			editPersonIdUnderTestAssertPersonIdChanged];
+			run(tests);
 		}
 	}
 	
 	self.NoGUI = function(){
-		// test No GUI
 		function setup(){};
 	
 		function teardown(){};
 		
-		
 		self.NoGUI.runTests = function(){
-			// will run through all tests and return those that failed
 		}
 	}
 }
