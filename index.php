@@ -30,12 +30,16 @@
         <input id="file" type=file value="spray from file">-->
 
         <div id="parent"></div>
-        <script src="conf/ws.js"></script>
+        <script src="conf/ws-development.js"></script>
         <script src="VQI_PathwayEditor.js"></script>
         <script>
-					var objVQI_PathwayEditor = new VQI_PathwayEditor();
-                    var objVQI_PathwayEditorGUI = objVQI_PathwayEditor.GUI("parent");
-                    var objVQI_PathwayEditorNoGUI = objVQI_PathwayEditor.NoGUI();
+//					var objVQI_PathwayEditor = new VQI_PathwayEditor();
+//					objVQI_PathwayEditor.GUI("parent");
+//					objVQI_PathwayEditor.NoGUI();
+
+					var objVQI_PathwayEditorTester = new VQI_PathwayEditorTester();
+					objVQI_PathwayEditorTester.GUI();
+					objVQI_PathwayEditorTester.GUI.runTests();
 
                     function load() {
                         objVQI_PathwayEditorNoGUI.loadPathwayExternalNoGUI(334);
