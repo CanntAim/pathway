@@ -71,7 +71,33 @@ The project utilizes a custom made testing framework that is completely dependen
 
 We breakdown our tester into two seperate subclasses of the tester for GUI and NoGUI. Both of these subclasses have their own setup and teardown functions. These functions re-initiates the pathway editor for every test we run. For the setup phase of the GUI tester we can either do a "complete" or "partial" setup. For a complete setup we initiate the editor, load in a pathway, and spray data over it. For the partial we only initiate the editor. The teardown method simply sets the objects we're testing on to null
 
-The idea of unit-tests is to test the smallest testable parts of an application. This means each test checks only one thing.
+The idea of unit-tests is to test the smallest testable parts of an application. This means each test checks only one thing. Here is the template/procedure for writing tests.
+
+```javascript
+// Test
+function AtestForX(remaining){
+   //either include "complete" or "partial"
+			setup("complete",(function(){			
+				//execute X
+				
+				//refresh - acertain current state
+				available.objects = objVQI_PathwayEditor.GUI.refresh();
+				
+				//assert that the expected condition matches the actual
+				var expectedTitle;
+				var actualTitle;
+				console.log(assert(actualTitle,expectedTitle));
+				
+				teardown(remaining);
+			}));
+		};
+
+self.GUI.runTests = function(){
+ //include the test written above in the array bellow
+ var tests = [AtestForX];
+			run(tests);
+		}
+```
 
 <h2>Interface</h2>
 <h2>Known Bugs</h2>
