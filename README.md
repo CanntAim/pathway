@@ -34,7 +34,6 @@ The VQI Pathway editor is a standard pathway viewer, editor, and analyzer that e
 The following section will go over the application at it's design level. Starting with how the project is currently formatted. This may very well change in the future thusly this section of the document **needs** to be kept up to date, to avoid confusion. Since this application uses Cytoscape.js as the design base this section will include a high level explaination of how Cytoscape is structured, including the purpose of the core and collection.
 
 <h3>Project Structure</h3>
-
 *VQI_PathwayEditor* - Overarching superclass, can be instantiated to run in 'test' or 'regular' modes. When running in test mode the internal functions and objects are exposed. The class maintains the service list, definitionHub, and other globals that are necessary in both GUI and NoGUI versions of the applications as well as functions that are used universally.
 
 *VQI_PathwayEditor.NoGUI* - This subclass maintains the code for the NoGUI version of the application. This subclass can be instantiated easily, in the sense that it's dependency free. This means that it doesn't use cytoscape.js or any other external library since it doesn't require rendering. Despite being very lightweight the NoGUI editor still has useful functionality including the ability to load in pathways into memory, spray data over the pathways, print json representation of graph, download a json representation of the graph, get/set person ID, and call the find & score path service.
@@ -44,8 +43,8 @@ The following section will go over the application at it's design level. Startin
 * Globals (strVar maintains the applications view)
 * Set the innerHTML of the parent container
 * Code to execute once HTML loaded
- * internal functions
- * visual pathway (Initialize cytoscape graph)
+ * Internal functions
+ * Visual pathway (Initialize cytoscape graph)
  * ---Set type styling properties
  * ---Set layout
  * ---Code to excute once cytoscape graph loaded
@@ -58,19 +57,21 @@ The following section will go over the application at it's design level. Startin
 
 *VQI_PathwayEditorTester* - This is the VQI_PathwayEditor tester. This class maintains the assert function, which is a simple condition checker. The GUI and NoGUI versions maintain their own setup and teardown functions along with a runTests function which maintains a list of tests that it runs through. The details of the Test Framework are outlined below. Any unit tests will be written here.
 
-<h3>Foundation</h3>
+<h3>Underlying Architecture</h3>
 The foundation of this application is based on cytoscape.js. Cytoscape.js, is a graph library that offers many features that would be difficult to reproduce from just pure D3 code. On top of that it follows good design principles and practices. The code is optimized internally and the library is dependency free. Just like in d3, cytoscape makes use of set-theory, functional patterns, and chaining that goes towards making code readable. Graph data can be passed to and from cytoscape applications via JSON. Cytoscape specification is extended towards graph theory so architecturally speaking cytoscape.js gravitates towards being representative of graphs. Similarly to d3, cytoscape.js has separation between the visual component and the data component.
 
 *Core* - Is a given graph instance. The core is the main interface to the graph and can be used to manipulate the viewport, set listeners for elements, set styles for elements, add elements, issue batch jobs, trigger animations, data exports, or do retrieval of collections.
 
-*Collection* - Is the node and edge data separate of the visualization, although it does store styling and attribute data that are or may be reflective visually. The collection is an underlying representation of the graph in terms of nodes and edges. Changes to the object attributes will be reflective in the graph instance as there is a one to one mapping to the visual object and the collection object. Operations on the collection are non destructive. The framework rather employs a binding mechanism, meaning the old versions of nodes or edges is preserved in a limbo like state for the duration of the application's lifetime.
+*Collection* - Is the node and edge data separate of the visualization, although it does store styling and attribute data that are or may be reflective visually. The collection is an underlying representation of the graph in terms of nodes and edges. Changes to the object attributes will be reflective in the graph instance as there is a one to one mapping to the visual object and the collection object. 
 
-Since the core can handle initial bindings, as an example, for styling on the initial render; Any actions applied to the styling within the context of collection are considered overrides of this initial bindings. The same can be done for listeners. Aside from a coherent data/function architecture, cytoscape also provides graph theory operations ranging from centrality measurements and various types of traversals.
+Operations on the collection are non destructive. The framework rather employs a binding mechanism, meaning the old versions of nodes or edges is preserved in a limbo like state for the duration of the application's lifetime. Since the core can handle initial bindings, as an example, for styling on the initial render; Any actions applied to the styling within the context of collection are considered overrides of this initial bindings. The same can be done for listeners. Aside from a coherent data/function architecture, cytoscape also provides graph theory operations ranging from centrality measurements and various types of traversals.
 
 <h3>Test Framework</h3>
-<h2>Dependencies</h2>
-<h3>Cytoscape.js</h3>
-<h3>Bootstraps</h3>
-<h3>D3</h3>
+The project utilizes a custom made testing framework that is completely dependency free. The framework is simple but should meet the testing requirements of our program. Testing is based completely on asserts, or the checking of expected vs. actual conditions. We currently can do this on objects. Because Javascript is functional we could easily check whether the execution of our code matches the expectation. For this, we need a capture method to catch the actual execution, this should be considered as a future feature. 
+
+We breakdown our tester into two seperate subclasses of the tester for GUI and NoGUI. Both of these subclasses have their own setup and teardown functions. These functions re-initiates the pathway editor for every test we run. For the setup phase of the GUI tester we can either do a "complete" or "partial" setup. For a complete setup we initiate the editor, load in a pathway, and spray data over it. For the partial we only initiate the editor. The teardown method simply sets the objects we're testing on to null
+
+The idea of unit-tests is to test the smallest testable parts of an application. This means each test checks only one thing.
+
 <h2>Interface</h2>
 <h2>Known Bugs</h2>
