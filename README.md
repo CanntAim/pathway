@@ -71,7 +71,7 @@ The project utilizes a custom made testing framework that is completely dependen
 
 We breakdown our tester into two seperate subclasses of the tester for GUI and NoGUI. Both of these subclasses have their own setup and teardown functions. These functions re-initiates the pathway editor for every test we run. For the setup phase of the GUI tester we can either do a "complete" or "partial" setup. For a complete setup we initiate the editor, load in a pathway, and spray data over it. For the partial we only initiate the editor. The teardown method simply sets the objects we're testing on to null
 
-The idea of unit-tests is to test the smallest testable parts of an application. This means each test checks only one thing. Here is the template/procedure for writing tests.
+The idea of unit-tests is to test the smallest testable parts of an application. This means each test checks only one thing. Here is the template/procedure for writing tests, for actual examples check the code.
 
 ```javascript
 // Test
@@ -93,11 +93,12 @@ function AtestForX(remaining){
 		};
 
 self.GUI.runTests = function(){
- //include the test written above in the array bellow
- var tests = [AtestForX];
-			run(tests);
-		}
+	//include the test written above in the array below
+	var tests = [AtestForX];
+	run(tests);
+}
 ```
 
 <h2>Interface</h2>
+
 <h2>Known Bugs</h2>
