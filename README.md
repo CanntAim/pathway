@@ -56,6 +56,8 @@ The following section will go over the application at it's design level. Startin
 * API (external methods to call)
 * Callback
 
+*VQI_PathwayEditorTester* - This is the VQI_PathwayEditor tester. This class maintains the assert function, which is a simple condition checker. The GUI and NoGUI versions maintain their own setup and teardown functions along with a runTests function which maintains a list of tests that it runs through. The details of the Test Framework are outlined below.
+
 <h3>Core</h3>
 <h3>Collection</h3>
 <h3>Test Framework</h3>
