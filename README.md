@@ -134,5 +134,5 @@ objVQI_PathwayEditorTester.GUI();
 objVQI_PathwayEditorTester.GUI.runTests();
 ```
                     
-<h2>Known Bugs</h2>
-This list of known bugs will go here, any additional bugs should be filed in issues.
+<h2>Reporting Bugs</h2>
+Bugs should be filed in issues section.
