@@ -100,5 +100,39 @@ self.GUI.runTests = function(){
 ```
 
 <h2>Interface</h2>
+This section will show examples of how to run the application					
 
+To initiate a new PathwayEditor we run the line below
+```javascript
+var objVQI_PathwayEditor = new VQI_PathwayEditor();
+```
+
+To run the GUI version we excute the following line where "parent" is the id of the DOM container that will house the GUI.
+```javascript
+objVQI_PathwayEditor.GUI("parent");
+```
+
+If want to run the No GUI version we execute the following line. 
+```javascript
+objVQI_PathwayEditor.NoGUI();
+```
+
+We can then call the exposed methods of the NoGUI Editor as followed.
+```javascript
+var data = "Hello!";
+objVQI_PathwayEditorNoGUI.setPersonIdNoGUI(data);
+
+var result = objVQI_PathwayEditorNoGUI.getPersonIdNoGUI();
+console.log(result);
+
+objVQI_PathwayEditorNoGUI.loadPathwayExternalNoGUI(334);
+```
+This is how to initiate the tester and run it.
+```javascript
+var objVQI_PathwayEditorTester = new VQI_PathwayEditorTester();
+objVQI_PathwayEditorTester.GUI();
+objVQI_PathwayEditorTester.GUI.runTests();
+```
+                    
 <h2>Known Bugs</h2>
+This list of known bugs will go here, any additional bugs should be filed in issues.
