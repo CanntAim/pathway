@@ -56,10 +56,17 @@ The following section will go over the application at it's design level. Startin
 * API (external methods to call)
 * Callback
 
-*VQI_PathwayEditorTester* - This is the VQI_PathwayEditor tester. This class maintains the assert function, which is a simple condition checker. The GUI and NoGUI versions maintain their own setup and teardown functions along with a runTests function which maintains a list of tests that it runs through. The details of the Test Framework are outlined below.
+*VQI_PathwayEditorTester* - This is the VQI_PathwayEditor tester. This class maintains the assert function, which is a simple condition checker. The GUI and NoGUI versions maintain their own setup and teardown functions along with a runTests function which maintains a list of tests that it runs through. The details of the Test Framework are outlined below. Any unit tests will be written here.
 
-<h3>Core</h3>
-<h3>Collection</h3>
+<h3>Foundation</h3>
+The foundation of this application is based on cytoscape.js. Cytoscape.js, is a graph library that offers many features that would be difficult to reproduce from just pure D3 code. On top of that it follows good design principles and practices. The code is optimized internally and the library is dependency free. Just like in d3, cytoscape makes use of set-theory, functional patterns, and chaining that goes towards making code readable. Graph data can be passed to and from cytoscape applications via JSON. Cytoscape specification is extended towards graph theory so architecturally speaking cytoscape.js gravitates towards being representative of graphs. Similarly to d3, cytoscape.js has separation between the visual component and the data component.
+
+*Core* - Is a given graph instance. The core is the main interface to the graph and can be used to manipulate the viewport, set listeners for elements, set styles for elements, add elements, issue batch jobs, trigger animations, data exports, or do retrieval of collections.
+
+*Collection* - Is the node and edge data separate of the visualization, although it does store styling and attribute data that are or may be reflective visually. The collection is an underlying representation of the graph in terms of nodes and edges. Changes to the object attributes will be reflective in the graph instance as there is a one to one mapping to the visual object and the collection object. Operations on the collection are non destructive. The framework rather employs a binding mechanism, meaning the old versions of nodes or edges is preserved in a limbo like state for the duration of the application's lifetime.
+
+Since the core can handle initial bindings, as an example, for styling on the initial render; Any actions applied to the styling within the context of collection are considered overrides of this initial bindings. The same can be done for listeners. Aside from a coherent data/function architecture, cytoscape also provides graph theory operations ranging from centrality measurements and various types of traversals.
+
 <h3>Test Framework</h3>
 <h2>Dependencies</h2>
 <h3>Cytoscape.js</h3>
