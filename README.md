@@ -27,10 +27,35 @@ The VQI Pathway editor is a standard pathway viewer, editor, and analyzer that e
 * Design
   * API (integerate with other services)
   * None-GUI Application (fallback)
+  * Self-Documenting Code
   * Test framework
 
 <h2>Design</h2>
+The following section will go over the application at it's design level. Starting with how the project is currently formatted. This may very well change in the future thusly this section of the document **needs** to be kept up to date, to avoid confusion. Since this application uses Cytoscape.js as the design base this section will include a high level explaination of how Cytoscape is structured, including the purpose of the core and collection.
+
 <h3>Project Structure</h3>
+
+*VQI_PathwayEditor* - Overarching superclass, can be instantiated to run in 'test' or 'regular' modes. When running in test mode the internal functions and objects are exposed. The class maintains the service list, definitionHub, and other globals that are necessary in both GUI and NoGUI versions of the applications as well as functions that are used universally.
+
+*VQI_PathwayEditor.NoGUI* - This subclass maintains the code for the NoGUI version of the application. This subclass can be instantiated easily, in the sense that it's dependency free. This means that it doesn't use cytoscape.js or any other external library since it doesn't require rendering. Despite being very lightweight the NoGUI editor still has useful functionality including the ability to load in pathways into memory, spray data over the pathways, print json representation of graph, download a json representation of the graph, get/set person ID, and call the find & score path service.
+
+*VQI_PathwayEditor.GUI* - This subclass is where the bulk of the application is located. The high level overview of the subclasses structure is as followed.
+
+* Globals (strVar maintains the applications view)
+* Set the innerHTML of the parent container
+* Code to execute once HTML loaded
+ * internal functions
+ * visual pathway (Initialize cytoscape graph)
+ * ---Set type styling properties
+ * ---Set layout
+ * ---Code to excute once cytoscape graph loaded
+ * ------This includes setting listeners and setting the view's state
+* Setting the functionality on the dialog boxes
+* Load in the remote pathway list
+* Set listeners on the GUI
+* API (external methods to call)
+* Callback
+
 <h3>Core</h3>
 <h3>Collection</h3>
 <h3>Test Framework</h3>
