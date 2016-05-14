@@ -135,4 +135,4 @@ objVQI_PathwayEditorTester.GUI.runTests();
 ```
                     
 <h2>Reporting Bugs</h2>
-Bugs should be filed in issues section.
+Bugs should be filed in the issues section.
