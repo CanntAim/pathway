@@ -100,7 +100,7 @@ function AtestForX(remaining){
 		};
 
 self.GUI.runTests = function(){
-	//include the test written above in the array below
+	//TO-DO - Include the test(s) written above in the array below
 	var tests = [AtestForX];
 	run(tests);
 }
