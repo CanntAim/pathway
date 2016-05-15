@@ -98,7 +98,25 @@ self.GUI.runTests = function(){
 	run(tests);
 }
 ```
+<h2>Dependencies</h2>
 
+```html
+<head>
+        <meta charset=utf-8/>
+        <link rel="stylesheet" href="style.css"/>
+        <link rel="stylesheet" href="dependencies/jquery-ui-1.11.4/jquery-ui.css"/>
+        <link rel="stylesheet" href="dependencies/bootstrap-3.3.5-dist/css/bootstrap.min.css">
+        <script src="dependencies/download.js"></script>
+		<script src="dependencies/sorttable.js"></script>
+        <script src="dependencies/jquery-1.11.3.min.js"></script>
+        <script src="dependencies/jquery-ui-1.11.4/jquery-ui.js"></script>
+        <script src="dependencies/d3/d3.min.js"></script>
+        <script src="dependencies/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+        <script src="dependencies/cytoscape.js-2.5.4/cytoscape.js"></script>
+        <script src="VQI_PathwayEditorGUI.js"></script>
+</head>
+```
+    
 <h2>Use/Interface</h2>
 This section will show examples of how to run the application					
 
