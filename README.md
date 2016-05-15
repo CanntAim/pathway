@@ -99,7 +99,7 @@ self.GUI.runTests = function(){
 }
 ```
 
-<h2>Interface</h2>
+<h2>Use/Interface</h2>
 This section will show examples of how to run the application					
 
 To initiate a new PathwayEditor we run the line below
