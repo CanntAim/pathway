@@ -80,13 +80,20 @@ function AtestForX(remaining){
 			setup("complete",(function(){			
 				//execute X
 				
+				// TO-DO - Input your execution
+				//
+				//
+				//
+				
 				//refresh - acertain current state
 				available.objects = objVQI_PathwayEditor.GUI.refresh();
 				
 				//assert that the expected condition matches the actual
-				var expectedTitle;
-				var actualTitle;
-				console.log(assert(actualTitle,expectedTitle));
+				// TO-DO - Set your expectation and capture your actual
+				
+				var expected;
+				var actual;
+				console.log(assert(actual,expected));
 				
 				teardown(remaining);
 			}));
