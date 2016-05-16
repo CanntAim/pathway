@@ -75,7 +75,7 @@ The idea of unit-tests is to test the smallest testable parts of an application.
 
 ```javascript
 // Test
-function AtestForX(remaining){
+function ATestForX(remaining){
    //either include "complete" or "partial"
 			setup("complete",(function(){			
 				//execute X
@@ -93,7 +93,7 @@ function AtestForX(remaining){
 				
 				var expected;
 				var actual;
-				console.log(assert(actual,expected));
+				console.log(console.log("aTestForX: " + assert(actual,expected).toString());
 				
 				teardown(remaining);
 			}));

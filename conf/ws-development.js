@@ -21,4 +21,4 @@ web_services['VQI_PATHWAY_EDITOR']['GET_PATHWAY'] = 'http://magellan.engr.uconn.
 web_services['VQI_PATHWAY_EDITOR']['SAVE_PATHWAY'] = 'http://magellan.engr.uconn.edu/puj07001/web_services/vqi_pathway/save_pathway.php';
 
 /* Settings */
-mode = "test";
+var mode = "test";

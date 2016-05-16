@@ -865,17 +865,8 @@ var VQI_PathwayEditor = function(aMode) {
 				$.post(services['SAVE_PATHWAY'], {
 					data_json : JSON.stringify(obj)
 				}, function(data) {
-					//                    if (data != "Success!") {
-					//                        obj.data.ID = data;
-					//                        $.post(services['SAVE_PATHWAY'], {
-					//                            updatePathway: JSON.stringify(obj)
-					//                        }, function (data) {
-					//                            dialogPathwaySaveAs.dialog("close");
-					//                        });
-					//                    } else {
 					refreshPathwayList();
 					dialogPathwaySaveAs.dialog("close");
-					//                    }
 				});
 			}
 
@@ -1499,9 +1490,6 @@ var VQI_PathwayEditor = function(aMode) {
 					table.deleteTHead();
 
 					var resultColumns = result[0]['columns'];
-					//                                        for(var col in result[0]['columns']){
-					//                                            var resultColumn =
-					//                                        }
 
 					for (var n = 0; n < result.length; n++) {
 						var row = table.insertRow();
@@ -1886,7 +1874,6 @@ var VQI_PathwayEditor = function(aMode) {
 							MutDistance.innerHTML = array[n - 1][1][3];
 						}
 					}
-					//document.getElementById(parent + "-dialog-table").innerHTML = data;
 					dialogTable.dialog("open")
 				});
 			}
@@ -2774,7 +2761,8 @@ var VQI_PathwayEditor = function(aMode) {
 						header : header,
 						counts : counts,
 						strInfo : strInfo,
-						highestZOrder : highestZOrder
+						highestZOrder : highestZOrder,
+						cy : $('#' + parent + '-cy').cytoscape('get')
 					}
 				} else {
 					return {};

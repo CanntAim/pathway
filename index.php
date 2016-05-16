@@ -17,6 +17,7 @@
 		<div id="parent"></div>
 		<script src="conf/ws-development.js"></script>
 		<script src="VQI_PathwayEditor.js"></script>
+		<script src="VQI_PathwayEditorTester.js"></script>
 		<script>
 			if (mode != "test") {
 				var objVQI_PathwayEditor = new VQI_PathwayEditor();

@@ -55,6 +55,42 @@ var VQI_PathwayEditorTester = function() {
 			}
 		};
 
+		function sprayColorUnderTestAssertNodeRNAColor(remaining) {
+			setup("partial", (function() {
+				//execute
+				var data = [["gene", "RNA", "PA"], ["NRAS", .25, .25]];
+				available.functions.sprayColor(data);
+
+				//refresh - acertain current state
+				available.objects = objVQI_PathwayEditor.GUI.refresh();
+
+				//assert a condition
+				expectedRNA = .25;
+				actualRNA = available.objects.cy.elements("node[name = 'NRAS']").data("Rna");
+				console.log("sprayColorUnderTestAssertNodeRNAColor: " + assert(expectedRNA, actualRNA).toString());
+
+				teardown(remaining);
+			}));
+		};
+
+		function sprayColorUnderTestAssertNodePAColor(remaining) {
+			setup("partial", (function() {
+				//execute
+				var data = [["gene", "RNA", "PA"], ["NRAS", .25, .25]];
+				available.functions.sprayColor(data);
+
+				//refresh - acertain current state
+				available.objects = objVQI_PathwayEditor.GUI.refresh();
+
+				//assert a condition
+				expectedPA = .25;
+				actualPA = available.objects.cy.elements("node[name = 'NRAS']").data('PA');
+				console.log("sprayColorUnderTestAssertNodePAColor: " + assert(expectedPA, actualPA).toString());
+
+				teardown(remaining);
+			}));
+		};
+
 		function editPersonIdUnderTestAssertPersonIdChanged(remaining) {
 			setup("complete", (function() {
 				//execute
@@ -68,7 +104,7 @@ var VQI_PathwayEditorTester = function() {
 				//assert a condition
 				expectedId = testId;
 				actualId = available.objects.personId;
-				console.log(assert(expectedId, actualId));
+				console.log("editPersonIdUnderTestAssertPersonIdChanged: " + assert(expectedId, actualId).toString());
 
 				teardown(remaining);
 			}));
@@ -86,8 +122,8 @@ var VQI_PathwayEditorTester = function() {
 
 				//assert a condition
 				var expectedTitle = available.objects.pathName + " <small>" + available.objects.personId + "</small>"
-				var actualTitle = document.getElementById(available.objects.parent + "-pathway-title");
-				console.log(assert(actualTitle, expectedTitle));
+				var actualTitle = document.getElementById(available.objects.parent + "-pathway-title").innerHTML;
+				console.log("editPersonIdUnderTestAssertTitleMatchesPersonIdChanged: " + assert(actualTitle, expectedTitle).toString());
 
 				teardown(remaining);
 			}));
@@ -107,7 +143,10 @@ var VQI_PathwayEditorTester = function() {
 
 
 		self.GUI.runTests = function() {
-			var tests = [editPersonIdUnderTestAssertTitleMatchesPersonIdChanged, editPersonIdUnderTestAssertPersonIdChanged];
+			var tests = [editPersonIdUnderTestAssertTitleMatchesPersonIdChanged, 
+			editPersonIdUnderTestAssertPersonIdChanged, 
+			sprayColorUnderTestAssertNodePAColor, 
+			sprayColorUnderTestAssertNodeRNAColor];
 			run(tests);
 		}
 	}
