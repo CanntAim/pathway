@@ -19,15 +19,15 @@
         <script src="VQI_PathwayEditor.js"></script>
         <script src="VQI_PathwayEditorTester.js"></script>
         <script>
-            var mode = "test";
-            if (mode != "test") {
-                var objVQI_PathwayEditor = new VQI_PathwayEditor();
-                objVQI_PathwayEditor.GUI("parent");
-                objVQI_PathwayEditor.NoGUI();
-            } else {
+            var debug_mode = "off";
+            if (debug_mode === "on") {
                 var objVQI_PathwayEditorTester = new VQI_PathwayEditorTester();
                 objVQI_PathwayEditorTester.GUI();
                 objVQI_PathwayEditorTester.GUI.runTests();
+            } else {
+                var objVQI_PathwayEditor = new VQI_PathwayEditor();
+                objVQI_PathwayEditor.GUI("parent");
+                objVQI_PathwayEditor.NoGUI();
             }
         </script>
     </body>
