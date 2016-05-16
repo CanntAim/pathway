@@ -9,11 +9,16 @@
  * Do not commit 'ws.js' file into Git. 'ws.js' file should be ignored while syncing with the repository.
  * 
  */
+
 if (typeof web_services === 'undefined') {
     web_services = {};
 }
-/* Pathway Editor */
+
+/* Services */
 web_services['VQI_PATHWAY_EDITOR'] = {};
 web_services['VQI_PATHWAY_EDITOR']["FIND_PATH"] = "http://magellan.engr.uconn.edu/puj07001/web_services/find_path_and_score/find_path_and_score.php";
 web_services['VQI_PATHWAY_EDITOR']['GET_PATHWAY'] = 'http://magellan.engr.uconn.edu/puj07001/web_services/vqi_pathway/get_pathway.php';
 web_services['VQI_PATHWAY_EDITOR']['SAVE_PATHWAY'] = 'http://magellan.engr.uconn.edu/puj07001/web_services/vqi_pathway/save_pathway.php';
+
+/* Settings */
+mode = "test";
