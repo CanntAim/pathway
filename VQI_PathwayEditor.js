@@ -1786,7 +1786,7 @@ var VQI_PathwayEditor = function(aMode) {
 
 			function editNodeRna() {
 				var Rna = document.getElementById(parent + "-rna").value;
-				selectedForEditNodes.data('Cnv', Rna);
+				selectedForEditNodes.data('Rna', Rna);
 				saveState();
 			}
 
