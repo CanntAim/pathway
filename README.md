@@ -38,7 +38,7 @@ The following section will go over the application at it's design level. Startin
 
 *VQI_PathwayEditor.NoGUI* - This subclass maintains the code for the NoGUI version of the application. This subclass can be instantiated easily, in the sense that it's dependency free. This means that it doesn't use cytoscape.js or any other external library since it doesn't require rendering. Despite being very lightweight the NoGUI editor still has useful functionality including the ability to load in pathways into memory, spray data over the pathways, print json representation of graph, download a json representation of the graph, get/set person ID, and call the find & score path service.
 
-*VQI_PathwayEditor.GUI* - This subclass is where the bulk of the application is located. The high level overview of the subclasses structure is as followed.
+*VQI_PathwayEditor.GUI* - This subclass is where the bulk of the application is located. The high level overview of the structure is as followed.
 
 * Globals (strVar maintains the applications view)
 * Set the innerHTML of the parent container
@@ -67,7 +67,7 @@ The foundation of this application is based on cytoscape.js. Cytoscape.js, is a 
 Operations on the collection are non destructive. The framework rather employs a binding mechanism, meaning the old versions of nodes or edges is preserved in a limbo like state for the duration of the application's lifetime. Since the core can handle initial bindings, as an example, for styling on the initial render; Any actions applied to the styling within the context of collection are considered overrides of this initial bindings. The same can be done for listeners. Aside from a coherent data/function architecture, cytoscape also provides graph theory operations ranging from centrality measurements and various types of traversals.
 
 <h3>Test Framework</h3>
-The project utilizes a custom made testing framework that is completely dependency free. The framework is simple but should meet the testing requirements of our program. Testing is based completely on asserts, or the checking of expected vs. actual conditions. We currently can do this on objects. Because Javascript is functional we could easily check whether the execution of our code matches the expectation. For this, we need a capture method to catch the actual execution, this should be considered as a future feature. 
+The project utilizes a custom made testing framework that is completely dependency free. The framework is simple but should meet the testing requirements of our program. Testing is based completely on asserts, or the checking of expected vs. actual conditions. We currently can do this on objects. We could easily check whether the execution of our code matches the expectation. For this, we need a capture method to catch the actual execution, this should be considered as a future feature. 
 
 We breakdown our tester into two seperate subclasses of the tester for GUI and NoGUI. Both of these subclasses have their own setup and teardown functions. These functions re-initiates the pathway editor for every test we run. For the setup phase of the GUI tester we can either do a "complete" or "partial" setup. For a complete setup we initiate the editor, load in a pathway, and spray data over it. For the partial we only initiate the editor. The teardown method simply sets the objects we're testing on to null
 
