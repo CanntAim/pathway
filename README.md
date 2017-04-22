@@ -6,11 +6,14 @@ The VQI Pathway editor is a standard pathway viewer, editor, and analyzer that e
 <h3>Other tools</h3>
 *Pathway Common* - The first tool that will be looked at is Pathway Commons (PC) which has multiple components that add up to the overall package. Firstly PC serves as a pathway database; It’s supportive of typical query functionality such as extraction and publication, it aims to offer clear author attribution and also provide end-users tools for analysis. It uses the BioPAX as the representational standard when storing, passing and receiving pathway information. It pulls in pathway data from source databases but avoids duplicating some of the more advanced databasing features of those databases. On the user-end Pathway Commons offers tools for visualization and analysis. On the web it offers PCViz for simple visualization, primarily as a way to see genes in the context of a pathway. Secondly it offers ChiBE as a slightly more powerful visualization tool that can be downloaded as a Java application. Finally there is the CyPath2 tool which can be used for querying and analysis. This is much more of a studio suite that utilizes flash based cytoscape at the core of it’s design.
 
+
 *Wikipathways* - Is complementary to the efforts of PC and just the same offers a place to facilitate the contribution and maintenance of pathways. The website is built on MediaWiki software and provides an interface that most people are familiar with. It offers an embedded editor that can be used to alter existing pathways or create new ones. Version history is kept so that changes can be reverted. Pathways can be downloaded and used in a variety of formats including object oriented (JSON,XML, etc) or images (JPG,PNG,etc). Exported files can be used with other tools that handle analysis.
+
 
 *Pathway Studio* - Pathway Studio is proprietary owned software with associated use charges through licensing. It is available both through web and can be downloaded. Being that it is closed source there is no access to internal design of the application. Thusly the study will look at it in terms of its available features on the user end. Being that this is company owned software the natural expectation going into this survey study is that it’s the most powerful in terms of the features it offers and overall production quality.
 
 <h3>Feature List</h3>
+
 * Editing
   * Add/Remove/Update entities
   * Add/Remove/Update interactions
@@ -67,6 +70,7 @@ The foundation of this application is based on cytoscape.js. Cytoscape.js, is a 
 Operations on the collection are non destructive. The framework rather employs a binding mechanism, meaning the old versions of nodes or edges is preserved in a limbo like state for the duration of the application's lifetime. Since the core can handle initial bindings, as an example, for styling on the initial render; Any actions applied to the styling within the context of collection are considered overrides of this initial bindings. The same can be done for listeners. Aside from a coherent data/function architecture, cytoscape also provides graph theory operations ranging from centrality measurements and various types of traversals.
 
 <h3>Test Framework</h3>
+
 The project utilizes a custom made testing framework that is completely dependency free. The framework is simple but should meet the testing requirements of our program. Testing is based completely on asserts, or the checking of expected vs. actual conditions. We currently can do this on objects. We could easily check whether the execution of our code matches the expectation. For this, we need a capture method to catch the actual execution, this should be considered as a future feature. 
 
 We breakdown our tester into two seperate subclasses of the tester for GUI and NoGUI. Both of these subclasses have their own setup and teardown functions. These functions re-initiates the pathway editor for every test we run. For the setup phase of the GUI tester we can either do a "complete" or "partial" setup. For a complete setup we initiate the editor, load in a pathway, and spray data over it. For the partial we only initiate the editor. The teardown method simply sets the objects we're testing on to null
